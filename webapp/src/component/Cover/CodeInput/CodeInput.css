@@ -1,0 +1,31 @@
+.CodeInput {
+    margin: 20px;
+    display: inline-block;
+}
+
+.CodeInput .create-room-input-wrapper {
+    background-color: white;
+    padding: 5px;
+    border-style: solid;
+    border-color: gray;
+    border-width: 1px;
+}
+
+.CodeInput .domain {
+    color: gray;
+}
+
+.CodeInput .create-room-input {
+    border-style: none;
+    font-size: 16px;
+    margin-left: 1px;
+    color: #D9B835;
+}
+
+.CodeInput .create-room-input::placeholder {
+    color: black;
+}
+
+.CodeInput .create-room-input:focus {
+    outline: none;
+}
