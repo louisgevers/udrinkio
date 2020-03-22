@@ -22,7 +22,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const { endpoint } = this.state
     var socket = io()
   }
 
