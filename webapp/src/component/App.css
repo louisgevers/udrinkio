@@ -1,0 +1,30 @@
+.App {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.Cover {
+    min-height: 600px;
+}
+
+.GamesPanel {
+    min-height: 600px;
+}
+
+/* Desktop */
+@media only screen and (min-width: 800px) {
+    
+    /* Cover and GamesPanel take half screen, full height */
+    .Cover {
+        height: 100vh;
+        float: left;
+        width: 50%;
+    }
+
+    .GamesPanel {
+        height: 100vh;
+        float: left;
+        clear: right;
+        width: 50%;
+    }
+
+}

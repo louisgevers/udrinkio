@@ -1,0 +1,52 @@
+.GameTile {
+    text-align: center;
+    position: relative;
+    min-height: 300px;
+}
+
+.GameTile span {
+    color: white;
+}
+
+.GameTile .game-title {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.GameTile img {
+    position: absolute;
+    top: 10%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    max-width: 80%;
+    max-height: 40%;
+    min-height: 100px;
+}
+
+.GameTile button {
+    position: absolute;
+    border: none;
+    padding: 10px 20px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.GameTile button:focus {
+    outline: none;
+}
+
+.GameTile button:active {
+    background-color: #222222;
+}
+
+/* Desktop */
+@media only screen and (min-width: 800px) {
+    .GameTile img {
+        top: 0;
+    }
+}

@@ -1,0 +1,11 @@
+.GamesPanel {
+    display: grid;
+    grid-template-columns: auto;
+}
+
+/* Desktop */
+@media only screen and (min-width: 800px) {
+    .GamesPanel {
+        grid-template-columns: 50% 50%;
+    }
+}
