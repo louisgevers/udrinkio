@@ -1,0 +1,34 @@
+[
+    {
+        "name": "PYRAMID",
+        "minPlayers": 2,
+        "maxPlayers": 8,
+        "imageName": "pyramid.png",
+        "primaryColor": "#6D534B",
+        "secondaryColor": "#EEB711"
+    },
+    {
+        "name": "HORSE RACE",
+        "minPlayers": 2,
+        "maxPlayers": 8,
+        "imageName": "horse-race.png",
+        "primaryColor": "#3FA2BE",
+        "secondaryColor": "#FC0F3B"
+    },
+    {
+        "name": "KING CUP",
+        "minPlayers": 2,
+        "maxPlayers": 8,
+        "imageName": "king-cup.png",
+        "primaryColor": "#FC0F3B",
+        "secondaryColor": "#3FA2BE"
+    },
+    {
+        "name": "TRIVIA QUIZ",
+        "minPlayers": 2,
+        "maxPlayers": 4,
+        "imageName": "quiz.png",
+        "primaryColor": "#EEB711",
+        "secondaryColor": "#6D534B"
+    }
+]

@@ -1,9 +1,11 @@
-
-/* Placeholder rules */
 .GamesPanel {
-    background-color: #bbbbbb;
+    display: grid;
+    grid-template-columns: auto;
 }
 
-.GamesPanel p {
-    margin: 0
+/* Desktop */
+@media only screen and (min-width: 800px) {
+    .GamesPanel {
+        grid-template-columns: 50% 50%;
+    }
 }
