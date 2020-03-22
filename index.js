@@ -10,6 +10,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
+io.set('origins', 'http://localhost.com:8080');
+
 io.on('connection', (socket) => {
   console.log('a user connected!')
 })
