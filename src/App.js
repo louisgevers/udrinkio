@@ -7,6 +7,7 @@ import './App.css';
 import Home from './page/Home';
 
 class App extends Component {
+
   render() {
     const App = () => (
         <div className="App">
