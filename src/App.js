@@ -7,15 +7,19 @@ import './App.css';
 import Home from './page/Home';
 
 class App extends Component {
-
   render() {
-    return (
-      <Switch>
+    const App = () => (
         <div className="App">
           <Switch>
-            <Route exact path='/' component={Home}/>
+            <Route exact path='/'>
+              <Home />
+            </Route>
           </Switch>
         </div>
+    )
+    return (
+      <Switch>
+        <App />
       </Switch>
       
     );
