@@ -27,11 +27,21 @@ class App extends Component {
   }
 
   componentDidMount() {
-    var socket = io()
+    this.socket = io()
+    this.socket.on('assign-room', (roomId) => {
+      this.roomId = roomId
+      // TODO start lobby
+      alert('Assigned to room ' + roomId + " for game " + this.game.name)
+    })
   }
 
   createParty = (game, username) => {
-    // TODO
+    this.game = game
+    this.username = username
+    this.socket.emit('create-party', {
+      gameId: game.id,
+      username: username
+    })
   }
 
 }
