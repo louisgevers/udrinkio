@@ -10,21 +10,34 @@ class UsernameInput extends Component {
             return firstName + secondName
         }
         this.setRandomName = () => {
-            const input = document.getElementById("username-prompt-input")
-            input.value = ""
-            document.getElementById("username-prompt-input").placeholder = this.randomName()
+            this.input.value = ""
+            const name = this.randomName()
+            document.getElementById("username-prompt-input").placeholder = name
+            this.props.onNameChange(name)
+        }
+        this.updateName = () => {
+            if (this.input.value.length === 0) {
+                this.props.onNameChange(this.input.placeholder)
+            } else {
+                this.props.onNameChange(this.input.value)
+            }
         }
     }
     
     render() {
         return (
             <div className="UsernameInput">
-                <input type="text" placeholder={this.randomName()} className="username-input" id="username-prompt-input" style={this.props.inputStyle} autoComplete="off" autoCorrect="off" spellCheck="false" />
+                <input ref={(input) => this.input = input} type="text" onInput={this.updateName} className="username-input" id="username-prompt-input" style={this.props.textStyle} autoComplete="off" autoCorrect="off" spellCheck="false" />
                 <button className="random-button" onClick={this.setRandomName}>
                     <span className="material-icons">sync</span>
                 </button>
             </div>
         )
+    }
+
+    componentDidMount() {
+        this.setRandomName()
+        this.input.focus()
     }
 }
 

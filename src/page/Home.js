@@ -34,7 +34,7 @@ class Home extends Component {
             <div className="Home">
                 <Cover/>
                 <GamesPanel onCreateParty={this.onCreateParty}/>
-                {this.state.prompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose}/>}
+                {this.state.prompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose} onStart={this.props.onPartyCreated}/>}
             </div>
         )
     }

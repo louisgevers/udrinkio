@@ -13,7 +13,7 @@ class App extends Component {
         <div className="App">
           <Switch>
             <Route exact path='/'>
-              <Home />
+              <Home onPartyCreated={this.createParty} />
             </Route>
           </Switch>
         </div>
@@ -28,6 +28,10 @@ class App extends Component {
 
   componentDidMount() {
     var socket = io()
+  }
+
+  createParty = (game, username) => {
+    // TODO
   }
 
 }
