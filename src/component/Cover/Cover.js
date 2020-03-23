@@ -7,7 +7,7 @@ class Cover extends Component {
     render() {
         return (
             <div className="Cover">
-                <EntryPoint />
+                <EntryPoint onJoinParty={(code) => this.props.onJoinParty(code)} />
             </div>
         )
     }

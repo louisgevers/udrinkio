@@ -10,7 +10,7 @@ class GamesPanel extends Component {
         return (
             <div className="GamesPanel">
                 {games.map(game => {
-                    return <GameTile key={game.name} game={game} />
+                    return <GameTile key={game.name} game={game} onCreateParty={() => this.props.onCreateParty(game)} />
                 })}
             </div>
         )

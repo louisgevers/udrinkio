@@ -1,5 +1,6 @@
 [
     {
+        "id": "pyramid",
         "name": "PYRAMID",
         "minPlayers": 2,
         "maxPlayers": 8,
@@ -8,6 +9,7 @@
         "secondaryColor": "#EEB711"
     },
     {
+        "id": "horserace",
         "name": "HORSE RACE",
         "minPlayers": 2,
         "maxPlayers": 8,
@@ -16,6 +18,7 @@
         "secondaryColor": "#FC0F3B"
     },
     {
+        "id": "kingcup",
         "name": "KING CUP",
         "minPlayers": 2,
         "maxPlayers": 8,
@@ -24,6 +27,7 @@
         "secondaryColor": "#3FA2BE"
     },
     {
+        "id": "triviaquizz",
         "name": "TRIVIA QUIZ",
         "minPlayers": 2,
         "maxPlayers": 4,

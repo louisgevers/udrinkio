@@ -1,0 +1,28 @@
+.UsernameInput {
+    background-color: white;
+    padding: 0px 5px;
+    border-style: solid;
+    border-color: gray;
+    border-width: 1px;
+    margin: 10px 0;
+    display: block;
+}
+
+.UsernameInput .username-input {
+    border-style: none;
+    font-size: 16px;
+    margin-left: 1px;
+    color: #D9B835;
+    font-weight: bold;
+}
+
+.UsernameInput .username-input:focus, .UsernameInput .random-button:focus {
+    outline: none;
+}
+
+.UsernameInput .random-button {
+    background: none;
+    border: none;
+    /* color: white; */
+    vertical-align: middle;
+}

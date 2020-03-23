@@ -20,7 +20,7 @@ class GameTile extends Component {
                     <span>Players {this.props.game.minPlayers} - {this.props.game.maxPlayers}</span>
                 </div>
                 <img src={require(`../../../image/${this.props.game.imageName}`)} alt={`${this.props.game.name} icon`}/>
-                <button className="create-party-button" type="submit" data-color={this.props.game.secondaryColor}>Create party</button>
+                <button className="create-party-button" type="submit" data-color={this.props.game.secondaryColor} onClick={this.props.onCreateParty}>Create party</button>
             </div>
         )
     }
