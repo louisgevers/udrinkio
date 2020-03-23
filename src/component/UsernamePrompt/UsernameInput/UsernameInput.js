@@ -19,7 +19,7 @@ class UsernameInput extends Component {
     render() {
         return (
             <div className="UsernameInput">
-                <input type="text" placeholder={this.randomName()} className="username-input" id="username-prompt-input" autoComplete="off" autoCorrect="off" spellCheck="false" />
+                <input type="text" placeholder={this.randomName()} className="username-input" id="username-prompt-input" style={this.props.inputStyle} autoComplete="off" autoCorrect="off" spellCheck="false" />
                 <button className="random-button" onClick={this.setRandomName}>
                     <span className="material-icons">sync</span>
                 </button>

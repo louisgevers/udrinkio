@@ -10,18 +10,21 @@ class Home extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            prompt: false
+            prompt: false,
+            game: null
         }
 
         this.onCreateParty = (game) => {
             this.setState({
-                prompt: true
+                prompt: true,
+                game: game
             })
         }
 
         this.onPromptClose = () => {
             this.setState({
-                prompt: false
+                prompt: false,
+                game: this.state.game
             })
         }
     }
@@ -31,7 +34,7 @@ class Home extends Component {
             <div className="Home">
                 <Cover/>
                 <GamesPanel onCreateParty={this.onCreateParty}/>
-                {this.state.prompt && <UsernamePrompt onClose={this.onPromptClose}/>}
+                {this.state.prompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose}/>}
             </div>
         )
     }

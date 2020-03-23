@@ -9,6 +9,12 @@
 .UsernamePrompt .prompt-header {
     background-color: #EEB711;
     padding: 10px 0;
+    display: flex;
+    flex-direction: row;
+}
+
+.UsernamePrompt .prompt-header h2 {
+    margin: 0;
 }
 
 .UsernamePrompt .prompt-body {
@@ -28,13 +34,11 @@
 }
 
 .UsernamePrompt .prompt-create-button {
-    background-color: #EEB711;
     border: none;
     color: white;
     padding: 10px 20px;
 }
 
 .UsernamePrompt .prompt-create-button:active {
-    background-color: #222222;
-    color: #D9B835;
+    color: #222222;
 }

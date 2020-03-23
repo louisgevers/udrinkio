@@ -11,21 +11,25 @@ class UsernamePrompt extends Component {
                 this.props.onClose()
             }
         }
+        this.backgroundStyle = {backgroundColor: this.props.game.primaryColor}
+        this.textStyle = {color: this.props.game.secondaryColor}
+        this.buttonStyle = {backgroundColor: this.props.game.secondaryColor}
     }
 
     render() {
         return (
             <div className="UsernamePrompt" onClick={this.handleClick}>
                 <div className="prompt-container">
-                    <div className="prompt-header">
+                    <div style={this.backgroundStyle} className="prompt-header">
                         <button className="prompt-cancel-button" id="username-prompt-cancel-button" onClick={this.props.onClose}>
                             <span className="material-icons">close</span>
                         </button>
+                        <h2 style={this.textStyle}>{this.props.game.name}</h2>
                     </div>
                     <div className="prompt-body">
                         <span>Username</span>
-                        <UsernameInput />
-                        <button className="prompt-create-button" id="username-prompt-create-button">Start party</button>
+                        <UsernameInput inputStyle={this.textStyle} />
+                        <button className="prompt-create-button" id="username-prompt-create-button" style={this.buttonStyle}>Start party</button>
                     </div>
                 </div>
             </div>
