@@ -33,7 +33,7 @@ class UsernamePrompt extends Component {
                     <div className="prompt-body">
                         <span>Username</span>
                         <UsernameInput inputStyle={this.textStyle} onNameChange={this.setUsername} />
-                        <button className="prompt-create-button" id="username-prompt-create-button" style={this.buttonStyle} onClick={() => this.props.onStart(this.props.game, this.username)}>Start party</button>
+                        <button className="prompt-create-button" id="username-prompt-create-button" style={this.buttonStyle} onClick={() => this.props.onStart(this.username)}>Start party</button>
                     </div>
                 </div>
             </div>

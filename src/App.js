@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import './App.css';
 
 import Home from './page/Home';
+import games from "./data/games.json"
 
 class App extends Component {
 
@@ -13,7 +14,7 @@ class App extends Component {
         <div className="App">
           <Switch>
             <Route exact path='/'>
-              <Home onPartyCreated={this.createParty} />
+              <Home ref={(home) => this.home = home} onPartyCreated={this.createParty} onJoinParty={this.attemptJoinParty} onPartyJoined={this.joinParty} />
             </Route>
           </Switch>
         </div>
@@ -33,6 +34,18 @@ class App extends Component {
       // TODO start lobby
       alert('Assigned to room ' + roomId + " for game " + this.game.name)
     })
+    this.socket.on('invalid-room', () => {
+      // TODO real alert
+      alert('Invalid room number!')
+    })
+    this.socket.on('room-available', (gameId) => {
+      this.game = this.getGame(gameId)
+      this.home.onJoinParty(this.game)
+    })
+    this.socket.on('user-joined', (username) => {
+      // TODO replace by adding user in lobby
+      alert(username + ' joined the game!')
+    })
   }
 
   createParty = (game, username) => {
@@ -42,6 +55,23 @@ class App extends Component {
       gameId: game.id,
       username: username
     })
+  }
+
+  joinParty = (username) => {
+    this.username = username
+    this.socket.emit('join-party', {
+      roomId: this.roomId,
+      username: username
+    })
+  }
+
+  attemptJoinParty = (roomId) => {
+    this.roomId = roomId
+    this.socket.emit('check-room', roomId)
+  }
+
+  getGame = (gameId) => {
+    return games.filter((game) => game.id === gameId)[0];
   }
 
 }

@@ -32,8 +32,30 @@ io.on('connection', (socket) => {
       members: {}
     }
     room.data.members[socket.id] = data.username
-
+    
     socket.emit('assign-room', roomId)
+  })
+
+  socket.on('check-room', (roomId) => {
+    const room = getRoom(roomId)
+    if (room == null) {
+      socket.emit('invalid-room')
+    } else {
+      socket.emit('room-available', room.data.gameId)
+    }
+  })
+
+  socket.on('join-party', (data) => {
+    const roomId = data.roomId
+    const room = getRoom(roomId)
+    if (room == null) {
+      socket.emit('invalid-room')
+    } else {
+      socket.join(roomId)
+      socket.broadcast.to(roomId).emit('user-joined', data.username)
+      room.data.members[socket.id] = data.username
+      socket.emit('assign-room', roomId)
+    }
   })
 
 })

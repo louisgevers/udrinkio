@@ -10,21 +10,30 @@ class Home extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            prompt: false,
+            createPrompt: false,
+            joinPrompt: false,
             game: null
         }
 
         this.onCreateParty = (game) => {
             this.setState({
-                prompt: true,
+                createPrompt: true,
+                game: game
+            })
+        }
+
+        this.onJoinParty = (game) => {
+            this.setState({
+                joinPrompt: true,
                 game: game
             })
         }
 
         this.onPromptClose = () => {
             this.setState({
-                prompt: false,
-                game: this.state.game
+                createPrompt: false,
+                joinPrompt: false,
+                game: null
             })
         }
     }
@@ -32,9 +41,10 @@ class Home extends Component {
     render() {
         return (
             <div className="Home">
-                <Cover/>
+                <Cover onJoinParty={(code) => this.props.onJoinParty(code)}/>
                 <GamesPanel onCreateParty={this.onCreateParty}/>
-                {this.state.prompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose} onStart={this.props.onPartyCreated}/>}
+                {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose} onStart={(username) => this.props.onPartyCreated(this.state.game, username)}/>}
+                {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose} onStart={this.props.onPartyJoined}/>}
             </div>
         )
     }
