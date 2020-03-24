@@ -67,3 +67,11 @@
     color: white;
     font-size: 18px;
 }
+
+.Lobby .start-game-button.inactive {
+    color: #666666
+}
+
+.Lobby button[class="start-game-button"]::after {
+    content: " >>";
+}
