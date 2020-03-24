@@ -37,57 +37,75 @@ createRoom = (socket, username, game) => {
   }
 }
 
-// ### SOCKET IO ###
+joinRoom = (socket, username, roomId, room) => {
+  socket.data = {
+    username: username,
+    roomId: roomId
+  }
+  socket.join(roomId)
 
+  room.data.members[socket.id] = username
+
+  const users = generateUsersData(room.data)
+  socket.broadcast.to(roomId).emit('room.newUser', users)
+  return {
+    users: users,
+    isHost: false,
+    roomId: roomId,
+    game: room.data.game
+  }
+}
+
+canConnectToRoom = (socket, roomId, room) => {
+  if (!isValidRoomCode(roomId)) {
+    socket.emit('room.unavailable', 'Invalid room name!')
+    return false
+  } else if (room == null) {
+    socket.emit('room.unavailable', 'This room does not exist!')
+    return false
+  } else {
+    return true
+  }
+}
+
+// ### SOCKET IO ###
+var connectionsCount = 0
 io.on('connection', (socket) => {
-  console.log('a user connected!')
+  connectionsCount += 1
+  console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
 
   socket.on('room.create', (data) => {
     const username = data.username
     const game = data.game
     socket.emit('room.created', createRoom(socket, username, game))
   })
-  // socket.on('create-party', (data) => {    
-  //   const roomId = generateRoomId()
-  //   socket.data = {
-  //     username: data.username,
-  //     roomId: roomId
-  //   }
 
-  //   socket.join(roomId)
+  socket.on('room.availability', (roomId) => {
+    const room = getRoom(roomId)
+    if (canConnectToRoom(socket, roomId, room)) {
+      socket.emit('room.available', {
+        game: room.data.game,
+        isHost: false,
+        users: generateUsersData(room.data),
+        roomId: roomId
+      })
+    }
+  })
 
-  //   const room = getRoom(roomId)
-  //   room.data = {
-  //     gameId: data.gameId,
-  //     host: socket.id,
-  //     members: {}
-  //   }
-  //   room.data.members[socket.id] = data.username
+  socket.on('room.join', (data) => {
+    const roomId = data.roomId
+    const username = data.username
+    const room = getRoom(roomId)
+    if (canConnectToRoom(socket, roomId, room)) {
+      socket.emit('room.joined', joinRoom(socket, username, roomId, room))
+    }
+  })
+
+  socket.on('disconnect', () => { 
+    connectionsCount -= 1
+    console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
     
-  //   socket.emit('assign-room', roomId)
-  // })
-
-  // socket.on('check-room', (roomId) => {
-  //   const room = getRoom(roomId)
-  //   if (room == null) {
-  //     socket.emit('invalid-room')
-  //   } else {
-  //     socket.emit('room-available', room.data.gameId)
-  //   }
-  // })
-
-  // socket.on('join-party', (data) => {
-  //   const roomId = data.roomId
-  //   const room = getRoom(roomId)
-  //   if (room == null) {
-  //     socket.emit('invalid-room')
-  //   } else {
-  //     socket.join(roomId)
-  //     socket.broadcast.to(roomId).emit('user-joined', data.username)
-  //     room.data.members[socket.id] = data.username
-  //     socket.emit('assign-room', roomId)
-  //   }
-  // })
+  })
 
 })
 
@@ -121,6 +139,10 @@ function generateUsersData(roomData) {
     host: hostIndex,
     users: users
   }
+}
+
+function isValidRoomCode(roomId) {
+  return roomId.match(/^[0-9]{6}$/) != null
 }
 
 // ### SERVER ###
