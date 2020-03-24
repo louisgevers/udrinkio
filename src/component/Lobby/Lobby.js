@@ -23,7 +23,7 @@ class Lobby extends Component {
                     <span className="players-amount">{`${this.props.game.minPlayers} - ${this.props.game.maxPlayers} players`}</span>
                     <UserList users={this.props.users} isHost={this.props.isHost} isUserMissing={this.isUserMissing(this.props.game, this.props.users)} color={this.props.game.primaryDark} />
                 </div>
-                {this.isUserMissing(this.props.game, this.props.users) ?
+                {!this.props.isHost || this.isUserMissing(this.props.game, this.props.users) ?
                 <button disabled className="start-game-button inactive" style={{backgroundColor: this.props.game.primaryDark}}>Start game</button>
                 : <button type="submit" className="start-game-button" style={{backgroundColor: this.props.game.secondaryColor}}>Start game</button>}
             </div>
