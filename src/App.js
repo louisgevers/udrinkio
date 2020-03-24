@@ -4,8 +4,9 @@ import io from "socket.io-client";
 
 import './App.css';
 
-import Home from './page/Home';
+import Home from './page/Home/Home.js';
 import games from "./data/games.json"
+import Game from './page/Game/Game';
 
 class App extends Component {
 
@@ -15,6 +16,10 @@ class App extends Component {
           <Switch>
             <Route exact path='/'>
               <Home ref={(home) => this.home = home} onPartyCreated={this.createParty} onJoinParty={this.attemptJoinParty} onPartyJoined={this.joinParty} />
+            </Route>
+            {/* TODO only 6 digit code paths, else error */}
+            <Route path='/*'>
+              <Game />
             </Route>
           </Switch>
         </div>
