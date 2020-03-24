@@ -28,15 +28,15 @@ class App extends Component {
         <div className="App">
           <Switch>
             <Route exact path='/'>
-              <Home onJoinParty={this.attemptJoinParty} onCreateParty={this.onCreateParty} />
+              <Home onJoinParty={this.onJoinButtonClick} onCreateParty={this.onCreateButtonClick} />
             </Route>
             {/* TODO only 6 digit code paths, else error */}
             <Route path='/*'>
-              <Game game={this.state.game} roomId={this.state.roomId} />
+              <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} />
             </Route>
           </Switch>
-          {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose} onStart={(username) => this.createParty(this.state.game, username)}/>}
-          {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.onPromptClose} onStart={this.joinParty}/>}
+          {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onCreateStartClick}/>}
+          {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onJoinStartClick}/>}
         </div>
     )
     return (
@@ -49,46 +49,65 @@ class App extends Component {
 
   componentDidMount() {
     this.socket = io()
-    this.socket.on('assign-room', (roomId) => {
-      this.setState({roomId: roomId, createPrompt: false,
-        joinPrompt: false})
-      // TODO start lobby
-      this.props.history.push(`/${roomId}`)
+
+    this.socket.on('room.created', (data) => {
+      this.closePrompts()
+      this.setState({
+        users: data.users,
+        isHost: data.isHost,
+        roomId: data.roomId
+      })
+      this.props.history.push(`/${data.roomId}`)
     })
-    this.socket.on('invalid-room', () => {
-      // TODO real alert
-      alert('Invalid room number!')
-    })
-    this.socket.on('room-available', (gameId) => {
-      this.setState({game: this.getGame(gameId)})
-      this.onJoinParty(this.state.game)
-    })
-    this.socket.on('user-joined', (username) => {
-      // TODO replace by adding user in lobby
-      alert(username + ' joined the game!')
-    })
+
+    // this.socket.on('assign-room', (roomId) => {
+    //   this.setState({roomId: roomId, createPrompt: false,
+    //     joinPrompt: false})
+    //   // TODO start lobby
+    //   this.props.history.push(`/${roomId}`)
+    // })
+    // this.socket.on('invalid-room', () => {
+    //   // TODO real alert
+    //   alert('Invalid room number!')
+    // })
+    // this.socket.on('room-available', (gameId) => {
+    //   this.setState({game: this.getGame(gameId)})
+    //   this.onJoinParty(this.state.game)
+    // })
+    // this.socket.on('user-joined', (username) => {
+    //   // TODO replace by adding user in lobby
+    //   alert(username + ' joined the game!')
+    // })
   }
 
-  // ### PROMPT TOGGLING ###
+  // ### OPEN and CLOSE PROMPTS ###
 
-  // Open the prompt to create a party
-  onCreateParty = (game) => {
+  // Open the create prompt
+  openCreatePrompt = (game) => {
     this.setState({
-      createPrompt: true,
+      createPrompt: true, 
       game: game
     })
   }
 
-  // Open the prompt to join a party
-  onJoinParty = (game) => {
+  // Open the join prompt
+  openJoinPrompt = (game) => {
     this.setState({
       joinPrompt: true,
       game: game
     })
   }
 
-  // Close prompt and return to homepage
-  onPromptClose = () => {
+  // Close prompts (e.g. after starting the game)
+  closePrompts = () => {
+    this.setState({
+      createPrompt: false,
+      joinPrompt: false
+    })
+  }
+
+  // Close prompts and go back to homepage, reset game
+  cancelPrompts = () => {
     this.props.history.push('/')
     this.setState({
       createPrompt: false,
@@ -97,35 +116,90 @@ class App extends Component {
     })
   }
 
+  // ### JOIN and CREATE button clicks ###
 
-  // ### SOCKET.IO JOIN AND CREATE PARTIES ###
-
-  createParty = (game, username) => {
-    this.setState({
-      game: game,
-      username: username
-    })
-    this.socket.emit('create-party', {
-      gameId: game.id,
-      username: username
-    })
+  onCreateButtonClick = (game) => {
+    this.openCreatePrompt(game)
   }
 
-  joinParty = (username) => {
-    this.setState({username: username})
-    this.socket.emit('join-party', {
-      roomId: this.state.roomId,
+  onJoinButtonClick = (roomId) => {
+    // TODO
+    console.log('join button clicked')
+  }
+
+
+  // ### PROMPT start or leave
+
+  onCreateStartClick = (username) => {
+    const data = {
       username: username,
-      createPrompt: false,
-      joinPrompt: false
-    })
-    this.props.history.push(`/${this.state.roomId}`)
+      game: this.state.game
+    }
+    this.socket.emit('room.create', data)
   }
 
-  attemptJoinParty = (roomId) => {
-    this.setState({roomId: roomId})
-    this.socket.emit('check-room', roomId)
+  onJoinStartClick = (username) => {
+    // TODO
+    console.log('attempting to join a game')
   }
+
+  // ### PROMPT TOGGLING ###
+
+  // // Open the prompt to create a party
+  // onCreateParty = (game) => {
+  //   this.setState({
+  //     createPrompt: true,
+  //     game: game
+  //   })
+  // }
+
+  // // Open the prompt to join a party
+  // onJoinParty = (game) => {
+  //   this.setState({
+  //     joinPrompt: true,
+  //     game: game
+  //   })
+  // }
+
+  // // Close prompt and return to homepage
+  // onPromptClose = () => {
+  //   this.props.history.push('/')
+  //   this.setState({
+  //     createPrompt: false,
+  //     joinPrompt: false,
+  //     game: null
+  //   })
+  // }
+
+
+  // // ### SOCKET.IO JOIN AND CREATE PARTIES ###
+
+  // createParty = (game, username) => {
+  //   this.setState({
+  //     game: game,
+  //     username: username
+  //   })
+  //   this.socket.emit('create-party', {
+  //     gameId: game.id,
+  //     username: username
+  //   })
+  // }
+
+  // joinParty = (username) => {
+  //   this.setState({username: username})
+  //   this.socket.emit('join-party', {
+  //     roomId: this.state.roomId,
+  //     username: username,
+  //     createPrompt: false,
+  //     joinPrompt: false
+  //   })
+  //   this.props.history.push(`/${this.state.roomId}`)
+  // }
+
+  // attemptJoinParty = (roomId) => {
+  //   this.setState({roomId: roomId})
+  //   this.socket.emit('check-room', roomId)
+  // }
 
   getGame = (gameId) => {
     return games.filter((game) => game.id === gameId)[0];
