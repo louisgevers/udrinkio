@@ -58,7 +58,7 @@
     font-size: 72px;
 }
 
-.Lobby .player-title {
+.Lobby .players-title {
     font-size: 28px;
     font-weight: bold;
 }
@@ -74,4 +74,9 @@
 
 .Lobby button[class="start-game-button"]::after {
     content: " >>";
+}
+
+.Lobby .code-description {
+    margin: 0;
+    text-align: center;
 }

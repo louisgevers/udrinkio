@@ -15,7 +15,8 @@ class Lobby extends Component {
                     <h1 style={{color: this.props.game.secondaryColor}}>{this.props.game.name}</h1>
                     <span className="room-code-title">ROOM CODE</span>
                     <span className="room-code-holder">{this.props.roomId}</span>
-                    <button className="copy-code-button" style={{backgroundColor: this.props.game.secondaryColor}}>copy code</button>
+                    <p className="code-description" style={{color: "#CCCCCC"}}>Share this code with your friends or share them the link <br/><b>http://www.udrink.io/{this.props.roomId}</b></p>
+                    {/* <button className="copy-code-button" onClick={this.copyRoomCode} style={{backgroundColor: this.props.game.secondaryColor}}>copy code</button> */}
                 </div>
                 <div className="players">
                     <span className="players-title" style={{color: this.props.game.secondaryColor}}>Players</span>
