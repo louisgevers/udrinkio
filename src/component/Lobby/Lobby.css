@@ -1,8 +1,68 @@
-/* Placeholder rules */
 .Lobby {
-    background-color: gray;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.Lobby p {
-    margin: 0;
+.Lobby .header, .Lobby .players {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Lobby .header {
+    margin-bottom: 30px;
+}
+
+.Lobby .start-game-button {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+}
+
+.Lobby button {
+    border: none;
+    color: white;
+    font-size: 18px;
+}
+
+.Lobby .copy-code-button {
+    padding: 5px 10px;
+}
+
+.Lobby button:active {
+    color: black;
+}
+
+.Lobby button:focus {
+    outline: none;
+}
+
+.Lobby h1 {
+    font-size: 48px;
+}
+
+.Lobby .room-code-title {
+    color: #CCCCCC;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.Lobby .room-code-holder {
+    color: white;
+    font-weight: bold;
+    font-size: 72px;
+}
+
+.Lobby .player-title {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.Lobby .players {
+    color: white;
+    font-size: 18px;
 }
