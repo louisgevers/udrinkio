@@ -1,0 +1,27 @@
+.Lobby {
+    min-height: 100vh;
+}
+
+.Chat {
+    height: 100vh;
+}
+
+/* Desktop */
+@media only screen and (min-width: 800px) {
+    
+    .Lobby {
+        min-height: 600px;
+        height: 100vh;
+        float: left;
+        width: 75%;
+    }
+
+    .Chat {
+        min-height: 600px;
+        height: 100vh;
+        float: left;
+        clear: right;
+        width: 25%;
+    }
+
+}
