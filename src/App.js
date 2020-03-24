@@ -89,6 +89,28 @@ class App extends Component {
         users: users
       })
     })
+
+    this.socket.on('room.hostDisconnected', (username) => {
+      this.leaveGame(`Host "${username}" has disconnected`)
+    })
+
+    this.socket.on('room.userDisconnected', (users) => {
+      this.setState({
+        users: users
+      })
+    })
+  }
+
+  leaveGame = (message) => {
+    this.props.history.push('/')
+    this.setState({
+      game: null,
+      isHost: false,
+      users: null,
+      roomId: null
+    })
+    // TODO proper alert
+    alert(message)
   }
 
   // ### OPEN and CLOSE PROMPTS ###
