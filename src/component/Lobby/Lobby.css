@@ -1,0 +1,102 @@
+.Lobby {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Lobby .header, .Lobby .players {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.Lobby .header {
+    margin-bottom: 30px;
+}
+
+.Lobby .start-game-button {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+}
+
+.Lobby button {
+    border: none;
+    color: white;
+    font-size: 18px;
+}
+
+.Lobby .copy-code-button {
+    padding: 5px 10px;
+}
+
+.Lobby button:active {
+    color: black;
+}
+
+.Lobby button:focus {
+    outline: none;
+}
+
+.Lobby h1 {
+    font-size: 36px;
+}
+
+.Lobby .room-code-title {
+    color: #CCCCCC;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.Lobby .room-code-holder {
+    color: white;
+    font-weight: bold;
+    font-size: 56px;
+}
+
+.Lobby .players-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.Lobby .players {
+    color: white;
+    font-size: 14px;
+}
+
+.Lobby .start-game-button.inactive {
+    color: #666666
+}
+
+.Lobby button[class="start-game-button"]::after {
+    content: " >>";
+}
+
+.Lobby .code-description {
+    margin: 0;
+    text-align: center;
+}
+
+/* Desktop */
+@media only screen and (min-width: 800px) and (min-height: 700px) {
+    .Lobby h1 {
+        font-size: 48px;
+    }
+
+    .Lobby .room-code-title {
+        font-size: 24px;
+    }
+
+    .Lobby .room-code-holder {
+        font-size: 72px;
+    }
+
+    .Lobby .players-title {
+        font-size: 28px;
+    }
+
+    .Lobby .players {
+        font-size: 18px;
+    }
+}
