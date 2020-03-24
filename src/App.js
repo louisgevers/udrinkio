@@ -13,6 +13,7 @@ class App extends Component {
 
   constructor(props) {
     super(props)
+    this.initializeSocketIO()
     this.state = {
       game: null,
       users: null,
@@ -30,10 +31,15 @@ class App extends Component {
             <Route exact path='/'>
               <Home onJoinParty={this.onJoinButtonClick} onCreateParty={this.onCreateButtonClick} />
             </Route>
-            {/* TODO only 6 digit code paths, else error */}
-            <Route path='/*'>
-              <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} />
+            <Route path='*'>
+              {
+                this.state.roomId !== null ?
+                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} /> :
+                () => this.onPathJoin(this.props.location.pathname)
+              }
+              
             </Route>
+            {/* TODO error page */}
           </Switch>
           {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onCreateStartClick}/>}
           {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onJoinStartClick}/>}
@@ -47,7 +53,7 @@ class App extends Component {
     );
   }
 
-  componentDidMount() {
+  initializeSocketIO() {
     this.socket = io()
 
     this.socket.on('room.created', (data) => {
@@ -60,6 +66,7 @@ class App extends Component {
     })
 
     this.socket.on('room.unavailable', (message) => {
+      this.props.history.push('/')
       // TODO proper pop up
       alert(message)
     })
@@ -181,6 +188,11 @@ class App extends Component {
     this.socket.emit('room.join', data)
     this.closePrompts()
     // TODO LOADING SCREEN
+  }
+
+  // ### URL MAPPING ###
+  onPathJoin = (path) => {
+    this.socket.emit('room.availability', path.substr(1))
   }
 
   getGame = (gameId) => {
