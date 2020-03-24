@@ -10,8 +10,16 @@ const placeholderGame = {
     "maxPlayers": 8,
     "imageName": "pyramid.png",
     "primaryColor": "#6D534B",
+    "primaryDark": "#5C4944",
     "secondaryColor": "#EEB711"
 }
+
+const placeholderUsers = {
+    host: 1,
+    users: ["Arthur", "Louis", "Panda", "Kakker", "Olivier"]
+}
+
+const placeHolderIsHost = true
 
 const placeholderRoomId = 593023
 
@@ -19,7 +27,7 @@ class Game extends Component {
     render() {
         return (
             <div className="Game">
-                <Lobby game={placeholderGame} roomId={placeholderRoomId} />
+                <Lobby game={placeholderGame} roomId={placeholderRoomId} users={placeholderUsers} isHost={placeHolderIsHost} />
                 <Chat />
             </div>
         )

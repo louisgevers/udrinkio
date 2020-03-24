@@ -1,0 +1,64 @@
+.UserList {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 70%;
+    justify-content: center;
+    margin: 30px;
+}
+
+.UserList > * {
+    position: relative;
+    height: 50px;
+    padding: 10px;
+    margin: 0 40px;
+}
+
+.UserList > * * {
+    vertical-align: middle;
+}
+
+.OtherUser .remove-user-button {
+    background-color: transparent;
+    height: 100%;
+}
+
+.UserList .item-username {
+    position: absolute;
+    left: 70px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.UserList .waiting-players {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.UserList .HostUser {
+    font-weight: bold;
+    background-color: #D9D9D9;
+    font-size: 22px;
+    color: black;
+}
+
+.UserList .HostUser img {
+    height: 100%;
+}
+
+.UserList .OtherUser {
+    color: white;
+}
+
+.UserList .MissingUser {
+    color: #666666;
+}
+
+/* Desktop */
+@media only screen and (min-width: 800px) {
+
+    .UserList {
+        grid-template-columns: 30% 30%;
+    }
+
+}
