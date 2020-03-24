@@ -7,7 +7,7 @@ class Game extends Component {
     render() {
         return (
             <div className="Game">
-                <Lobby game={this.props.game} roomId={this.props.roomId} users={this.props.users} isHost={this.props.isHost} />
+                <Lobby game={this.props.game} roomId={this.props.roomId} users={this.props.users} isHost={this.props.isHost} onHomeClick={this.props.onHomeClick} />
                 <Chat />
             </div>
         )

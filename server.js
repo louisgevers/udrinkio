@@ -68,6 +68,20 @@ canConnectToRoom = (socket, roomId, room) => {
   }
 }
 
+disconnectUser = (socket, room) => {
+  if (room.data.host === socket.id) {
+    io.to(socket.data.roomId).emit('room.hostDisconnected', socket.data.username)
+    io.in(socket.data.roomId).clients((error, socketIds) => {
+      if (error) throw error
+      socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(socket.data.roomId))
+    })
+  } else {
+    delete room.data.members[socket.id]
+    const users = generateUsersData(room.data)
+    io.to(socket.data.roomId).emit('room.userDisconnected', users)
+  }
+}
+
 // ### SOCKET IO ###
 var connectionsCount = 0
 io.on('connection', (socket) => {
@@ -101,6 +115,11 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('room.quit', () => {
+    const room = getRoom(socket.data.roomId)
+    disconnectUser(socket, room)
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
@@ -108,17 +127,7 @@ io.on('connection', (socket) => {
       const roomId = socket.data.roomId
       const room = getRoom(roomId)
       if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
-        if (room.data.host === socket.id) {
-          io.to(roomId).emit('room.hostDisconnected', socket.data.username)
-          io.in(roomId).clients((error, socketIds) => {
-            if (error) throw error
-            socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(roomId))
-          })
-        } else {
-          delete room.data.members[socket.id]
-          const users = generateUsersData(room.data)
-          io.to(roomId).emit('room.userDisconnected', users)
-        }
+        disconnectUser(socket, room)
       }
     }
   })

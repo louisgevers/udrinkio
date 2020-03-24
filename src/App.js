@@ -34,7 +34,7 @@ class App extends Component {
             <Route path='*'>
               {
                 this.state.roomId !== null ?
-                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} /> :
+                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} /> :
                 () => this.onPathJoin(this.props.location.pathname)
               }
               
@@ -190,9 +190,21 @@ class App extends Component {
     // TODO LOADING SCREEN
   }
 
-  // ### URL MAPPING ###
+  // ### NAVIGATION ###
+
   onPathJoin = (path) => {
     this.socket.emit('room.availability', path.substr(1))
+  }
+
+  onQuitLobby = () => {
+    this.socket.emit('room.quit')
+    this.props.history.push('/')
+    this.setState({
+      game: null,
+      users: null,
+      roomId: null,
+      username: null
+    })
   }
 
   getGame = (gameId) => {
