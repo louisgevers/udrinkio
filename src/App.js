@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import io from "socket.io-client";
 
 import './App.css';
@@ -10,6 +10,16 @@ import Game from './page/Game/Game';
 
 class App extends Component {
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      game: null,
+      users: null,
+      roomId: null,
+      username: null
+    }
+  }
+
   render() {
     const App = () => (
         <div className="App">
@@ -19,7 +29,7 @@ class App extends Component {
             </Route>
             {/* TODO only 6 digit code paths, else error */}
             <Route path='/*'>
-              <Game />
+              <Game game={this.state.game} roomId={this.state.roomId} />
             </Route>
           </Switch>
         </div>
@@ -35,17 +45,17 @@ class App extends Component {
   componentDidMount() {
     this.socket = io()
     this.socket.on('assign-room', (roomId) => {
-      this.roomId = roomId
+      this.setState({roomId: roomId})
       // TODO start lobby
-      alert('Assigned to room ' + roomId + " for game " + this.game.name)
+      this.props.history.push(`/${roomId}`)
     })
     this.socket.on('invalid-room', () => {
       // TODO real alert
       alert('Invalid room number!')
     })
     this.socket.on('room-available', (gameId) => {
-      this.game = this.getGame(gameId)
-      this.home.onJoinParty(this.game)
+      this.setState({game: this.getGame(gameId)})
+      this.home.onJoinParty(this.state.game)
     })
     this.socket.on('user-joined', (username) => {
       // TODO replace by adding user in lobby
@@ -54,8 +64,10 @@ class App extends Component {
   }
 
   createParty = (game, username) => {
-    this.game = game
-    this.username = username
+    this.setState({
+      game: game,
+      username: username
+    })
     this.socket.emit('create-party', {
       gameId: game.id,
       username: username
@@ -63,15 +75,16 @@ class App extends Component {
   }
 
   joinParty = (username) => {
-    this.username = username
+    this.setState({username: username})
     this.socket.emit('join-party', {
-      roomId: this.roomId,
+      roomId: this.state.roomId,
       username: username
     })
+    this.props.history.push(`/${this.state.roomId}`)
   }
 
   attemptJoinParty = (roomId) => {
-    this.roomId = roomId
+    this.setState({roomId: roomId})
     this.socket.emit('check-room', roomId)
   }
 
@@ -81,4 +94,4 @@ class App extends Component {
 
 }
 
-export default App;
+export default withRouter(App);

@@ -6,6 +6,7 @@
         "maxPlayers": 8,
         "imageName": "pyramid.png",
         "primaryColor": "#6D534B",
+        "primaryDark": "#5C4944",
         "secondaryColor": "#EEB711"
     },
     {
@@ -15,6 +16,7 @@
         "maxPlayers": 8,
         "imageName": "horse-race.png",
         "primaryColor": "#3FA2BE",
+        "primaryDark": "#3B8194",
         "secondaryColor": "#FC0F3B"
     },
     {
@@ -24,6 +26,7 @@
         "maxPlayers": 8,
         "imageName": "king-cup.png",
         "primaryColor": "#FC0F3B",
+        "primaryDark": "#C01A38",
         "secondaryColor": "#3FA2BE"
     },
     {
@@ -33,6 +36,7 @@
         "maxPlayers": 4,
         "imageName": "quiz.png",
         "primaryColor": "#EEB711",
+        "primaryDark": "#B68F1B",
         "secondaryColor": "#6D534B"
     }
 ]
