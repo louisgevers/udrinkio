@@ -17,10 +17,7 @@
 }
 
 .Lobby .start-game-button {
-    position: absolute;
-    bottom: 5%;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-bottom: 20px;
     padding: 10px 20px;
 }
 
@@ -43,29 +40,29 @@
 }
 
 .Lobby h1 {
-    font-size: 48px;
+    font-size: 36px;
 }
 
 .Lobby .room-code-title {
     color: #CCCCCC;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .Lobby .room-code-holder {
     color: white;
     font-weight: bold;
-    font-size: 72px;
+    font-size: 56px;
 }
 
 .Lobby .players-title {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
 }
 
 .Lobby .players {
     color: white;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .Lobby .start-game-button.inactive {
@@ -79,4 +76,27 @@
 .Lobby .code-description {
     margin: 0;
     text-align: center;
+}
+
+/* Desktop */
+@media only screen and (min-width: 800px) and (min-height: 700px) {
+    .Lobby h1 {
+        font-size: 48px;
+    }
+
+    .Lobby .room-code-title {
+        font-size: 24px;
+    }
+
+    .Lobby .room-code-holder {
+        font-size: 72px;
+    }
+
+    .Lobby .players-title {
+        font-size: 28px;
+    }
+
+    .Lobby .players {
+        font-size: 18px;
+    }
 }
