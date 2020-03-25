@@ -15,6 +15,7 @@ class App extends Component {
     super(props)
     this.initializeSocketIO()
     this.state = {
+      id: null,
       game: null,
       users: null,
       roomId: null,
@@ -55,6 +56,13 @@ class App extends Component {
 
   initializeSocketIO() {
     this.socket = io()
+
+    // TODO persist ID
+    this.socket.emit('app.addUser')
+
+    this.socket.on('app.userAdded', (id) => {
+      this.setState({id: id})
+    })
 
     this.socket.on('room.created', (data) => {
       this.setState({

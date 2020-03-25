@@ -3,6 +3,7 @@ const path = require('path')
 const app = express()
 const http = require('http').createServer(app)
 var io = require('socket.io').listen(http)
+const {v4: uuidv4 } = require('uuid')
 
 
 app.use(express.static(path.join(__dirname, 'build')))
@@ -15,10 +16,8 @@ app.get('*', (req, res) => {
 
 createRoom = (socket, username, game) => {
   const roomId = generateRoomId()
-  socket.data = {
-    username: username,
-    roomId: roomId
-  }
+  socket.data.username = username
+  socket.data.roomId = roomId
 
   socket.join(roomId)
 
@@ -28,7 +27,10 @@ createRoom = (socket, username, game) => {
     host: socket.id,
     members: {}
   }
-  room.data.members[socket.id] = username
+  room.data.members[socket.id] = {
+    username: username,
+    userId: 0
+  }
 
   return {
     users: generateUsersData(room.data),
@@ -38,13 +40,14 @@ createRoom = (socket, username, game) => {
 }
 
 joinRoom = (socket, username, roomId, room) => {
-  socket.data = {
-    username: username,
-    roomId: roomId
-  }
+  socket.data.username = username
+  socket.data.roomId = roomId
   socket.join(roomId)
 
-  room.data.members[socket.id] = username
+  room.data.members[socket.id] = {
+    username: username,
+    id: room.data.members.size
+  }
 
   const users = generateUsersData(room.data)
   socket.broadcast.to(roomId).emit('room.newUser', users)
@@ -70,7 +73,7 @@ canConnectToRoom = (socket, roomId, room) => {
 
 disconnectUser = (socket, room) => {
   if (room.data.host === socket.id) {
-    io.to(socket.data.roomId).emit('room.hostDisconnected', socket.data.username)
+    socket.broadcast.to(socket.data.roomId).emit('room.hostDisconnected', socket.data.username)
     io.in(socket.data.roomId).clients((error, socketIds) => {
       if (error) throw error
       socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(socket.data.roomId))
@@ -78,8 +81,10 @@ disconnectUser = (socket, room) => {
   } else {
     delete room.data.members[socket.id]
     const users = generateUsersData(room.data)
-    io.to(socket.data.roomId).emit('room.userDisconnected', users)
+    socket.broadcast.to(socket.data.roomId).emit('room.userDisconnected', users)
   }
+  socket.leave(socket.data.roomId)
+  delete socket.data.roomId
 }
 
 // ### SOCKET IO ###
@@ -87,6 +92,15 @@ var connectionsCount = 0
 io.on('connection', (socket) => {
   connectionsCount += 1
   console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
+
+  socket.on('app.addUser', () => {
+    // TODO persist ID or reconnect socket
+    const id = uuidv4()
+    socket.data = {
+      userId: id
+    }
+    socket.emit('app.userAdded', (id))
+  })
 
   socket.on('room.create', (data) => {
     const username = data.username
@@ -140,7 +154,7 @@ function generateRoomId() {
   const min = 100000
   const max = 999999
   // TODO conflicitng room ids
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 function getRoom(id) {

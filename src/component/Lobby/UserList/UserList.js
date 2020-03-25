@@ -18,9 +18,9 @@ class UserList extends Component {
     render() {
         return (
             <div className="UserList">
-                <HostUser username={this.getHost(this.props.users)} />
-                {this.getOtherUsers(this.props.users).map((user, index) => {
-                    return <OtherUser key={index} username={user} isHost={this.props.isHost} color={this.props.color}/>
+                <HostUser username={this.getHost(this.props.users).username} />
+                {this.getOtherUsers(this.props.users).map((user) => {
+                    return <OtherUser key={user.userId} username={user.username} isHost={this.props.isHost} color={this.props.color}/>
                 })}
                 {this.props.isUserMissing && <MissingUser color={this.props.color} />}
             </div>
