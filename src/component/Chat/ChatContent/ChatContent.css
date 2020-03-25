@@ -1,0 +1,50 @@
+.ChatContent {
+    background-color: #666666;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    font-family: 'Open Sans', sans-serif;
+    padding-bottom: 20px;
+}
+
+.ChatContent .ChatMessage {
+    margin: 15px 20px;
+    padding: 10px 10px 20px 10px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.ChatContent .ChatMessage:after {
+    content: '';
+    border: 20px solid transparent;
+    position: absolute;
+    bottom: -20px;
+}
+
+.ChatContent .ChatMessage .chat-username {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.ChatContent .ChatMessage.own {
+    background-color: #FFEDB0;
+}
+
+.ChatContent .ChatMessage.own:after {
+    border-right: 20px solid #FFEDB0;
+    right: 0
+}
+
+.ChatContent .ChatMessage.other {
+    background-color: #D9D9D9;
+}
+
+.ChatContent .ChatMessage.other:after {
+    border-left: 20px solid #D9D9D9;
+    left: 0
+}
+
+.ChatContent .ChatMessage * {
+    display: block;
+}

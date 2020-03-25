@@ -1,0 +1,11 @@
+.ChatHeader {
+    background-color: #434343;
+    text-align: center;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.ChatHeader img {
+    height: 100%;
+    max-width: 100%;
+}

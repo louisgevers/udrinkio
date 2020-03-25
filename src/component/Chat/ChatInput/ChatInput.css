@@ -1,0 +1,33 @@
+.ChatInput {
+    background-color: #434343;
+    text-align: center;
+    padding: 10px 0;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 10px 10px 20px;
+}
+
+.ChatInput .chat-input {
+    resize: none;
+    font-family: 'Open Sans', sans-serif;
+    width: 100%;
+    height: 50%;
+}
+
+.ChatInput .chat-send-button {
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.ChatInput .chat-send-button:active {
+    color: #B68F1B;
+}
+
+.ChatInput .chat-send-button:focus {
+    outline: none;
+}
