@@ -31,8 +31,11 @@ class ChatInput extends Component {
     sendMessage = () => {
         const input = document.querySelector('.ChatInput .chat-input')
         const message = input.value
-        input.value = ''
-        this.socket.emit('chat.sendMessage', message)
+        // only if message is not empty or not full of spaces
+        if (message.length > 0 && message.replace(/\s/g, '').length > 0) {
+            input.value = ''
+            this.socket.emit('chat.sendMessage', message)
+        }
     }
 }
 
