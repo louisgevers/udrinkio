@@ -5,11 +5,25 @@
     flex-direction: column;
     justify-content: flex-end;
     font-family: 'Open Sans', sans-serif;
-    padding-bottom: 20px;
+    overflow-y: hidden;
+}
+
+.ChatContent .chat-wrapper {
+    height: 100%;
+    padding: 20px 0;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.ChatContent .chat-wrapper > :first-child {
+    margin-top: auto !important;
 }
 
 .ChatContent .ChatMessage {
-    margin: 15px 20px;
+    align-self: stretch;
+    margin: 20px 20px;
     padding: 10px 10px 20px 10px;
     border-radius: 10px;
     position: relative;

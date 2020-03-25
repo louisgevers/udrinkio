@@ -1,6 +1,8 @@
 .Chat {
+    height: 100vh;
     display: grid;
-    grid-template-rows: 100px auto 70px;
+    grid-template-rows: 100px 1fr 70px;
     grid-template-columns: auto;
     font-family: 'Open Sans', sans-serif;
+    overflow-y: hidden;
 }
