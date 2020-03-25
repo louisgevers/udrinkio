@@ -1,5 +1,6 @@
 .Chat {
     display: grid;
-    grid-template-rows: 100px auto 100px;
+    grid-template-rows: 100px auto 70px;
     grid-template-columns: auto;
+    font-family: 'Open Sans', sans-serif;
 }
