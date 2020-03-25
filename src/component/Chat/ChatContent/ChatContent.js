@@ -14,14 +14,16 @@ class ChatContent extends Component {
     render() {
         return (
             <div className="ChatContent">
-                {this.state.chatMessages.map((chatMessage, index) => {
-                    return <ChatMessage 
-                        key={index}
-                        messageType={chatMessage.isSender ? 'own' : 'other'} 
-                        username={chatMessage.isSender ? 'You' : chatMessage.username} 
-                        message={chatMessage.message} 
-                    />
-                })}
+                <div className="chat-wrapper">
+                    {this.state.chatMessages.map((chatMessage, index) => {
+                        return <ChatMessage 
+                            key={index}
+                            messageType={chatMessage.isSender ? 'own' : 'other'} 
+                            username={chatMessage.isSender ? 'You' : chatMessage.username} 
+                            message={chatMessage.message} 
+                        />
+                    })}
+                </div>
             </div>
         )
     }
@@ -33,6 +35,8 @@ class ChatContent extends Component {
             this.setState({
                 chatMessages: this.state.chatMessages
             })
+            var element = document.querySelector(".ChatContent .chat-wrapper");
+            element.scrollTop = element.scrollHeight;
         })
     }
 }
