@@ -8,6 +8,7 @@ class ChatContent extends Component {
         this.state = {
             chatMessages: []
         }
+        this.initializeSocket()
     }
 
     render() {
@@ -16,13 +17,23 @@ class ChatContent extends Component {
                 {this.state.chatMessages.map((chatMessage, index) => {
                     return <ChatMessage 
                         key={index}
-                        messageType={chatMessage.userId === this.props.roomUserId ? 'own' : 'other'} 
-                        username={chatMessage.userId === this.props.roomUserId ? 'You' : chatMessage.username} 
+                        messageType={chatMessage.isSender ? 'own' : 'other'} 
+                        username={chatMessage.isSender ? 'You' : chatMessage.username} 
                         message={chatMessage.message} 
                     />
                 })}
             </div>
         )
+    }
+
+    initializeSocket = () => {
+        this.socket = this.props.socket
+        this.socket.on('chat.receivedMessage', (chatMessage) => {
+            this.state.chatMessages.push(chatMessage)
+            this.setState({
+                chatMessages: this.state.chatMessages
+            })
+        })
     }
 }
 

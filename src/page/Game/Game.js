@@ -8,7 +8,7 @@ class Game extends Component {
         return (
             <div className="Game">
                 <Lobby game={this.props.game} roomId={this.props.roomId} users={this.props.users} isHost={this.props.isHost} onHomeClick={this.props.onHomeClick} onRemoveUser={this.props.onRemoveUser} />
-                <Chat game={this.props.game} />
+                <Chat game={this.props.game} socket={this.props.socket} />
             </div>
         )
     }

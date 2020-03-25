@@ -35,7 +35,7 @@ class App extends Component {
             <Route path='*'>
               {
                 this.state.roomId !== null ?
-                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} onRemoveUser={this.removeUser} /> :
+                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} onRemoveUser={this.removeUser} socket={this.socket} /> :
                 () => this.onPathJoin(this.props.location.pathname)
               }
               

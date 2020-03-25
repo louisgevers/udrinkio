@@ -155,6 +155,17 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('chat.sendMessage', (message) => {
+    const data = {
+      username: socket.data.username,
+      message: message,
+      isSender: false
+    }
+    socket.broadcast.to(socket.data.roomId).emit('chat.receivedMessage', data)
+    data.isSender = true
+    socket.emit('chat.receivedMessage', data)
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)

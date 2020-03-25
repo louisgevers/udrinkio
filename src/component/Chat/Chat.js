@@ -10,8 +10,8 @@ class Chat extends Component {
         return (
             <div className="Chat">
                 <ChatHeader game={this.props.game} />
-                <ChatContent />
-                <ChatInput />
+                <ChatContent socket={this.props.socket} />
+                <ChatInput socket={this.props.socket} />
             </div>
         )
     }

@@ -6,6 +6,8 @@
     justify-content: flex-end;
     font-family: 'Open Sans', sans-serif;
     padding-bottom: 20px;
+    height: 100%;
+    overflow: scroll;
 }
 
 .ChatContent .ChatMessage {
