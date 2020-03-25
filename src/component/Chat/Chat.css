@@ -1,8 +1,4 @@
-/* placeholder rules */
 .Chat {
-    background-color: lightblue;
-}
-
-.Chat p {
-    margin: 0;
+    display: grid;
+    grid-template-rows: 100px auto 100px;
 }
