@@ -4,6 +4,14 @@ import UserList from "./UserList/UserList"
 
 class Lobby extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            users: this.props.users
+        }
+        this.initializeSocket()
+    }
+
     isUserMissing = (game, users) => {
         return users.users.length < game.minPlayers
     }
@@ -22,13 +30,33 @@ class Lobby extends Component {
                 <div className="players">
                     <span className="players-title" style={{color: this.props.game.secondaryColor}}>Players</span>
                     <span className="players-amount">{`${this.props.game.minPlayers} - ${this.props.game.maxPlayers} players`}</span>
-                    <UserList users={this.props.users} isHost={this.props.isHost} onRemoveUser={this.props.onRemoveUser} isUserMissing={this.isUserMissing(this.props.game, this.props.users)} color={this.props.game.primaryDark} />
+                    {(typeof this.state.users !== 'undefined' && <UserList users={this.state.users} isHost={this.props.isHost} onRemoveUser={this.removeUser} isUserMissing={this.isUserMissing(this.props.game, this.state.users)} color={this.props.game.primaryDark} />)}
                 </div>
-                {!this.props.isHost || this.isUserMissing(this.props.game, this.props.users) ?
+                {typeof this.state.users !== 'undefined' && (!this.props.isHost || this.isUserMissing(this.props.game, this.state.users)) ?
                 <button disabled className="start-game-button inactive" style={{backgroundColor: this.props.game.primaryDark}}>Start game</button>
                 : <button type="submit" className="start-game-button" style={{backgroundColor: this.props.game.secondaryColor}}>Start game</button>}
             </div>
         )
+    }
+
+    initializeSocket = () => {
+        this.socket = this.props.socket
+
+        this.socket.on('room.newUser', (users) => {
+            this.setState({
+              users: users
+            })
+        })
+
+        this.socket.on('room.userDisconnected', (users) => {
+            this.setState({
+              users: users
+            })
+        })
+    }
+
+    removeUser = (userId) => {
+        this.socket.emit('room.removeUser', userId)
     }
 }
 

@@ -35,7 +35,7 @@ class App extends Component {
             <Route path='*'>
               {
                 this.state.roomId !== null ?
-                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} onRemoveUser={this.removeUser} socket={this.socket} /> :
+                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} socket={this.socket} /> :
                 () => this.onPathJoin(this.props.location.pathname)
               }
               
@@ -99,20 +99,8 @@ class App extends Component {
       this.props.history.push(`/${data.roomId}`)
     })
 
-    this.socket.on('room.newUser', (users) => {
-      this.setState({
-        users: users
-      })
-    })
-
     this.socket.on('room.hostDisconnected', (username) => {
       this.ejectGame(`Host "${username}" has disconnected`)
-    })
-
-    this.socket.on('room.userDisconnected', (users) => {
-      this.setState({
-        users: users
-      })
     })
 
     this.socket.on('room.userRemoved', (hostName) => {
@@ -209,10 +197,6 @@ class App extends Component {
     })
     // TODO proper alert
     alert(message)
-  }
-
-  removeUser = (userId) => {
-    this.socket.emit('room.removeUser', userId)
   }
 
   // ### NAVIGATION ###
