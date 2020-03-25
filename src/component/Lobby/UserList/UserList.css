@@ -1,6 +1,6 @@
 .UserList {
     display: grid;
-    width: 100%;
+    width: 80%;
     grid-template-columns: 70%;
     justify-content: center;
     margin: 30px;
@@ -58,7 +58,7 @@
 @media only screen and (min-width: 800px) {
 
     .UserList {
-        grid-template-columns: 30% 30%;
+        grid-template-columns: 50% 50%;
     }
 
 }

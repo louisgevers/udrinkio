@@ -11,6 +11,7 @@ class Lobby extends Component {
     render() {
         return (
             <div className="Lobby" style={{backgroundColor: this.props.game.primaryColor}}>
+                <button className="lobby-home-button" onClick={this.props.onHomeClick}>Home</button>
                 <div className="header">
                     <h1 style={{color: this.props.game.secondaryColor}}>{this.props.game.name}</h1>
                     <span className="room-code-title">ROOM CODE</span>
@@ -21,7 +22,7 @@ class Lobby extends Component {
                 <div className="players">
                     <span className="players-title" style={{color: this.props.game.secondaryColor}}>Players</span>
                     <span className="players-amount">{`${this.props.game.minPlayers} - ${this.props.game.maxPlayers} players`}</span>
-                    <UserList users={this.props.users} isHost={this.props.isHost} isUserMissing={this.isUserMissing(this.props.game, this.props.users)} color={this.props.game.primaryDark} />
+                    <UserList users={this.props.users} isHost={this.props.isHost} onRemoveUser={this.props.onRemoveUser} isUserMissing={this.isUserMissing(this.props.game, this.props.users)} color={this.props.game.primaryDark} />
                 </div>
                 {!this.props.isHost || this.isUserMissing(this.props.game, this.props.users) ?
                 <button disabled className="start-game-button inactive" style={{backgroundColor: this.props.game.primaryDark}}>Start game</button>

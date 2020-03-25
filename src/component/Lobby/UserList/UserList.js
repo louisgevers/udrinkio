@@ -6,6 +6,7 @@ import crownIcon from "../../../image/crown.png"
 class UserList extends Component {
 
     getHost = (users) => {
+        console.log(users)
         return users.users[users.host]
     }
 
@@ -18,9 +19,9 @@ class UserList extends Component {
     render() {
         return (
             <div className="UserList">
-                <HostUser username={this.getHost(this.props.users)} />
-                {this.getOtherUsers(this.props.users).map((user, index) => {
-                    return <OtherUser key={index} username={user} isHost={this.props.isHost} color={this.props.color}/>
+                <HostUser username={this.getHost(this.props.users).username} />
+                {this.getOtherUsers(this.props.users).map((user) => {
+                    return <OtherUser key={user.userId} user={user} isHost={this.props.isHost} color={this.props.color} onRemoveUser={this.props.onRemoveUser}/>
                 })}
                 {this.props.isUserMissing && <MissingUser color={this.props.color} />}
             </div>
@@ -44,11 +45,11 @@ class OtherUser extends Component {
         return (
             <div className="OtherUser" style={{backgroundColor: this.props.color}}>
                 {this.props.isHost && 
-                    <button className="remove-user-button">
+                    <button className="remove-user-button" onClick={() => this.props.onRemoveUser(this.props.user.userId)}>
                         <span className="material-icons">close</span>
                     </button>
                 }
-                <span className="item-username">{this.props.username}</span>
+                <span className="item-username">{this.props.user.username}</span>
             </div>
         )
     }
