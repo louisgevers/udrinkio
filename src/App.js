@@ -35,7 +35,7 @@ class App extends Component {
             <Route path='*'>
               {
                 this.state.roomId !== null ?
-                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} /> :
+                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} onRemoveUser={this.removeUser} /> :
                 () => this.onPathJoin(this.props.location.pathname)
               }
               
@@ -106,7 +106,7 @@ class App extends Component {
     })
 
     this.socket.on('room.hostDisconnected', (username) => {
-      this.leaveGame(`Host "${username}" has disconnected`)
+      this.ejectGame(`Host "${username}" has disconnected`)
     })
 
     this.socket.on('room.userDisconnected', (users) => {
@@ -114,19 +114,15 @@ class App extends Component {
         users: users
       })
     })
+
+    this.socket.on('room.userRemoved', (hostName) => {
+      this.ejectGame(`Host "${hostName}" has removed you from the game`)
+    })
   }
 
-  leaveGame = (message) => {
-    this.props.history.push('/')
-    this.setState({
-      game: null,
-      isHost: false,
-      users: null,
-      roomId: null
-    })
-    // TODO proper alert
-    alert(message)
-  }
+  // ################
+  // #   HOMEPAGE   #
+  // ################ 
 
   // ### OPEN and CLOSE PROMPTS ###
 
@@ -196,6 +192,27 @@ class App extends Component {
     this.socket.emit('room.join', data)
     this.closePrompts()
     // TODO LOADING SCREEN
+  }
+
+
+  // #############
+  // #   LOBBY   #
+  // #############
+
+  ejectGame = (message) => {
+    this.props.history.push('/')
+    this.setState({
+      game: null,
+      isHost: false,
+      users: null,
+      roomId: null
+    })
+    // TODO proper alert
+    alert(message)
+  }
+
+  removeUser = (userId) => {
+    this.socket.emit('room.removeUser', userId)
   }
 
   // ### NAVIGATION ###

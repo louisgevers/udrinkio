@@ -25,12 +25,14 @@ createRoom = (socket, username, game) => {
   room.data = {
     game: game,
     host: socket.id,
-    members: {}
+    members: new Map()
   }
-  room.data.members[socket.id] = {
+
+  memberData = {
     username: username,
     userId: 0
   }
+  room.data.members.set(socket.id, memberData)
 
   return {
     users: generateUsersData(room.data),
@@ -43,11 +45,13 @@ joinRoom = (socket, username, roomId, room) => {
   socket.data.username = username
   socket.data.roomId = roomId
   socket.join(roomId)
-
-  room.data.members[socket.id] = {
+  
+  memberData = {
     username: username,
-    id: room.data.members.size
+    userId: room.data.members.size
   }
+
+  room.data.members.set(socket.id, memberData)
 
   const users = generateUsersData(room.data)
   socket.broadcast.to(roomId).emit('room.newUser', users)
@@ -79,7 +83,7 @@ disconnectUser = (socket, room) => {
       socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(socket.data.roomId))
     })
   } else {
-    delete room.data.members[socket.id]
+    delete room.data.members.delete(socket.id)
     const users = generateUsersData(room.data)
     socket.broadcast.to(socket.data.roomId).emit('room.userDisconnected', users)
   }
@@ -134,6 +138,23 @@ io.on('connection', (socket) => {
     disconnectUser(socket, room)
   })
 
+  socket.on('room.removeUser', (userId) => {
+    const room = getRoom(socket.data.roomId)
+    if (socket.id === room.data.host) {
+      var userSocketId = -1
+      room.data.members.forEach((member, socketId) => {
+        if (member.userId === userId) {
+          userSocketId = socketId
+        }
+      })
+      if (userSocketId !== -1) {
+        const userSocket = io.sockets.sockets[userSocketId]
+        disconnectUser(userSocket, room)
+        userSocket.emit('room.userRemoved', socket.data.username)
+      }
+    }
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
@@ -166,14 +187,13 @@ function generateUsersData(roomData) {
   const members = roomData.members
   const users = []
   var hostIndex = 0
-  var index = 0
-  for (member in members) {
-    if (member === host) {
+  index = 0
+  members.forEach((member, socketId) => {
+    if (socketId === host) {
      hostIndex = index
     }
-    users.push(members[member])
-    index += 1
-  }
+    users.push(member)
+  })
   return {
     host: hostIndex,
     users: users
