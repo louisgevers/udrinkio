@@ -110,6 +110,7 @@ io.on('connection', (socket) => {
     const username = data.username
     const game = data.game
     socket.emit('room.created', createRoom(socket, username, game))
+    socket.emit('chat.userJoined', username)
   })
 
   socket.on('room.availability', (roomId) => {
@@ -130,12 +131,15 @@ io.on('connection', (socket) => {
     const room = getRoom(roomId)
     if (canConnectToRoom(socket, roomId, room)) {
       socket.emit('room.joined', joinRoom(socket, username, roomId, room))
+      io.to(roomId).emit('chat.userJoined', username)
     }
   })
 
   socket.on('room.quit', () => {
-    const room = getRoom(socket.data.roomId)
+    const roomId = socket.data.roomId
+    const room = getRoom(roomId)
     disconnectUser(socket, room)
+    io.to(roomId).emit('chat.userDisconnected', (socket.data.username))
   })
 
   socket.on('room.removeUser', (userId) => {
@@ -151,6 +155,10 @@ io.on('connection', (socket) => {
         const userSocket = io.sockets.sockets[userSocketId]
         disconnectUser(userSocket, room)
         userSocket.emit('room.userRemoved', socket.data.username)
+        io.to(socket.data.roomId).emit('chat.userRemoved', {
+          host: socket.data.username,
+          username: userSocket.data.username
+        })
       }
     }
   })
@@ -174,6 +182,7 @@ io.on('connection', (socket) => {
       const room = getRoom(roomId)
       if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
         disconnectUser(socket, room)
+        io.to(roomId).emit('chat.userDisconnected', socket.data.username)
       }
     }
   })
