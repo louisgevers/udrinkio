@@ -9,7 +9,7 @@ class Chat extends Component {
     render() {
         return (
             <div className="Chat">
-                <ChatHeader />
+                <ChatHeader game={this.props.game} />
                 <ChatContent />
                 <ChatInput />
             </div>

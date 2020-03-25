@@ -5,7 +5,7 @@ class ChatHeader extends Component {
     render() {
         return (
             <div className="ChatHeader">
-                <span>[CHATHEADER]</span>
+                <img src={require(`../../../image/${this.props.game.imageName}`)} alt="game icon"/>
             </div>
         )
     }
