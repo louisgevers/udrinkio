@@ -15,11 +15,9 @@ class MineFieldGame extends Component {
     render() {
         return (
             <div className='MineFieldGame game-component'>
-                <div className='card-table'>
+                <div className='card-table' style={{display: 'grid', gridTemplateColumns: `repeat(${this.state.table.length}, 1fr)`}}>
                     {this.state.table.map((row) => {
-                        return <div className='card-row'>
-                            {row.map((cardId) => this.createCard(cardId))}
-                        </div>
+                        return row.map((cardId) => this.createCard(cardId))
                     })}
                 </div>
             </div>

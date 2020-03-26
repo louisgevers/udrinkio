@@ -1,4 +1,8 @@
 
+.MineFieldGame .card-table {
+    display: grid;
+    height: 80%;
+}
 
 /* placeholder rules */
 .MineFieldGame {
