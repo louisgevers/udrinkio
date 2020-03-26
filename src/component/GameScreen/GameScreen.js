@@ -1,13 +1,22 @@
 import React, { Component } from 'react'
 import './GameScreen.css'
+import MineFieldGame from './MineFieldGame/MineFieldGame'
 
 class GameScreen extends Component {
     render() {
         return (
             <div className='GameScreen'>
-                <span>[GAMESCREEN]</span>
+                {this.getGameComponent(this.props.game)}
             </div>
         )
+    }
+
+    getGameComponent = (game) => {
+        if (game.id === 'minefield') {
+            return <MineFieldGame game={game} />
+        } else {
+            return <span>{`Game ${game.name} not implemented`}</span>
+        }
     }
 }
 

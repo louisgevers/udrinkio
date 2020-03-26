@@ -1,4 +1,4 @@
-/* placeholder rules */
-.GameScreen {
-    background-color: turquoise;
+.GameScreen .game-component {
+    height: 100%;
+    width: 100%;
 }
