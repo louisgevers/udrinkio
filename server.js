@@ -65,7 +65,7 @@ joinRoom = (socket, username, roomId, room) => {
 
 canConnectToRoom = (socket, roomId, room) => {
   if (!isValidRoomCode(roomId)) {
-    socket.emit('room.unavailable', 'Invalid room name!')
+    socket.emit('room.unavailable', 'Invalid room code!')
     return false
   } else if (room == null) {
     socket.emit('room.unavailable', 'This room does not exist!')

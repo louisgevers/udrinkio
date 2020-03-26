@@ -23,7 +23,6 @@ class EntryPoint extends Component {
                     <CodeInput getRoomCode={this.getRoomCode} />
                     <button className="join-room-button" type="submit" onClick={() => this.props.onJoinParty(this.roomCode)}>Join party</button>
                 </div>
-                <span className="or-join-create">or</span>
             </div>
         )
     }

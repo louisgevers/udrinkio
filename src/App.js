@@ -32,7 +32,7 @@ class App extends Component {
             <Route exact path='/'>
               <Home onJoinParty={this.onJoinButtonClick} onCreateParty={this.onCreateButtonClick} />
             </Route>
-            <Route path='*'>
+            <Route path='/*'>
               {
                 this.state.roomId !== null ?
                 <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} socket={this.socket} /> :
