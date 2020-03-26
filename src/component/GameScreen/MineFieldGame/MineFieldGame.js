@@ -8,8 +8,7 @@ class MineFieldGame extends Component {
 
     constructor(props) {
         super(props)
-        // TODO this is used for storybook
-        this.state = this.props.state
+        this.state = this.props.gameState
     }
 
     render() {
@@ -26,7 +25,7 @@ class MineFieldGame extends Component {
 
     createCard = (cardId) => {
         if (cardId === 'b') {
-            return <CardBack game={this.state.game} />
+            return <CardBack game={this.props.game} />
         } else {
             return <Card cardId={cardId} />
         }

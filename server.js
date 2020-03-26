@@ -184,11 +184,16 @@ io.on('connection', (socket) => {
     socket.emit('chat.receivedMessage', data)
   })
 
-  socket.on('game.start', () => {
+  socket.on('game.start', (data) => {
     const roomId = socket.data.roomId
     const room = getRoom(roomId)
     room.data.started = true
-    io.to(roomId).emit('game.started')
+    if (room.data.game.id === 'minefield') {
+      const gameState = createMineFieldGame(data)
+      io.to(roomId).emit('game.started', gameState)
+    } else {
+      // TODO implement other games
+    }
   })
 
   socket.on('disconnect', () => { 
@@ -239,6 +244,24 @@ function generateUsersData(roomData) {
 
 function isValidRoomCode(roomId) {
   return roomId.match(/^[0-9]{6}$/) != null
+}
+
+// ### GAME ###
+
+function createMineFieldGame(data) {
+  const n = data.value
+  const grid = []
+  for (var i = 0; i < n; i++) {
+    const row = []
+    for (var j = 0; j < n; j++) {
+      row.push('b')
+    }
+    grid.push(row)
+  }
+  const state = {
+    table: grid
+  }
+  return state
 }
 
 // ### SERVER ###

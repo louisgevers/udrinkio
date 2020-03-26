@@ -47,6 +47,33 @@
         "imageName": "minefield.png",
         "primaryColor": "#333333",
         "primaryDark": "#111111",
-        "secondaryColor": "#FC0F3B"
+        "secondaryColor": "#FC0F3B",
+        "settings": [
+            {
+                "name": "Grid size",
+                "options": [
+                    {
+                        "display": "3x3",
+                        "value": 3
+                    },
+                    {
+                        "display": "4x4",
+                        "value": 4
+                    },
+                    {
+                        "display": "5x5",
+                        "value": 5
+                    },
+                    {
+                        "display": "6x6",
+                        "value": 6
+                    },
+                    {
+                        "display": "7x7",
+                        "value": 7
+                    }
+                ]
+            }
+        ]
     }
 ]
