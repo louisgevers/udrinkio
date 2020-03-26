@@ -1,4 +1,4 @@
-.Lobby {
+.Lobby, .GameScreen {
     min-height: 100vh;
 }
 
@@ -9,7 +9,7 @@
 /* Desktop */
 @media only screen and (min-width: 800px) {
     
-    .Lobby {
+    .Lobby, .GameScreen {
         min-height: 600px;
         height: 100vh;
         float: left;

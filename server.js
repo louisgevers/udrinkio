@@ -25,6 +25,7 @@ createRoom = (socket, username, game) => {
   room.data = {
     game: game,
     host: socket.id,
+    started: false,
     members: new Map()
   }
 
@@ -65,11 +66,15 @@ joinRoom = (socket, username, roomId, room) => {
 
 canConnectToRoom = (socket, roomId, room) => {
   if (!isValidRoomCode(roomId)) {
-    socket.emit('room.unavailable', 'Invalid room code!')
+    socket.emit('room.unavailable', 'Invalid room code')
     return false
   } else if (room == null) {
-    socket.emit('room.unavailable', 'This room does not exist!')
+    socket.emit('room.unavailable', 'This room does not exist')
     return false
+  } else if (room.data.started) {
+    socket.emit('room.unavailable', 'Game for this room already started')
+  } else if (room.data.members.size >= room.data.game.maxPlayers) {
+    socket.emit('room.unavailable', 'Room is full')
   } else {
     return true
   }
@@ -172,6 +177,13 @@ io.on('connection', (socket) => {
     socket.broadcast.to(socket.data.roomId).emit('chat.receivedMessage', data)
     data.isSender = true
     socket.emit('chat.receivedMessage', data)
+  })
+
+  socket.on('game.start', () => {
+    const roomId = socket.data.roomId
+    const room = getRoom(roomId)
+    room.data.started = true
+    io.to(roomId).emit('game.started')
   })
 
   socket.on('disconnect', () => { 

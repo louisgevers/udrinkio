@@ -34,7 +34,7 @@ class Lobby extends Component {
                 </div>
                 {typeof this.state.users !== 'undefined' && (!this.props.isHost || this.isUserMissing(this.props.game, this.state.users)) ?
                 <button disabled className="start-game-button inactive" style={{backgroundColor: this.props.game.primaryDark}}>Start game</button>
-                : <button type="submit" className="start-game-button" style={{backgroundColor: this.props.game.secondaryColor}}>Start game</button>}
+                : <button type="submit" className="start-game-button" style={{backgroundColor: this.props.game.secondaryColor}} onClick={this.props.onStartClick}>Start game</button>}
             </div>
         )
     }
