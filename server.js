@@ -4,6 +4,7 @@ const app = express()
 const http = require('http').createServer(app)
 var io = require('socket.io').listen(http)
 const {v4: uuidv4 } = require('uuid')
+const MineField = require('./game/MineField.js')
 
 
 app.use(express.static(path.join(__dirname, 'build')))
@@ -189,11 +190,20 @@ io.on('connection', (socket) => {
     const room = getRoom(roomId)
     room.data.started = true
     if (room.data.game.id === 'minefield') {
-      const gameState = createMineFieldGame(data)
-      io.to(roomId).emit('game.started', gameState)
+      const game = new MineField(data.value)
+      const room = getRoom(socket.data.roomId)
+      room.data.gameObject = game
+      io.to(roomId).emit('game.started', game.state)
     } else {
       // TODO implement other games
     }
+  })
+
+  socket.on('minefield.drawCard', (data) => {
+    const room = getRoom(socket.data.roomId)
+    const game = room.data.gameObject
+    game.drawCard(data.row, data.column)
+    io.to(socket.data.roomId).emit('minefield.drawnCard', game.state)
   })
 
   socket.on('disconnect', () => { 

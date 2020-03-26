@@ -13,7 +13,7 @@ class GameScreen extends Component {
 
     getGameComponent = (game) => {
         if (game.id === 'minefield') {
-            return <MineFieldGame game={game} gameState={this.props.gameState} />
+            return <MineFieldGame game={game} gameState={this.props.gameState} socket={this.props.socket }/>
         } else {
             return <span>{`Game ${game.name} not implemented`}</span>
         }
