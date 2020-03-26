@@ -1,0 +1,42 @@
+.CardBack {
+    width: 227px;
+}
+
+.CardBack .card-wrapper {
+    display: block;
+    height: 0;
+    padding-top: 139.20%;
+    position: relative;
+}
+
+.CardBack .card-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.CardBack .card-outline {
+    border: 1px solid black;
+    background-color: white;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.CardBack .card-color {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.CardBack img {
+    width: 50%;
+}
