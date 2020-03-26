@@ -54,6 +54,16 @@ class App extends Component {
     );
   }
 
+  componentDidMount = () => {
+    this.props.history.listen((location, action) => {
+      if (action === 'POP') {
+        if (location.pathname === '/' && typeof this.state.roomId !== 'undefined') {
+          this.onQuitLobby()
+        }
+      }
+    })
+  }
+
   initializeSocketIO() {
     this.socket = io()
 

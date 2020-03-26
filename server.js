@@ -141,10 +141,15 @@ io.on('connection', (socket) => {
   })
 
   socket.on('room.quit', () => {
+    console.log('attempting to quit ' + socket.data.roomId)
     const roomId = socket.data.roomId
-    const room = getRoom(roomId)
-    disconnectUser(socket, room)
-    io.to(roomId).emit('chat.userDisconnected', (socket.data.username))
+    if (typeof roomId !== 'undefined') {
+      const room = getRoom(roomId)
+      if (typeof room !== 'undefined') {
+        disconnectUser(socket, room)
+        io.to(roomId).emit('chat.userDisconnected', (socket.data.username))
+      }
+    }
   })
 
   socket.on('room.removeUser', (userId) => {
