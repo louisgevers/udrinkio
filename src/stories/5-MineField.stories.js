@@ -9,7 +9,7 @@ export default {
 export const Simple = () => <MineFieldGame state={state} />;
 
 const state = {
-    table: [['kc', '1s', 'kc'], ['qs', '4h', '6h'], ['1c', '8c', '5h']],
+    table: [['b', 'b', 'b'], ['b', 'b', 'b'], ['b', '8c', '5h']],
     game: {
         "id": "minefield",
         "name": "MINE FIELD",
