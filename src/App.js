@@ -70,17 +70,12 @@ class App extends Component {
 
   initializeSocket = () => {
     this.socket = io()
-    const uuid = localStorage.getItem('uuid')
-    this.socket.emit('app.connect', uuid)
-    this.socket.on('app.connected', (servUuid) => {
-      
-      if (servUuid !== uuid) {
-        localStorage.setItem('uuid', servUuid)
-      }
-
+    this.socket.emit('app.connect')
+    this.socket.on('app.connected', () => {
       this.socket.emit('state.get')
 
       this.socket.on('state.none', () => {
+        // TODO if trying to access room
         this.props.history.push('/')
       })
   
@@ -194,7 +189,7 @@ class App extends Component {
 
   onPathJoin = (path) => {
     // TODO socket join
-    // this.socket.emit('room.availability', path.substr(1))
+    // this.socket.emit('state.availability', path.substr(1))
   }
 
   onQuitLobby = () => {

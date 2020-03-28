@@ -15,23 +15,13 @@ app.get('*', (req, res) => {
 // ### SOCKET IO ###
 var connectionsCount = 0
 
-const sessionMap = new Map()
-
 io.on('connection', (socket) => {
   connectionsCount += 1
   console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
   
-  socket.on('app.connect', (uuid) => {
-    console.log(uuid)
-    if (sessionMap.has(uuid)) {
-      socket.session = sessionMap.get(uuid)
-      socket.emit('app.connected', uuid)
-    } else {
-      const servUuid = uuidv4()
-      socket.session = {}
-      sessionMap.set(servUuid, socket.session)
-      socket.emit('app.connected', servUuid)
-    }
+  socket.on('app.connect', () => {
+    socket.session = {}
+    socket.emit('app.connected')
   })
 
   socket.on('state.get', () => {
