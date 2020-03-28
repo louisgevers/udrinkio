@@ -12,7 +12,7 @@ export default {
 export const Simple = () => <MineFieldGame gameState={state} socket={socket} game={state.game} />;
 
 const state = {
-    table: [['1s', '1c', 'qh'], ['ks', 'jh', '8c'], ['7c', '8c', '5h']],
+    table: [['1s', 'b', 'qh'], ['ks', 'jh', '8c'], ['7c', '8c', '5h']],
     game: {
         "id": "minefield",
         "name": "MINE FIELD",

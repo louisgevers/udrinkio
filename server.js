@@ -210,11 +210,10 @@ io.on('connection', (socket) => {
     const room = getRoom(socket.data.roomId)
     const user = room.data.members.get(socket.id)
     const game = room.data.gameObject
-    if (game.isTurn(user)) {
-      game.drawCard(data.row, data.column)
+    if (game.isTurn(user) && game.drawCard(data.row, data.column)) {
       game.nextTurn()
+      io.to(socket.data.roomId).emit('minefield.drawnCard', game.state)
     }
-    io.to(socket.data.roomId).emit('minefield.drawnCard', game.state)
   })
 
   socket.on('disconnect', () => { 

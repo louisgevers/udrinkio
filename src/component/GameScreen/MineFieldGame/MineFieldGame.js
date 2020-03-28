@@ -14,7 +14,6 @@ class MineFieldGame extends Component {
     constructor(props) {
         super(props)
         this.state = this.props.gameState
-        this.spriteTable = []
     }
 
     componentDidMount = () => {
@@ -22,7 +21,7 @@ class MineFieldGame extends Component {
         this.props.socket.on('minefield.drawnCard', this.onNewGameState)
         this.props.socket.on('game.userDisconnected', this.onNewGameState)
         // pixi.js
-        this.app = new Application({resizeTo: this.gameCanvas, backgroundColor: this.props.game.primaryColor})
+        this.app = new Application({resizeTo: this.gameCanvas, backgroundColor: this.getHexadecimalColor(this.props.game.primaryColor)})
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
         this.setup()
@@ -45,6 +44,11 @@ class MineFieldGame extends Component {
 
     onNewGameState = (gameState) => {
         this.setState(gameState)
+        this.updateCardSprites()
+    }
+
+    onCardClicked = (i, j) => {
+        this.props.socket.emit('minefield.drawCard', {row: i, column: j})
     }
 
     // ###################
@@ -53,6 +57,7 @@ class MineFieldGame extends Component {
 
     setup = () => {
         // Add card sprites
+        this.spriteTable = []
         loader
         .add(cardFiles.map((fileName) => {
             return {name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
@@ -76,6 +81,8 @@ class MineFieldGame extends Component {
             const spriteRow = []
             row.forEach((cardName, j) => {
                 const card = new Sprite(resources[cardName].texture)
+                card.interactive = true
+                card.on('click', () => this.onCardClicked(i, j))
                 this.app.stage.addChild(card)
                 spriteRow.push(card)
             })
@@ -106,6 +113,10 @@ class MineFieldGame extends Component {
                 this.spriteTable[i][j].texture = resources[cardName].texture
             })
         })
+    }
+
+    getHexadecimalColor = (stringColor) => {
+        return parseInt(stringColor.replace('#', '0x'))
     }
 
 }
