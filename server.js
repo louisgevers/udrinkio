@@ -85,11 +85,12 @@ io.on('connection', (socket) => {
 
 function getLobbyData(session) {
   const room = getRoom(session.roomId)
+  const users = JSON.stringify(Array.from(room.data.users))
   return {
     userId: session.userId,
     roomId: session.roomId,
     game: room.data.game,
-    users: room.data.users,
+    users: users,
     host: room.data.host
   }
 }

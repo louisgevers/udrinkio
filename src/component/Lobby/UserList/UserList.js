@@ -5,21 +5,20 @@ import crownIcon from "../../../image/crown.png"
 
 class UserList extends Component {
 
-    getHost = (users) => {
-        console.log(users)
-        return users.users[users.host]
-    }
-
     getOtherUsers = (users) => {
-        return users.users.filter((_, index) => {
-            return index !== users.host
-        })
+        const userList = []
+        for (var id in users.keys()) {
+            if (id !== this.props.session.host) {
+                users.push({userId: id, username: users[id]})
+            }
+        }
+        return userList
     }
 
     render() {
         return (
             <div className="UserList">
-                <HostUser username={this.getHost(this.props.users).username} />
+                <HostUser username={this.props.users.get(this.props.host)} />
                 {this.getOtherUsers(this.props.users).map((user) => {
                     return <OtherUser key={user.userId} user={user} isHost={this.props.isHost} color={this.props.color} onRemoveUser={this.props.onRemoveUser}/>
                 })}

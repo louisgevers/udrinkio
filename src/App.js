@@ -32,7 +32,7 @@ class App extends Component {
             <Route path='/*'>
               {
                 this.state.roomId !== null ?
-                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} userGameId={this.state.userGameId} onHomeClick={this.onQuitLobby} socket={this.socket} /> :
+                <Game session={this.state} onHomeClick={this.onQuitLobby} socket={this.socket} /> :
                 () => this.onPathJoin(this.props.location.pathname)
               }
               
@@ -80,11 +80,12 @@ class App extends Component {
       })
   
       this.socket.on('state.lobby', (data) => {
+        console.log(data.users)
         const state = {
           userId: data.userId,
           roomId: data.roomId,
           game: data.game,
-          users: data.users,
+          users: new Map(JSON.parse(data.users)),
           host: data.host
         }
         this.setState(state)

@@ -19,13 +19,13 @@ class Game extends Component {
     render() {
         return (
             <div className="Game">
-                {(this.state.settingsPrompt && <GameSettingsPrompt game={this.props.game} onOptionChosen={this.onOptionChosen} onClose={() => this.setState({settingsPrompt: false})} />)}
+                {(this.state.settingsPrompt && <GameSettingsPrompt game={this.props.session.game} onOptionChosen={this.onOptionChosen} onClose={() => this.setState({settingsPrompt: false})} />)}
                 {(this.state.play ? 
-                <GameScreen game={this.props.game} isHost={this.props.isHost} userGameId={this.props.userGameId} gameState={this.state.gameState} socket={this.props.socket} />
+                <GameScreen session={this.props.session} gameState={this.state.gameState} socket={this.props.socket} />
                 : 
-                <Lobby game={this.props.game} roomId={this.props.roomId} socket={this.props.socket} users={this.props.users} isHost={this.props.isHost} onHomeClick={this.props.onHomeClick} onStartClick={this.startGame} />
+                <Lobby session={this.props.session} socket={this.props.socket} onHomeClick={this.props.onHomeClick} onStartClick={this.startGame} />
                 )}
-                <Chat game={this.props.game} socket={this.props.socket} />
+                <Chat game={this.props.session.game} socket={this.props.socket} />
             </div>
         )
     }
