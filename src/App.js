@@ -65,62 +65,6 @@ class App extends Component {
     })
   }
 
-  initializeSocketIO() {
-    this.socket = io()
-
-    // TODO persist ID
-    this.socket.emit('app.addUser')
-
-    this.socket.on('app.userAdded', (id) => {
-      this.setState({id: id})
-    })
-
-    this.socket.on('room.created', (data) => {
-      this.setState({
-        users: data.users,
-        isHost: data.isHost,
-        roomId: data.roomId,
-        userGameId: data.userGameId
-      })
-      this.props.history.push(`/${data.roomId}`)
-    })
-
-    this.socket.on('room.unavailable', (message) => {
-      this.props.history.push('/')
-      // TODO proper pop up
-      alert(message)
-    })
-
-    this.socket.on('room.available', (data) => {
-      this.setState({
-        game: data.game,
-        isHost: data.isHost,
-        users: data.users,
-        roomId: data.roomId
-      })
-      this.openJoinPrompt(this.state.game)
-    })
-
-    this.socket.on('room.joined', (data) => {
-      this.setState({
-        game: data.game,
-        isHost: data.isHost,
-        users: data.users,
-        roomId: data.roomId,
-        userGameId: data.userGameId
-      })
-      this.props.history.push(`/${data.roomId}`)
-    })
-
-    this.socket.on('room.hostDisconnected', (username) => {
-      this.ejectGame(`Host "${username}" has disconnected`)
-    })
-
-    this.socket.on('room.userRemoved', (hostName) => {
-      this.ejectGame(`Host "${hostName}" has removed you from the game`)
-    })
-  }
-
   // ################
   // #   HOMEPAGE   #
   // ################ 
@@ -168,7 +112,7 @@ class App extends Component {
   }
 
   onJoinButtonClick = (roomId) => {
-    this.socket.emit('room.availability', roomId)
+    // TODO JOIN SOCKET
     // TODO LOADING SCREEN
   }
 
@@ -180,8 +124,8 @@ class App extends Component {
       username: username,
       game: this.state.game
     }
-    this.socket.emit('room.create', data)
     this.closePrompts()
+    // TODO EMIT SOCKET
     // TODO LOADING SCREEN
   }
 
@@ -190,8 +134,8 @@ class App extends Component {
       username: username,
       roomId: this.state.roomId
     }
-    this.socket.emit('room.join', data)
     this.closePrompts()
+    // TODO EMIT SOCKET
     // TODO LOADING SCREEN
   }
 
@@ -215,11 +159,13 @@ class App extends Component {
   // ### NAVIGATION ###
 
   onPathJoin = (path) => {
-    this.socket.emit('room.availability', path.substr(1))
+    // TODO socket join
+    // this.socket.emit('room.availability', path.substr(1))
   }
 
   onQuitLobby = () => {
-    this.socket.emit('room.quit')
+    // TODO socket join
+    // this.socket.emit('room.quit')
     this.props.history.push('/')
     this.setState({
       game: null,
@@ -227,10 +173,6 @@ class App extends Component {
       roomId: null,
       username: null
     })
-  }
-
-  getGame = (gameId) => {
-    return games.filter((game) => game.id === gameId)[0];
   }
 
 }

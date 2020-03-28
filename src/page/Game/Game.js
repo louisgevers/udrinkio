@@ -31,26 +31,26 @@ class Game extends Component {
         )
     }
 
-    initializeSocket = () => {
-        this.socket = this.props.socket
-        this.socket.on('game.started', (gameState) => {
-            this.setState({
-                play: true,
-                gameState: gameState
-            })
-        })
-    }
+    // initializeSocket = () => {
+    //     this.socket = this.props.socket
+    //     this.socket.on('game.started', (gameState) => {
+    //         this.setState({
+    //             play: true,
+    //             gameState: gameState
+    //         })
+    //     })
+    // }
 
-    onOptionChosen = (name, value) => {
-        const data = {
-            name: name,
-            value: value
-        }
-        this.socket.emit('game.start', data)
-        this.setState({
-            settingsPrompt: false
-        })
-    }
+    // onOptionChosen = (name, value) => {
+    //     const data = {
+    //         name: name,
+    //         value: value
+    //     }
+    //     this.socket.emit('game.start', data)
+    //     this.setState({
+    //         settingsPrompt: false
+    //     })
+    // }
 
     startGame = () => {
         this.setState({

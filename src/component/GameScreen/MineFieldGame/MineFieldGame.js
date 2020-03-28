@@ -23,14 +23,14 @@ class MineFieldGame extends Component {
         this.app.start()
         this.setup()
         // socket.io
-        this.props.socket.on('minefield.drawnCard', this.onNewGameState)
-        this.props.socket.on('game.userDisconnected', this.onNewGameState)
+        // this.props.socket.on('minefield.drawnCard', this.onNewGameState)
+        // this.props.socket.on('game.userDisconnected', this.onNewGameState)
     }
 
     componentWillUnmount = () => {
         // socket.io
-        this.props.socket.removeListener('minefield.drawnCard', this.onNewGameState)
-        this.props.socket.removeListener('game.userDisconnected', this.onNewGameState)
+        // this.props.socket.removeListener('minefield.drawnCard', this.onNewGameState)
+        // this.props.socket.removeListener('game.userDisconnected', this.onNewGameState)
         // pixi.js
         this.cleanUp()
         this.app.stop()
@@ -53,7 +53,7 @@ class MineFieldGame extends Component {
     onCardClicked = (i, j, cardName) => {
         if (this.isUsersTurn()) {
             if (cardName === 'b') {
-                this.props.socket.emit('minefield.drawCard', {row: i, column: j})
+                // this.props.socket.emit('minefield.drawCard', {row: i, column: j})
             } else {
                 alert('This card is already taken')
             }

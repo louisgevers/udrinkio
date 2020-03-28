@@ -35,18 +35,18 @@ class ChatContent extends Component {
     }
 
     componentWillUnmount = () => {
-        this.socket.removeListener('chat.receivedMessage', this.receivedMessageFn)
-        this.socket.removeListener('chat.userJoined', this.userJoinedFn)
-        this.socket.removeListener('chat.userDisconnected', this.userDisconnectedFn)
-        this.socket.removeListener('chat.userRemoved', this.userRemovedFn)
+        // this.socket.removeListener('chat.receivedMessage', this.receivedMessageFn)
+        // this.socket.removeListener('chat.userJoined', this.userJoinedFn)
+        // this.socket.removeListener('chat.userDisconnected', this.userDisconnectedFn)
+        // this.socket.removeListener('chat.userRemoved', this.userRemovedFn)
     }
 
     componentWillMount = () => {
-        this.socket = this.props.socket
-        this.socket.on('chat.receivedMessage', this.receivedMessageFn)
-        this.socket.on('chat.userJoined', this.userJoinedFn)
-        this.socket.on('chat.userDisconnected', this.userDisconnectedFn)
-        this.socket.on('chat.userRemoved', this.userRemovedFn)
+        // this.socket = this.props.socket
+        // this.socket.on('chat.receivedMessage', this.receivedMessageFn)
+        // this.socket.on('chat.userJoined', this.userJoinedFn)
+        // this.socket.on('chat.userDisconnected', this.userDisconnectedFn)
+        // this.socket.on('chat.userRemoved', this.userRemovedFn)
     }
 
     receivedMessageFn = (chatMessage) => {

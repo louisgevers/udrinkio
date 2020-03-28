@@ -5,7 +5,7 @@ class ChatInput extends Component {
 
     constructor(props) {
         super(props)
-        this.socket = this.props.socket
+        // this.socket = this.props.socket
     }
 
     render() {
@@ -34,7 +34,7 @@ class ChatInput extends Component {
         // only if message is not empty or not full of spaces
         if (message.length > 0 && message.replace(/\s/g, '').length > 0) {
             input.value = ''
-            this.socket.emit('chat.sendMessage', message)
+            // this.socket.emit('chat.sendMessage', message)
         }
     }
 }
