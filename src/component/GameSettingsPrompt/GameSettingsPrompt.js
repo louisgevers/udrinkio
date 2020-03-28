@@ -20,7 +20,7 @@ class GameSettingsPrompt extends Component {
             return <div key={setting.name} className='setting-section'>
                 <span>{setting.name}</span>
                 {setting.options.map((option) => {
-                    return <button key={option.value} onClick={() => this.props.onOptionChosen(setting.name, option.value)}>{option.display}</button>
+                    return <button key={option.value} onClick={() => this.props.onOptionChosen(setting.name, option.value)} style={{backgroundColor: this.props.game.secondaryColor}}>{option.display}</button>
                 })}
             </div>
         })

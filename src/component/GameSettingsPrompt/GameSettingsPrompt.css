@@ -1,0 +1,16 @@
+.GameSettingsPrompt .setting-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.GameSettingsPrompt .setting-section button {
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px 0;
+}
+
+.GameSettingsPrompt .setting-section button:active {
+    border: none;
+    color: black;
+}

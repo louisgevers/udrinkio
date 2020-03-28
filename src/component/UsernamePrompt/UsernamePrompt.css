@@ -1,7 +1,3 @@
-.UsernamePrompt .prompt-create-button:focus {
-    outline: none;
-}
-
 .UsernamePrompt .prompt-create-button {
     border: none;
     color: white;
