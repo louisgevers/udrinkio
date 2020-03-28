@@ -43,20 +43,18 @@ class Lobby extends Component {
         this.socket.on('room.userJoined', (users) => {
             this.setState({users: new Map(JSON.parse(users))})
         })
+        this.socket.on('room.userDisconnected', (users) => {
+            this.setState({users: new Map(JSON.parse(users))})
+        })
     }
 
     componentWillUnmount() {
         this.socket.off('room.userJoined')
+        this.socket.off('room.userDisconnected')
     }
 
     // initializeSocket = () => {
     //     this.socket = this.props.socket
-
-    //     this.socket.on('room.newUser', (users) => {
-    //         this.setState({
-    //           users: users
-    //         })
-    //     })
 
     //     this.socket.on('room.userDisconnected', (users) => {
     //         this.setState({

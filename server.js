@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
     const roomId = data.roomId
     if (isRoomAvailable(socket, roomId)) {
       const room = getRoom(roomId)
-      const users = JSON.stringify(Array.from(room.data.users))
+      const users = createUsersJson(room.data.users)
       const lobbyData = {
         roomId: roomId,
         game: room.data.game,
@@ -116,14 +116,19 @@ io.on('connection', (socket) => {
         socket.emit('state.game', gameData)
       }
       // Inform room
-      const users = getLobbyData(session).users
+      const users = createUsersJson(room.data.users)
       socket.broadcast.to(roomId).emit('room.userJoined', users)
     }
   })
 
+  socket.on('room.quit', () => {
+    disconnectUser(socket)
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
-    console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)  
+    console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
+    disconnectUser(socket)
   })
 })
 
@@ -131,7 +136,7 @@ io.on('connection', (socket) => {
 
 function getLobbyData(session) {
   const room = getRoom(session.roomId)
-  const users = JSON.stringify(Array.from(room.data.users))
+  const users = createUsersJson(room.data.users)
   return {
     userId: session.userId,
     roomId: session.roomId,
@@ -158,6 +163,48 @@ function isRoomAvailable(socket, roomId) {
   }
 }
 
+function disconnectUser(socket) {
+  // Check if session is initialized
+  if (typeof socket.session !== 'undefined') {
+    // Check if room is initialized
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const userId = socket.session.userId
+      // Check if host
+      if (userId === room.data.host) {
+        // Notify users
+        const hostName = room.data.users.get(room.data.host)
+        socket.broadcast.to(roomId).emit('room.hostDisconnected', hostName)
+        // Remove listeners to room
+        io.in(roomId).clients((err, socketIds) => {
+          if (err) throw err
+          socketIds.forEach((socketId) => {
+            const socket = io.sockets.sockets[socketId]
+            socket.leave(roomId)
+            delete socket.session.username
+            delete socket.session.roomId
+            delete socket.session.userId
+            socket.session.state = 'none'
+          })
+        })
+      } else {
+        // Remove user from room data and notify users
+        room.data.users.delete(userId)
+        const users = createUsersJson(room.data.users)
+        socket.broadcast.to(roomId).emit('room.userDisconnected', users)
+      }
+      // Update socket info
+      socket.leave(roomId)
+      delete socket.session.username
+      delete socket.session.roomId
+      delete socket.session.userId
+      socket.session.state = 'none'
+      socket.emit('state.none')
+    }
+  }
+}
+
 // ### HELPER METHODS ###
 
 function generateRoomId() {
@@ -171,22 +218,8 @@ function getRoom(id) {
   return io.sockets.adapter.rooms[id]
 }
 
-function generateUsersData(roomData) {
-  const host = roomData.host
-  const members = roomData.members
-  const users = []
-  var hostIndex = 0
-  index = 0
-  members.forEach((member, socketId) => {
-    if (socketId === host) {
-     hostIndex = index
-    }
-    users.push(member)
-  })
-  return {
-    host: hostIndex,
-    users: users
-  }
+function createUsersJson(users) {
+  return JSON.stringify(Array.from(users))
 }
 
 function isValidRoomCode(roomId) {

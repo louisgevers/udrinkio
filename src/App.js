@@ -82,6 +82,13 @@ class App extends Component {
           this.socket.emit('room.available', {roomId: path.substr(1)})
         } else {
           this.props.history.push('/')
+          this.setState({
+            userId: null,
+            roomId: null,
+            game: null,
+            users: null,
+            host: null
+          })
         }
       })
   
@@ -112,6 +119,22 @@ class App extends Component {
         this.setState(state)
         this.props.history.push(`/${state.roomId}`)
         this.openJoinPrompt(this.state.game)
+      })
+
+      this.socket.on('room.hostDisconnected', (username) => {
+        this.props.history.push('/')
+        this.setState({
+          userId: null,
+          roomId: null,
+          game: null,
+          users: null,
+          host: null
+        })
+        alert(`Host ${username} disconnected`)
+      })
+
+      this.socket.on('disconnect', () => {
+        alert('Connection with server has been interrupted')
       })
 
     })
@@ -211,8 +234,7 @@ class App extends Component {
   // ### NAVIGATION ###
 
   onQuitLobby = () => {
-    // TODO socket join
-    // this.socket.emit('room.quit')
+    this.socket.emit('room.quit')
     this.props.history.push('/')
     this.setState({
       game: null,
