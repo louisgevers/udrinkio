@@ -20,7 +20,7 @@ class Game extends Component {
     render() {
         return (
             <div className="Game">
-                {(this.state.settingsPrompt && <GameSettingsPrompt game={this.props.game} onOptionChosen={this.onOptionChosen} />)}
+                {(this.state.settingsPrompt && <GameSettingsPrompt game={this.props.game} onOptionChosen={this.onOptionChosen} onClose={() => this.setState({settingsPrompt: false})} />)}
                 {(this.state.play ? 
                 <GameScreen game={this.props.game} isHost={this.props.isHost} gameState={this.state.gameState} socket={this.props.socket} />
                 : 

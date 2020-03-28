@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
 import './GameSettingsPrompt.css'
 
+import Prompt from '../Prompt/Prompt.js'
+
 class GameSettingsPrompt extends Component {
 
     render() {
         return (
             <div className='GameSettingsPrompt'>
-                {this.generateSettings(this.props.game.settings)}
+                <Prompt primaryColor={this.props.game.primaryColor} secondaryColor={this.props.game.secondaryColor} title={`${this.props.game.name} SETTINGS`} onClose={this.props.onClose}>
+                    {this.generateSettings(this.props.game.settings)}
+                </Prompt>
             </div>
         )
     }
