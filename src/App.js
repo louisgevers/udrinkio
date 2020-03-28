@@ -13,16 +13,12 @@ class App extends Component {
 
   constructor(props) {
     super(props)
-    this.initializeSocketIO()
     this.state = {
-      id: null,
+      userId: null,
+      roomId: null,
       game: null,
       users: null,
-      roomId: null,
-      username: null,
-      createPrompt: false,
-      joinPrompt: false,
-      userGameId: null
+      host: null
     }
   }
 
@@ -62,6 +58,33 @@ class App extends Component {
           this.onQuitLobby()
         }
       }
+    })
+    this.initializeSocket()
+  }
+
+  componentWillUnmount = () => {
+    this.socket.off('state.none')
+    this.socket.off('state.lobby')
+  }
+
+  initializeSocket = () => {
+    this.socket = io()
+    this.socket.emit('state.get')
+    
+    this.socket.on('state.none', () => {
+      this.props.history.push('/')
+    })
+
+    this.socket.on('state.lobby', (data) => {
+      const state = {
+        userId: data.userId,
+        roomId: data.roomId,
+        game: data.game,
+        users: data.users,
+        host: data.host
+      }
+      this.setState(state)
+      this.props.history.push(`/${state.roomId}`)
     })
   }
 
@@ -125,7 +148,7 @@ class App extends Component {
       game: this.state.game
     }
     this.closePrompts()
-    // TODO EMIT SOCKET
+    this.socket.emit('room.create', data)
     // TODO LOADING SCREEN
   }
 

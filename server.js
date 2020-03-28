@@ -30,11 +30,78 @@ io.on('connection', (socket) => {
   connectionsCount += 1
   console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
   
+  socket.on('state.get', () => {
+    const session = socket.handshake.session
+    console.log(session)
+    // Check if state is defined
+    if (typeof session.state === 'undefined') {
+      session.state = 'none'
+    }
+    if (session.state === 'lobby') {
+      // Return lobby info if user is in lobby
+      const lobbyData = getLobbyData(session)
+      socket.emit('state.lobby', lobbyData)
+    } else if (session.state === 'game') {
+      // Return game info if user is in game
+      const gameData = {
+        // TODO
+      }
+      socket.emit('state.game')
+    } else {
+      // Return no state if not matching
+      socket.emit('state.none')
+    }
+
+  })
+
+  socket.on('room.create', (data) => {
+    // Data variables
+    const game = data.game
+    const username = data.username
+    // Create room
+    const roomId = generateRoomId()
+    socket.join(roomId)
+    // Update socket information
+    const session = socket.handshake.session
+    session.username = username
+    session.roomId = roomId
+    session.userId = 0
+    session.state = 'lobby'
+    session.save()
+    console.log(session)
+    // Update room information
+    const room = getRoom(roomId)
+    const roomData = {
+      game: game,
+      host: session.userId,
+      state: 'lobby',
+      users: new Map()
+    }
+    roomData.users.set(session.userId, session.username)
+    room.data = roomData
+    // Inform user
+    const lobbyData = getLobbyData(session)
+    socket.emit('state.lobby', lobbyData)
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)  
   })
 })
+
+// ### ABSTRACT SOCKET METHODS ###
+
+function getLobbyData(session) {
+  const room = getRoom(session.roomId)
+  return {
+    userId: session.userId,
+    roomId: session.roomId,
+    game: room.data.game,
+    users: room.data.users,
+    host: room.data.host
+  }
+}
 
 // ### HELPER METHODS ###
 
