@@ -39,7 +39,8 @@ createRoom = (socket, username, game) => {
   return {
     users: generateUsersData(room.data),
     isHost: true,
-    roomId: roomId
+    roomId: roomId,
+    userGameId: memberData.userId
   }
 }
 
@@ -61,7 +62,8 @@ joinRoom = (socket, username, roomId, room) => {
     users: users,
     isHost: false,
     roomId: roomId,
-    game: room.data.game
+    game: room.data.game,
+    userGameId: memberData.userId
   }
 }
 

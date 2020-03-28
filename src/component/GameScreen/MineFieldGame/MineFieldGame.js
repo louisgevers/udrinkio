@@ -13,18 +13,18 @@ class MineFieldGame extends Component {
 
     constructor(props) {
         super(props)
-        this.state = this.props.gameState
+        this.onNewGameState(this.props.gameState)
     }
 
     componentDidMount = () => {
-        // socket.io
-        this.props.socket.on('minefield.drawnCard', this.onNewGameState)
-        this.props.socket.on('game.userDisconnected', this.onNewGameState)
         // pixi.js
         this.app = new Application({resizeTo: this.gameCanvas, backgroundColor: this.getHexadecimalColor(this.props.game.primaryColor)})
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
         this.setup()
+        // socket.io
+        this.props.socket.on('minefield.drawnCard', this.onNewGameState)
+        this.props.socket.on('game.userDisconnected', this.onNewGameState)
     }
 
     componentWillUnmount = () => {
@@ -43,12 +43,27 @@ class MineFieldGame extends Component {
     }
 
     onNewGameState = (gameState) => {
-        this.setState(gameState)
+        this.gameState = gameState
         this.updateCardSprites()
+        if (this.isUsersTurn()) {
+            alert('Your turn to play! Pick a card.')
+        }
     }
 
-    onCardClicked = (i, j) => {
-        this.props.socket.emit('minefield.drawCard', {row: i, column: j})
+    onCardClicked = (i, j, cardName) => {
+        if (this.isUsersTurn()) {
+            if (cardName === 'b') {
+                this.props.socket.emit('minefield.drawCard', {row: i, column: j})
+            } else {
+                alert('This card is already taken')
+            }
+        } else {
+            alert('Not your turn yet')
+        }
+    }
+
+    isUsersTurn = () => {
+        return this.props.userGameId === this.gameState.playingUser.userId
     }
 
     // ###################
@@ -77,12 +92,15 @@ class MineFieldGame extends Component {
     }
 
     initCardSprites = () => {
-        this.state.table.forEach((row, i) => {
+        this.gameState.table.forEach((row, i) => {
             const spriteRow = []
             row.forEach((cardName, j) => {
                 const card = new Sprite(resources[cardName].texture)
                 card.interactive = true
-                card.on('click', () => this.onCardClicked(i, j))
+                card.data = {
+                    name: cardName
+                }
+                card.on('click', () => this.onCardClicked(i, j, card.data.name))
                 this.app.stage.addChild(card)
                 spriteRow.push(card)
             })
@@ -92,7 +110,7 @@ class MineFieldGame extends Component {
     }
 
     resizeCardSprites = () => {
-        const n = this.state.table.length
+        const n = this.gameState.table.length
         const gap = 3
         this.spriteTable.forEach((row, i) => {
             row.forEach((card, j) => {
@@ -108,11 +126,14 @@ class MineFieldGame extends Component {
     }
 
     updateCardSprites = () => {
-        this.state.table.forEach((row, i) => {
-            row.forEach((cardName, j) => {
-                this.spriteTable[i][j].texture = resources[cardName].texture
+        if (typeof this.spriteTable !== 'undefined') {
+            this.gameState.table.forEach((row, i) => {
+                row.forEach((cardName, j) => {
+                    this.spriteTable[i][j].texture = resources[cardName].texture
+                    this.spriteTable[i][j].data.name = cardName
+                })
             })
-        })
+        }
     }
 
     getHexadecimalColor = (stringColor) => {

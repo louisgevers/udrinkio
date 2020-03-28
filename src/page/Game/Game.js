@@ -22,7 +22,7 @@ class Game extends Component {
             <div className="Game">
                 {(this.state.settingsPrompt && <GameSettingsPrompt game={this.props.game} onOptionChosen={this.onOptionChosen} onClose={() => this.setState({settingsPrompt: false})} />)}
                 {(this.state.play ? 
-                <GameScreen game={this.props.game} isHost={this.props.isHost} gameState={this.state.gameState} socket={this.props.socket} />
+                <GameScreen game={this.props.game} isHost={this.props.isHost} userGameId={this.props.userGameId} gameState={this.state.gameState} socket={this.props.socket} />
                 : 
                 <Lobby game={this.props.game} roomId={this.props.roomId} socket={this.props.socket} users={this.props.users} isHost={this.props.isHost} onHomeClick={this.props.onHomeClick} onStartClick={this.startGame} />
                 )}
