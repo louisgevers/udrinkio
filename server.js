@@ -26,35 +26,43 @@ io.on('connection', (socket) => {
 
   socket.on('state.get', () => {
     const session = socket.session
-    // Check if state is defined
-    if (typeof session.state === 'undefined') {
-      session.state = 'none'
-    }
-    if (session.state === 'lobby') {
-      // Return lobby info if user is in lobby
-      const lobbyData = getLobbyData(session)
-      socket.emit('state.lobby', lobbyData)
-    } else if (session.state === 'game') {
-      // Return game info if user is in game
-      const gameData = {
-        // TODO
+    if (typeof session !== 'undefined') {
+      // Check if state is defined
+      if (typeof session.state === 'undefined') {
+        session.state = 'none'
       }
-      socket.emit('state.game')
-    } else {
-      // Return no state if not matching
-      socket.emit('state.none')
+      if (session.state === 'lobby') {
+        // Return lobby info if user is in lobby
+        const room = getRoom(session.roomId)
+        if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+          const lobbyData = getLobbyData(session)
+          socket.emit('state.lobby', lobbyData)
+        }
+      } else if (session.state === 'game') {
+        // Return game info if user is in game
+        const gameData = {
+          // TODO
+        }
+        socket.emit('state.game', gameData)
+      } else {
+        // Return no state if not matching
+        socket.emit('state.none')
+      }
     }
-
   })
 
   socket.on('room.create', (data) => {
     // Data variables
     const game = data.game
     const username = data.username
-    // Create room
+    if (typeof game !== 'undefined' && typeof username !== 'undefined') {
+      // Create room
     const roomId = generateRoomId()
     socket.join(roomId)
     // Update socket information
+    if (typeof socket.session === 'undefined') {
+      socket.session = {}
+    }
     const session = socket.session
     session.username = username
     session.roomId = roomId
@@ -73,6 +81,7 @@ io.on('connection', (socket) => {
     // Inform user
     const lobbyData = getLobbyData(session)
     socket.emit('state.lobby', lobbyData)
+    }
   })
 
   socket.on('room.available', (data) => {
@@ -147,7 +156,7 @@ function getLobbyData(session) {
 }
 
 function isRoomAvailable(socket, roomId) {
-  if (!isValidRoomCode(roomId)) {
+  if (typeof roomId !== 'undefined' && !isValidRoomCode(roomId)) {
     socket.emit('room.unavailable', 'Invalid room code')
     return false
   }
