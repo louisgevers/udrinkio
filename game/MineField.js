@@ -25,8 +25,13 @@ module.exports = class MineField {
     }
 
     drawCard = (row, column) => {
-        const card = this.deck.pop()
-        this.state.table[row][column] = card
+        if (this.state.table[row][column] === 'b') {
+            const card = this.deck.pop()
+            this.state.table[row][column] = card
+            return true
+        } else {
+            return false
+        }
     }
 
     isTurn = (user) => {

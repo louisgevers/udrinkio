@@ -1,15 +1,18 @@
 import React from 'react';
 import MineFieldGame from '../component/GameScreen/MineFieldGame/MineFieldGame.js';
+import MockedSocket from 'socket.io-mock';
+
+const socket = new MockedSocket();
 
 export default {
     title: 'MineFieldGame',
     component: MineFieldGame
 }
 
-export const Simple = () => <MineFieldGame state={state} />;
+export const Simple = () => <MineFieldGame gameState={state} socket={socket} game={state.game} />;
 
 const state = {
-    table: [['b', 'b', 'b'], ['b', 'b', 'b'], ['b', '8c', '5h']],
+    table: [['1s', 'b', 'qh'], ['ks', 'jh', '8c'], ['7c', '8c', '5h']],
     game: {
         "id": "minefield",
         "name": "MINE FIELD",

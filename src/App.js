@@ -21,7 +21,8 @@ class App extends Component {
       roomId: null,
       username: null,
       createPrompt: false,
-      joinPrompt: false
+      joinPrompt: false,
+      userGameId: null
     }
   }
 
@@ -35,7 +36,7 @@ class App extends Component {
             <Route path='/*'>
               {
                 this.state.roomId !== null ?
-                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} onHomeClick={this.onQuitLobby} socket={this.socket} /> :
+                <Game game={this.state.game} roomId={this.state.roomId} users={this.state.users} isHost={this.state.isHost} userGameId={this.state.userGameId} onHomeClick={this.onQuitLobby} socket={this.socket} /> :
                 () => this.onPathJoin(this.props.location.pathname)
               }
               
@@ -78,7 +79,8 @@ class App extends Component {
       this.setState({
         users: data.users,
         isHost: data.isHost,
-        roomId: data.roomId
+        roomId: data.roomId,
+        userGameId: data.userGameId
       })
       this.props.history.push(`/${data.roomId}`)
     })
@@ -104,7 +106,8 @@ class App extends Component {
         game: data.game,
         isHost: data.isHost,
         users: data.users,
-        roomId: data.roomId
+        roomId: data.roomId,
+        userGameId: data.userGameId
       })
       this.props.history.push(`/${data.roomId}`)
     })
