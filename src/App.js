@@ -63,28 +63,39 @@ class App extends Component {
   }
 
   componentWillUnmount = () => {
+    this.socket.off('app.connected')
     this.socket.off('state.none')
     this.socket.off('state.lobby')
   }
 
   initializeSocket = () => {
     this.socket = io()
-    this.socket.emit('state.get')
-    
-    this.socket.on('state.none', () => {
-      this.props.history.push('/')
-    })
-
-    this.socket.on('state.lobby', (data) => {
-      const state = {
-        userId: data.userId,
-        roomId: data.roomId,
-        game: data.game,
-        users: data.users,
-        host: data.host
+    const uuid = localStorage.getItem('uuid')
+    this.socket.emit('app.connect', uuid)
+    this.socket.on('app.connected', (servUuid) => {
+      
+      if (servUuid !== uuid) {
+        localStorage.setItem('uuid', servUuid)
       }
-      this.setState(state)
-      this.props.history.push(`/${state.roomId}`)
+
+      this.socket.emit('state.get')
+
+      this.socket.on('state.none', () => {
+        this.props.history.push('/')
+      })
+  
+      this.socket.on('state.lobby', (data) => {
+        const state = {
+          userId: data.userId,
+          roomId: data.roomId,
+          game: data.game,
+          users: data.users,
+          host: data.host
+        }
+        this.setState(state)
+        this.props.history.push(`/${state.roomId}`)
+      })
+
     })
   }
 

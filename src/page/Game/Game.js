@@ -14,7 +14,6 @@ class Game extends Component {
             settingsPrompt: false,
             gameState: null
         }
-        this.initializeSocket()
     }
 
     render() {

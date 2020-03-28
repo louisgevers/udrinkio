@@ -6,16 +6,7 @@ var io = require('socket.io').listen(http)
 const {v4: uuidv4 } = require('uuid')
 const MineField = require('./game/MineField.js')
 
-var session = require('express-session')({
-  secret: '5728239597198',
-  resave: true,
-  saveUninitialized: true
-})
-
-var sharedSession = require('express-socket.io-session')
-
 app.use(express.static(path.join(__dirname, 'build')))
-app.use(session)
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'))
@@ -24,15 +15,27 @@ app.get('*', (req, res) => {
 // ### SOCKET IO ###
 var connectionsCount = 0
 
-io.use(sharedSession(session, {autoSave: true}))
+const sessionMap = new Map()
 
 io.on('connection', (socket) => {
   connectionsCount += 1
   console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
   
+  socket.on('app.connect', (uuid) => {
+    console.log(uuid)
+    if (sessionMap.has(uuid)) {
+      socket.session = sessionMap.get(uuid)
+      socket.emit('app.connected', uuid)
+    } else {
+      const servUuid = uuidv4()
+      socket.session = {}
+      sessionMap.set(servUuid, socket.session)
+      socket.emit('app.connected', servUuid)
+    }
+  })
+
   socket.on('state.get', () => {
-    const session = socket.handshake.session
-    console.log(session)
+    const session = socket.session
     // Check if state is defined
     if (typeof session.state === 'undefined') {
       session.state = 'none'
@@ -62,13 +65,11 @@ io.on('connection', (socket) => {
     const roomId = generateRoomId()
     socket.join(roomId)
     // Update socket information
-    const session = socket.handshake.session
+    const session = socket.session
     session.username = username
     session.roomId = roomId
     session.userId = 0
     session.state = 'lobby'
-    session.save()
-    console.log(session)
     // Update room information
     const room = getRoom(roomId)
     const roomData = {
