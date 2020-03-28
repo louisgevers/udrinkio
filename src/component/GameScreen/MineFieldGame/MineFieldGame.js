@@ -24,11 +24,13 @@ class MineFieldGame extends Component {
     }
 
     componentWillMount = () => {
-        this.props.socket.on('minefield.drawnCard', this.onCardDrawn)
+        this.props.socket.on('minefield.drawnCard', this.onNewGameState)
+        this.props.socket.on('game.userDisconnected', this.onNewGameState)
     }
 
     componentWillUnmount = () => {
-        this.props.socket.removeListener('minefield.drawnCard', this.onCardDrawn)
+        this.props.socket.removeListener('minefield.drawnCard', this.onNewGameState)
+        this.props.socket.removeListener('game.userDisconnected', this.onNewGameState)
     }
 
     createCard = (cardId, i, j) => {
@@ -44,7 +46,7 @@ class MineFieldGame extends Component {
         this.props.socket.emit('minefield.drawCard', data)
     }
 
-    onCardDrawn = (gameState) => {
+    onNewGameState = (gameState) => {
         this.setState(gameState)
     }
 }

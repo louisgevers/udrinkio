@@ -89,7 +89,12 @@ disconnectUser = (socket, room) => {
       socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(socket.data.roomId))
     })
   } else {
-    delete room.data.members.delete(socket.id)
+    if (typeof room.data.gameObject !== 'undefined') {
+      const game = room.data.gameObject
+      game.disconnect(room.data.members.get(socket.id))
+      socket.broadcast.to(socket.data.roomId).emit('game.userDisconnected', game.state)
+    }
+    room.data.members.delete(socket.id)
     const users = generateUsersData(room.data)
     socket.broadcast.to(socket.data.roomId).emit('room.userDisconnected', users)
   }
@@ -189,8 +194,10 @@ io.on('connection', (socket) => {
     const roomId = socket.data.roomId
     const room = getRoom(roomId)
     room.data.started = true
+    const users = generateUsersData(room.data).users
     if (room.data.game.id === 'minefield') {
-      const game = new MineField(data.value)
+      const gridSize = data.value
+      const game = new MineField(gridSize, users)
       const room = getRoom(socket.data.roomId)
       room.data.gameObject = game
       io.to(roomId).emit('game.started', game.state)
@@ -201,8 +208,12 @@ io.on('connection', (socket) => {
 
   socket.on('minefield.drawCard', (data) => {
     const room = getRoom(socket.data.roomId)
+    const user = room.data.members.get(socket.id)
     const game = room.data.gameObject
-    game.drawCard(data.row, data.column)
+    if (game.isTurn(user)) {
+      game.drawCard(data.row, data.column)
+      game.nextTurn()
+    }
     io.to(socket.data.roomId).emit('minefield.drawnCard', game.state)
   })
 
@@ -254,24 +265,6 @@ function generateUsersData(roomData) {
 
 function isValidRoomCode(roomId) {
   return roomId.match(/^[0-9]{6}$/) != null
-}
-
-// ### GAME ###
-
-function createMineFieldGame(data) {
-  const n = data.value
-  const grid = []
-  for (var i = 0; i < n; i++) {
-    const row = []
-    for (var j = 0; j < n; j++) {
-      row.push('b')
-    }
-    grid.push(row)
-  }
-  const state = {
-    table: grid
-  }
-  return state
 }
 
 // ### SERVER ###
