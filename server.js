@@ -75,6 +75,52 @@ io.on('connection', (socket) => {
     socket.emit('state.lobby', lobbyData)
   })
 
+  socket.on('room.available', (data) => {
+    const roomId = data.roomId
+    if (isRoomAvailable(socket, roomId)) {
+      const room = getRoom(roomId)
+      const users = JSON.stringify(Array.from(room.data.users))
+      const lobbyData = {
+        roomId: roomId,
+        game: room.data.game,
+        users: users,
+        host: room.data.host
+      }
+      socket.emit('room.isAvailable', lobbyData)
+    }
+  })
+
+  socket.on('room.join', (data) => {
+    // Retrieve data
+    const username = data.username
+    const roomId = data.roomId
+    if (isRoomAvailable(socket, roomId)) {
+      // Join room
+      socket.join(roomId)
+      const room = getRoom(roomId)
+      // Update socket information
+      const session = socket.session
+      session.username = username
+      session.roomId = roomId
+      session.userId = room.data.users.size
+      session.state = room.data.state
+      // Update room information
+      room.data.users.set(session.userId, session.username)
+      // Inform user
+      if (room.data.state === 'lobby') {
+        const lobbyData = getLobbyData(session)
+        socket.emit('state.lobby', lobbyData)
+      } else if (room.data.state === 'game') {
+        // TODO update gameobject info
+        const gameData = {}
+        socket.emit('state.game', gameData)
+      }
+      // Inform room
+      const users = getLobbyData(session).users
+      socket.broadcast.to(roomId).emit('room.userJoined', users)
+    }
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)  
@@ -92,6 +138,23 @@ function getLobbyData(session) {
     game: room.data.game,
     users: users,
     host: room.data.host
+  }
+}
+
+function isRoomAvailable(socket, roomId) {
+  if (!isValidRoomCode(roomId)) {
+    socket.emit('room.unavailable', 'Invalid room code')
+    return false
+  }
+  const room = getRoom(roomId)
+  if (typeof room === 'undefined' || typeof room.data === 'undefined') {
+    socket.emit('room.unavailable', 'Room does not exist')
+    return false
+  } else if (room.data.users.size >= room.data.game.maxPlayers) {
+    socket.emit('room.unavailable', `Room is full (${room.data.users.size}/${room.data.game.maxPlayers})`)
+    return false
+  } else {
+    return true
   }
 }
 

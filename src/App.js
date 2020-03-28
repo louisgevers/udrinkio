@@ -31,9 +31,8 @@ class App extends Component {
             </Route>
             <Route path='/*'>
               {
-                this.state.roomId !== null ?
-                <Game session={this.state} onHomeClick={this.onQuitLobby} socket={this.socket} /> :
-                () => this.onPathJoin(this.props.location.pathname)
+                this.state.roomId !== null &&
+                <Game session={this.state} onHomeClick={this.onQuitLobby} socket={this.socket} />
               }
               
             </Route>
@@ -51,7 +50,7 @@ class App extends Component {
     );
   }
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.props.history.listen((location, action) => {
       if (action === 'POP') {
         if (location.pathname === '/' && typeof this.state.roomId !== 'undefined') {
@@ -62,10 +61,12 @@ class App extends Component {
     this.initializeSocket()
   }
 
-  componentWillUnmount = () => {
+  componentWillUnmount() {
     this.socket.off('app.connected')
     this.socket.off('state.none')
     this.socket.off('state.lobby')
+    this.socket.off('room.unavailable')
+    this.socket.off('room.isAvailable')
   }
 
   initializeSocket = () => {
@@ -76,11 +77,15 @@ class App extends Component {
 
       this.socket.on('state.none', () => {
         // TODO if trying to access room
-        this.props.history.push('/')
+        const path = this.props.location.pathname
+        if (path !== '/') {
+          this.socket.emit('room.available', {roomId: path.substr(1)})
+        } else {
+          this.props.history.push('/')
+        }
       })
   
       this.socket.on('state.lobby', (data) => {
-        console.log(data.users)
         const state = {
           userId: data.userId,
           roomId: data.roomId,
@@ -90,6 +95,23 @@ class App extends Component {
         }
         this.setState(state)
         this.props.history.push(`/${state.roomId}`)
+      })
+
+      this.socket.on('room.unavailable', (message) => {
+        this.props.history.push('/')
+        alert(message)
+      })
+
+      this.socket.on('room.isAvailable', (data) => {
+        const state = {
+          roomId: data.roomId,
+          game: data.game,
+          users: new Map(JSON.parse(data.users)),
+          host: data.host
+        }
+        this.setState(state)
+        this.props.history.push(`/${state.roomId}`)
+        this.openJoinPrompt(this.state.game)
       })
 
     })
@@ -142,7 +164,7 @@ class App extends Component {
   }
 
   onJoinButtonClick = (roomId) => {
-    // TODO JOIN SOCKET
+    this.socket.emit('room.available', ({roomId: roomId}))
     // TODO LOADING SCREEN
   }
 
@@ -165,7 +187,7 @@ class App extends Component {
       roomId: this.state.roomId
     }
     this.closePrompts()
-    // TODO EMIT SOCKET
+    this.socket.emit('room.join', data)
     // TODO LOADING SCREEN
   }
 
@@ -187,11 +209,6 @@ class App extends Component {
   }
 
   // ### NAVIGATION ###
-
-  onPathJoin = (path) => {
-    // TODO socket join
-    // this.socket.emit('state.availability', path.substr(1))
-  }
 
   onQuitLobby = () => {
     // TODO socket join

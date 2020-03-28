@@ -7,9 +7,9 @@ class UserList extends Component {
 
     getOtherUsers = (users) => {
         const userList = []
-        for (var id in users.keys()) {
-            if (id !== this.props.session.host) {
-                users.push({userId: id, username: users[id]})
+        for (var id of users.keys()) {
+            if (id !== this.props.host) {
+                userList.push({userId: id, username: users.get(id)})
             }
         }
         return userList
