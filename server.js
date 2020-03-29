@@ -193,6 +193,45 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('game.start', (data) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof data !== 'undefined') {
+      const gameId = room.data.game.id
+      if (gameId === 'minefield') {
+        const gridSize = data.value
+        if (typeof data.value === 'number') {
+          const gameObject = new MineField(gridSize, room.data.users)
+          room.data.gameObject = gameObject
+          const gameState = gameObject.state
+          gameState.users = createUsersJson(gameState.users)
+          io.to(roomId).emit('game.started', gameState)
+          room.data.state = 'game'
+          room.data.sockets.forEach((playingSocket) => {
+            playingSocket.session.state = 'game'
+          })
+        }
+      } else {
+        // TODO implement other games here
+      }
+    }
+  })
+
+  socket.on('minefield.drawCard', (data) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const user = {userId: socket.session.userId, username: socket.session.username}
+        if (gameObject.isTurn(user) && gameObject.drawCard(data.row, data.column)) {
+          gameObject.nextTurn()
+          io.to(roomId).emit('minefield.drawnCard', gameObject.state)
+        }
+      }
+    }
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
