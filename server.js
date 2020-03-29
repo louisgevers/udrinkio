@@ -131,10 +131,16 @@ io.on('connection', (socket) => {
       // Inform room
       const users = createUsersJson(room.data.users)
       socket.broadcast.to(roomId).emit('room.userJoined', users)
+      const chatInfo = {
+        type: 'info',
+        message: `${username} joined the room`
+      }
+      io.to(roomId).emit('chat.info', chatInfo)
     }
   })
 
   socket.on('room.quit', () => {
+    notifyUserDisconnected(socket)
     disconnectUser(socket)
     socket.emit('state.none')
   })
@@ -150,18 +156,47 @@ io.on('connection', (socket) => {
         // Disconnect the user socket
         const toRemoveSocket = room.data.sockets.get(userId)
         if (typeof toRemoveSocket !== 'undefined') {
+          // Collect info
+          const hostName = room.data.users.get(room.data.host)
+          const chatInfo = {
+            type: 'info',
+            message: `${hostName} has removed ${toRemoveSocket.session.username}`
+          }
+          // Disconnect
           disconnectUser(toRemoveSocket)
           // Notify user
-          const hostName = room.data.users.get(room.data.host)
           toRemoveSocket.emit('room.removed', hostName)
+          // Notify room
+          io.to(socket.session.roomId).emit('chat.info', chatInfo)
         }
       }
+    }
+  })
+
+  socket.on('chat.sendMessage', (data) => {
+    // Get message
+    const message = data.message
+    const roomId = socket.session.roomId
+    if (typeof roomId !== 'undefined') {
+      // Create chat message data
+      const chatMessage = {
+        type: 'chat',
+        message: message,
+        isSender: true,
+        username: socket.session.username
+      }
+      // Emit to sender
+      socket.emit('chat.receivedMessage', chatMessage)
+      // Emit to rest of room
+      chatMessage.isSender = false
+      socket.broadcast.to(roomId).emit('chat.receivedMessage', chatMessage)
     }
   })
 
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
+    notifyUserDisconnected(socket)
     disconnectUser(socket)
   })
 })
@@ -197,6 +232,19 @@ function isRoomAvailable(socket, roomId) {
   }
 }
 
+function notifyUserDisconnected(socket) {
+  if (typeof socket.session !== 'undefined') {
+    const roomId = socket.session.roomId
+    if (typeof roomId !== 'undefined') {
+      const chatInfo = {
+        type: 'info',
+        message: `${socket.session.username} disconnected`
+      }
+      io.to(roomId).emit('chat.info', chatInfo)
+    }
+  }
+}
+
 function disconnectUser(socket) {
   // Check if session is initialized
   if (typeof socket.session !== 'undefined') {
@@ -225,6 +273,7 @@ function disconnectUser(socket) {
       } else {
         // Remove user from room data and notify users
         room.data.users.delete(userId)
+        room.data.sockets.delete(userId)
         const users = createUsersJson(room.data.users)
         socket.broadcast.to(roomId).emit('room.userDisconnected', users)
       }
