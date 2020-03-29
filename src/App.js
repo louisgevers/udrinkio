@@ -133,6 +133,11 @@ class App extends Component {
         alert(`Host ${username} disconnected`)
       })
 
+      this.socket.on('room.removed', (hostName) => {
+        this.props.history.push('/')
+        alert(`You were removed by "${hostName}"`)
+      })
+
       this.socket.on('disconnect', () => {
         alert('Connection with server has been interrupted')
       })

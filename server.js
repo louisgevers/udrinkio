@@ -18,7 +18,8 @@ var connectionsCount = 0
 io.on('connection', (socket) => {
   connectionsCount += 1
   console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
-  
+  socket.session = {}
+
   socket.on('app.connect', () => {
     socket.session = {}
     socket.emit('app.connected')
@@ -74,9 +75,11 @@ io.on('connection', (socket) => {
       game: game,
       host: session.userId,
       state: 'lobby',
-      users: new Map()
+      users: new Map(),
+      sockets: new Map()
     }
     roomData.users.set(session.userId, session.username)
+    roomData.sockets.set(session.userId, socket)
     room.data = roomData
     // Inform user
     const lobbyData = getLobbyData(session)
@@ -115,6 +118,7 @@ io.on('connection', (socket) => {
       session.state = room.data.state
       // Update room information
       room.data.users.set(session.userId, session.username)
+      room.data.sockets.set(session.userId, socket)
       // Inform user
       if (room.data.state === 'lobby') {
         const lobbyData = getLobbyData(session)
@@ -132,6 +136,27 @@ io.on('connection', (socket) => {
 
   socket.on('room.quit', () => {
     disconnectUser(socket)
+    socket.emit('state.none')
+  })
+
+  socket.on('room.removeUser', (data) => {
+    const userId = data.userId
+    const room = getRoom(socket.session.roomId)
+    // Check if room exists
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      // Check if host is trying to remove
+      const isHost = (socket === room.data.sockets.get(room.data.host))
+      if (isHost) {
+        // Disconnect the user socket
+        const toRemoveSocket = room.data.sockets.get(userId)
+        if (typeof toRemoveSocket !== 'undefined') {
+          disconnectUser(toRemoveSocket)
+          // Notify user
+          const hostName = room.data.users.get(room.data.host)
+          toRemoveSocket.emit('room.removed', hostName)
+        }
+      }
+    }
   })
 
   socket.on('disconnect', () => { 
@@ -209,7 +234,6 @@ function disconnectUser(socket) {
       delete socket.session.roomId
       delete socket.session.userId
       socket.session.state = 'none'
-      socket.emit('state.none')
     }
   }
 }

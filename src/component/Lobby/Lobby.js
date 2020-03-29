@@ -53,19 +53,9 @@ class Lobby extends Component {
         this.socket.off('room.userDisconnected')
     }
 
-    // initializeSocket = () => {
-    //     this.socket = this.props.socket
-
-    //     this.socket.on('room.userDisconnected', (users) => {
-    //         this.setState({
-    //           users: users
-    //         })
-    //     })
-    // }
-
-    // removeUser = (userId) => {
-    //     this.socket.emit('room.removeUser', userId)
-    // }
+    removeUser = (userId) => {
+        this.socket.emit('room.removeUser', {userId: userId})
+    }
 }
 
 export default Lobby
