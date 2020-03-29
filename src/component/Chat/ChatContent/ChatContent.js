@@ -23,9 +23,9 @@ class ChatContent extends Component {
                                 message={chatMessage.message} 
                             />
                         } else if (chatMessage.type === "info") {
-                            return <span className="InfoMessage">{chatMessage.message}</span>
+                            return <span key={index} className="InfoMessage">{chatMessage.message}</span>
                         } else {
-                            return <span>{chatMessage}</span>
+                            return <span key={index}>{chatMessage}</span>
                         }
                         
                     })}
@@ -37,24 +37,12 @@ class ChatContent extends Component {
     componentWillUnmount = () => {
         this.socket.off('chat.receivedMessage')
         this.socket.off('chat.info')
-        // this.socket.removeListener('chat.userJoined', this.userJoinedFn)
     }
 
     componentDidMount = () => {
         this.socket = this.props.socket
         this.socket.on('chat.receivedMessage', this.addMessage)
         this.socket.on('chat.info', this.addMessage)
-        // this.socket.on('chat.userJoined', this.userJoinedFn)
-        // this.socket.on('chat.userDisconnected', this.userDisconnectedFn)
-        // this.socket.on('chat.userRemoved', this.userRemovedFn)
-    }
-
-    userJoinedFn = (username) => {
-        const chatMessage = {
-            type: "info",
-            message: `${username} joined the room`
-        }
-        this.addMessage(chatMessage)
     }
 
     addMessage = (chatMessage) => {

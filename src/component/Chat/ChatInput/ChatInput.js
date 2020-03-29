@@ -13,7 +13,7 @@ class ChatInput extends Component {
             <div className="ChatInput">
                 <input className="chat-input" placeholder="Write a message..." maxLength="200" onKeyDown={this.onInputKeyDown}/>
                 <button className="chat-send-button" onClick={this.sendMessage}>
-                    <span class="material-icons">send</span>
+                    <span className="material-icons">send</span>
                 </button>
             </div>
         )

@@ -5,7 +5,6 @@ import io from "socket.io-client";
 import './App.css';
 
 import Home from './page/Home/Home.js';
-import games from "./data/games.json"
 import Game from './page/Game/Game';
 import UsernamePrompt from './component/UsernamePrompt/UsernamePrompt';
 
