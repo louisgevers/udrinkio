@@ -270,6 +270,8 @@ function disconnectUser(socket) {
             socket.session.state = 'none'
           })
         })
+        // Remove room id
+        roomIdsSet.delete(roomId)
       } else {
         // Remove user from room data and notify users
         room.data.users.delete(userId)
@@ -289,11 +291,16 @@ function disconnectUser(socket) {
 
 // ### HELPER METHODS ###
 
+const roomIdsSet = new Set()
 function generateRoomId() {
   const min = 100000
   const max = 999999
-  // TODO conflicitng room ids
-  return Math.floor(Math.random() * (max - min + 1)) + min
+  var roomId = 0
+  do {
+    roomId = Math.floor(Math.random() * (max - min + 1)) + min
+  } while (roomIdsSet.has(roomId))
+  roomIdsSet.add(roomId) 
+  return roomId
 }
 
 function getRoom(id) {
