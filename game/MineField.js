@@ -62,7 +62,7 @@ module.exports = class MineField {
 
     disconnect = (userId) => {
         this.queue.remove((user) => {return user.userId === userId})
-        this.state.users = this.state.users.delete(userId)
+        this.state.users.delete(userId)
         this.state.playingUser = this.queue.peek()
     }
 

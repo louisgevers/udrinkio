@@ -119,14 +119,13 @@ io.on('connection', (socket) => {
       // Update room information
       room.data.users.set(session.userId, session.username)
       room.data.sockets.set(session.userId, socket)
-      // Inform user
-      if (room.data.state === 'lobby') {
-        const lobbyData = getLobbyData(session)
-        socket.emit('state.lobby', lobbyData)
-      } else if (room.data.state === 'game') {
-        // TODO update gameobject info
-        const gameData = {}
-        socket.emit('state.game', gameData)
+    // Inform user
+      const lobbyData = getLobbyData(session)
+      socket.emit('state.lobby', lobbyData)
+      if (room.data.state === 'game' && typeof room.data.gameObject !== 'undefined') {
+        const gameObject = room.data.gameObject
+        gameObject.connect({userId: session.userId, username: session.username})
+        socket.emit('game.started', gameObject.generateState())
       }
       // Inform room
       const users = createUsersJson(room.data.users)

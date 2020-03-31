@@ -138,6 +138,7 @@ class App extends Component {
       })
 
       this.socket.on('disconnect', () => {
+        this.props.history.push('/')
         alert('Connection with server has been interrupted')
       })
 
