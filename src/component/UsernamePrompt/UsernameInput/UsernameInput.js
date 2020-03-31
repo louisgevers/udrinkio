@@ -7,7 +7,7 @@ class UsernameInput extends Component {
         this.randomName = () => {
             const firstName = names1[Math.floor(Math.random() * names1.length)]
             const secondName = names2[Math.floor(Math.random() * names2.length)]
-            return firstName + secondName
+            return `${firstName} ${secondName}`
         }
         this.setRandomName = () => {
             this.input.value = ""

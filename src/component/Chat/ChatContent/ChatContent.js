@@ -23,9 +23,9 @@ class ChatContent extends Component {
                                 message={chatMessage.message} 
                             />
                         } else if (chatMessage.type === "info") {
-                            return <span className="InfoMessage">{chatMessage.message}</span>
+                            return <span key={index} className="InfoMessage">{chatMessage.message}</span>
                         } else {
-                            return <span>{chatMessage}</span>
+                            return <span key={index}>{chatMessage}</span>
                         }
                         
                     })}
@@ -35,47 +35,14 @@ class ChatContent extends Component {
     }
 
     componentWillUnmount = () => {
-        this.socket.removeListener('chat.receivedMessage', this.receivedMessageFn)
-        this.socket.removeListener('chat.userJoined', this.userJoinedFn)
-        this.socket.removeListener('chat.userDisconnected', this.userDisconnectedFn)
-        this.socket.removeListener('chat.userRemoved', this.userRemovedFn)
+        this.socket.off('chat.receivedMessage')
+        this.socket.off('chat.info')
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         this.socket = this.props.socket
-        this.socket.on('chat.receivedMessage', this.receivedMessageFn)
-        this.socket.on('chat.userJoined', this.userJoinedFn)
-        this.socket.on('chat.userDisconnected', this.userDisconnectedFn)
-        this.socket.on('chat.userRemoved', this.userRemovedFn)
-    }
-
-    receivedMessageFn = (chatMessage) => {
-        chatMessage.type = "chat"
-        this.addMessage(chatMessage)
-    }
-
-    userJoinedFn = (username) => {
-        const chatMessage = {
-            type: "info",
-            message: `${username} joined the room`
-        }
-        this.addMessage(chatMessage)
-    }
-
-    userDisconnectedFn = (username) => {
-        const chatMessage = {
-            type: "info",
-            message: `${username} disconnected`
-        }
-        this.addMessage(chatMessage)
-    }
-
-    userRemovedFn = (data) => {
-        const chatMessage = {
-            type: "info",
-            message: `${data.host} removed ${data.username}`
-        }
-        this.addMessage(chatMessage)
+        this.socket.on('chat.receivedMessage', this.addMessage)
+        this.socket.on('chat.info', this.addMessage)
     }
 
     addMessage = (chatMessage) => {

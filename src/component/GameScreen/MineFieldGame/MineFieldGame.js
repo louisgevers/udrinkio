@@ -18,7 +18,7 @@ class MineFieldGame extends Component {
 
     componentDidMount = () => {
         // pixi.js
-        this.app = new Application({resizeTo: this.gameCanvas, backgroundColor: this.getHexadecimalColor(this.props.game.primaryColor)})
+        this.app = new Application({resizeTo: this.gameCanvas, backgroundColor: this.getHexadecimalColor(this.props.session.game.primaryColor)})
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
         this.setup()
@@ -63,7 +63,7 @@ class MineFieldGame extends Component {
     }
 
     isUsersTurn = () => {
-        return this.props.userGameId === this.gameState.playingUser.userId
+        return this.gameState.playingUser.userId === this.props.session.userId
     }
 
     // ###################
