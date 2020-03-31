@@ -307,24 +307,37 @@ function disconnectUser(socket) {
       const userId = socket.session.userId
       // Check if host
       if (userId === room.data.host) {
-        // Notify users
-        const hostName = room.data.users.get(room.data.host)
-        socket.broadcast.to(roomId).emit('room.hostDisconnected', hostName)
-        // Remove listeners to room
-        io.in(roomId).clients((err, socketIds) => {
-          if (err) throw err
-          socketIds.forEach((socketId) => {
-            const socket = io.sockets.sockets[socketId]
-            socket.leave(roomId)
-            delete socket.session.username
-            delete socket.session.roomId
-            delete socket.session.userId
-            socket.session.state = 'none'
-          })
-        })
-        // Remove room id
-        roomIdsSet.delete(roomId)
-      } else {
+        if (room.data.users.size > 1) {
+          const userIds = room.data.users.keys()
+          console.log(userIds)
+          for (var otherId of userIds) {
+            if (otherId !== room.data.host) {
+              room.data.host = otherId
+              break
+            }
+          }
+        } else {
+          roomIdsSet.delete(roomId)
+        }
+        // ### CODE TO DISCONNECT USERS IF HOST DISCONNECTS
+        // // Notify users
+        // const hostName = room.data.users.get(room.data.host)
+        // socket.broadcast.to(roomId).emit('room.hostDisconnected', hostName)
+        // // Remove listeners to room
+        // io.in(roomId).clients((err, socketIds) => {
+        //   if (err) throw err
+        //   socketIds.forEach((socketId) => {
+        //     const socket = io.sockets.sockets[socketId]
+        //     socket.leave(roomId)
+        //     delete socket.session.username
+        //     delete socket.session.roomId
+        //     delete socket.session.userId
+        //     socket.session.state = 'none'
+        //   })
+        // })
+        // // Remove room id
+        // roomIdsSet.delete(roomId)
+      }
         // Remove user from room data and notify users
         room.data.users.delete(userId)
         room.data.sockets.delete(userId)
@@ -333,9 +346,12 @@ function disconnectUser(socket) {
           gameObject.disconnect(userId)
           socket.broadcast.to(roomId).emit('game.userDisconnected', gameObject.generateState())
         }
-        const users = createUsersJson(room.data.users)
-        socket.broadcast.to(roomId).emit('room.userDisconnected', users)
-      }
+        const data = {
+          users: createUsersJson(room.data.users),
+          host: room.data.host
+        }
+        socket.broadcast.to(roomId).emit('room.userDisconnected', data)
+      
       // Update socket info
       socket.leave(roomId)
       delete socket.session.username
