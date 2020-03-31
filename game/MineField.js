@@ -43,7 +43,7 @@ module.exports = class MineField {
     }
 
     isOver = () => {
-        return this.counter === 0
+        return this.counter <= 0
     }
 
     isTurn = (user) => {

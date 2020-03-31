@@ -39,6 +39,13 @@ class Game extends Component {
                 gameState: gameState
             })
         })
+        this.socket.on('game.isOver', () => {
+            this.socket.emit('state.get')
+            // this.setState({
+            //     play: false,
+            //     gameState: null
+            // })
+        })
     }
 
     componentWillUnmount() {

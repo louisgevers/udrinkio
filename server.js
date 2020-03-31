@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
     const session = socket.session
     session.username = username
     session.roomId = roomId
-    session.userId = 0
+    session.userId = uuidv4()
     session.state = 'lobby'
     // Update room information
     const room = getRoom(roomId)
@@ -114,7 +114,7 @@ io.on('connection', (socket) => {
       const session = socket.session
       session.username = username
       session.roomId = roomId
-      session.userId = room.data.users.size
+      session.userId = uuidv4()
       session.state = room.data.state
       // Update room information
       room.data.users.set(session.userId, session.username)
@@ -224,6 +224,11 @@ io.on('connection', (socket) => {
         if (gameObject.isTurn(user) && gameObject.drawCard(data.row, data.column)) {
           gameObject.nextTurn()
           io.to(roomId).emit('minefield.drawnCard', gameObject.generateState())
+          if (gameObject.isOver()) {
+            room.data.state = 'lobby'
+            delete room.data.gameObject
+            io.to(roomId).emit('state.lobby', getLobbyData(socket.session))
+          }
         }
       }
     }
