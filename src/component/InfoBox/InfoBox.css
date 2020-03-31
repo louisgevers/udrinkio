@@ -1,0 +1,29 @@
+.InfoBox .help-button {
+    margin: 10px;
+}
+
+.InfoBox .help-button, .InfoBox .close-button {
+    background: transparent;
+    color: white;
+    border: none;
+}
+
+.InfoBox .help-button:focus, .InfoBox .close-button:focus {
+    outline: none;
+}
+
+.InfoBox .help-button:active, .InfoBox .close-button:active {
+    color: #aaaaaa;
+}
+
+.InfoBox .info-container {
+    background: rgba(0, 0, 0, 0.9);
+    color: #cccccc;
+    padding: 10px;
+    display: none;
+}
+
+.InfoBox .info-container p {
+    margin: 0;
+    padding: 10px;
+}

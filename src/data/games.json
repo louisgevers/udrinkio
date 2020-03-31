@@ -8,7 +8,8 @@
         "primaryColor": "#6D534B",
         "primaryDark": "#5C4944",
         "secondaryColor": "#EEB711",
-        "settings": []
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "horserace",
@@ -19,7 +20,8 @@
         "primaryColor": "#3FA2BE",
         "primaryDark": "#3B8194",
         "secondaryColor": "#FC0F3B",
-        "settings": []
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "kingcup",
@@ -30,7 +32,8 @@
         "primaryColor": "#FC0F3B",
         "primaryDark": "#C01A38",
         "secondaryColor": "#3FA2BE",
-        "settings": []
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "triviaquizz",
@@ -41,7 +44,8 @@
         "primaryColor": "#EEB711",
         "primaryDark": "#B68F1B",
         "secondaryColor": "#6D534B",
-        "settings": []
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "minefield",
@@ -78,6 +82,7 @@
                     }
                 ]
             }
-        ]
+        ],
+        "info": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     }
 ]

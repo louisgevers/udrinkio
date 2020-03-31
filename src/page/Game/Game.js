@@ -5,6 +5,7 @@ import Chat from "../../component/Chat/Chat"
 import GameScreen from "../../component/GameScreen/GameScreen"
 import GameSettingsPrompt from "../../component/GameSettingsPrompt/GameSettingsPrompt"
 import GameOverPrompt from "../../component/GameOverPrompt/GameOverPrompt"
+import InfoBox from "../../component/InfoBox/InfoBox"
 
 class Game extends Component {
 
@@ -28,6 +29,7 @@ class Game extends Component {
                 : 
                 <Lobby session={this.props.session} socket={this.props.socket} onHomeClick={this.props.onHomeClick} onStartClick={this.startGame} />
                 )}
+                <InfoBox info={this.props.session.game.info} />
                 <Chat game={this.props.session.game} socket={this.props.socket} />
             </div>
         )

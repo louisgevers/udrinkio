@@ -6,6 +6,12 @@
     height: 100vh;
 }
 
+.InfoBox {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
 /* Desktop */
 @media only screen and (min-width: 800px) {
     
@@ -22,6 +28,10 @@
         float: left;
         clear: right;
         width: 25%;
+    }
+
+    .InfoBox {
+        max-width: 50%;
     }
 
 }
