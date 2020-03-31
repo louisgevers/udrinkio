@@ -203,9 +203,7 @@ io.on('connection', (socket) => {
         if (typeof data.value === 'number') {
           const gameObject = new MineField(gridSize, room.data.users)
           room.data.gameObject = gameObject
-          const gameState = gameObject.state
-          gameState.users = createUsersJson(gameState.users)
-          io.to(roomId).emit('game.started', gameState)
+          io.to(roomId).emit('game.started', gameObject.generateState())
           room.data.state = 'game'
           room.data.sockets.forEach((playingSocket) => {
             playingSocket.session.state = 'game'
@@ -226,7 +224,7 @@ io.on('connection', (socket) => {
         const user = {userId: socket.session.userId, username: socket.session.username}
         if (gameObject.isTurn(user) && gameObject.drawCard(data.row, data.column)) {
           gameObject.nextTurn()
-          io.to(roomId).emit('minefield.drawnCard', gameObject.state)
+          io.to(roomId).emit('minefield.drawnCard', gameObject.generateState())
         }
       }
     }
@@ -315,6 +313,11 @@ function disconnectUser(socket) {
         // Remove user from room data and notify users
         room.data.users.delete(userId)
         room.data.sockets.delete(userId)
+        if (room.data.state === 'game' && typeof room.data.gameObject !== 'undefined') {
+          const gameObject = room.data.gameObject
+          gameObject.disconnect(userId)
+          socket.broadcast.to(roomId).emit('game.userDisconnected', gameObject.generateState())
+        }
         const users = createUsersJson(room.data.users)
         socket.broadcast.to(roomId).emit('room.userDisconnected', users)
       }

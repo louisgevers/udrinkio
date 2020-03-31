@@ -57,16 +57,21 @@ module.exports = class MineField {
 
     connect = (user) => {
         this.queue.enqueue(user)
-        this.state.users.push(user)
+        this.state.users.set(user.userId, user.username)
     }
 
-    disconnect = (user) => {
-        this.queue.remove(user)
-        const index = this.state.users.indexOf(user)
-        if (index > -1) {
-            this.state.users.splice(index, 1);
-        }
+    disconnect = (userId) => {
+        this.queue.remove((user) => {return user.userId === userId})
+        this.state.users = this.state.users.delete(userId)
         this.state.playingUser = this.queue.peek()
+    }
+
+    generateState = () => {
+        return {
+            table: this.state.table,
+            users: JSON.stringify(Array.from(this.state.users)),
+            playingUser: this.state.playingUser
+        }
     }
 
 }
@@ -97,11 +102,8 @@ class Queue {
         }
     }
 
-    remove = (item) => {
-        const index = this.items.indexOf(item)
-        if (index > -1) {
-            this.item.splice(index, 1);
-        }
+    remove = (filter) => {
+        this.items = this.items.filter((user) => {return !filter(user)})
     }
 
     isEmpty = () => {
