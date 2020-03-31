@@ -1,0 +1,17 @@
+.GameOverPrompt .game-over-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.GameOverPrompt .game-over-buttons button {
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px 0;
+    width: 200px;
+}
+
+.GameOverPrompt .game-over-buttons button:active {
+    border: none;
+    color: black;
+}

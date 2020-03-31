@@ -4,6 +4,7 @@ import Lobby from "../../component/Lobby/Lobby"
 import Chat from "../../component/Chat/Chat"
 import GameScreen from "../../component/GameScreen/GameScreen"
 import GameSettingsPrompt from "../../component/GameSettingsPrompt/GameSettingsPrompt"
+import GameOverPrompt from "../../component/GameOverPrompt/GameOverPrompt"
 
 class Game extends Component {
 
@@ -12,7 +13,8 @@ class Game extends Component {
         this.state = {
             play: false,
             settingsPrompt: false,
-            gameState: null
+            gameState: null,
+            gameOverPrompt: false
         }
     }
 
@@ -20,6 +22,7 @@ class Game extends Component {
         return (
             <div className="Game">
                 {(this.state.settingsPrompt && <GameSettingsPrompt game={this.props.session.game} onOptionChosen={this.onOptionChosen} onClose={() => this.setState({settingsPrompt: false})} />)}
+                {(this.state.gameOverPrompt && <GameOverPrompt game={this.props.session.game} onPlayAgain={this.playAgain} onHome={this.props.onHomeClick} />)}
                 {(this.state.play ? 
                 <GameScreen session={this.props.session} gameState={this.state.gameState} socket={this.props.socket} />
                 : 
@@ -36,20 +39,20 @@ class Game extends Component {
             gameState.users = new Map(JSON.parse(gameState.users))
             this.setState({
                 play: true,
-                gameState: gameState
+                gameState: gameState,
+                gameOverPrompt: false
             })
         })
         this.socket.on('game.isOver', () => {
-            this.socket.emit('state.get')
-            // this.setState({
-            //     play: false,
-            //     gameState: null
-            // })
+            this.setState({
+                gameOverPrompt: true
+            })
         })
     }
 
     componentWillUnmount() {
         this.socket.off('game.started')
+        this.socket.off('game.isOver')
     }
 
     onOptionChosen = (name, value) => {
@@ -67,6 +70,15 @@ class Game extends Component {
         this.setState({
             settingsPrompt: true
         })
+    }
+
+    playAgain = () => {
+        this.setState({
+            gameOverPrompt: false,
+            gameState: null,
+            play: false
+        })
+        this.socket.emit('game.playAgain')
     }
 }
 

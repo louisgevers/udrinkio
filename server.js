@@ -214,6 +214,17 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('game.playAgain', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      if (room.data.state === 'lobby') {
+        const lobbyData = getLobbyData(socket.session)
+        socket.emit('state.lobby', lobbyData)
+      }
+    }
+  })
+
   socket.on('minefield.drawCard', (data) => {
     const roomId = socket.session.roomId
     const room = getRoom(roomId)
@@ -227,7 +238,7 @@ io.on('connection', (socket) => {
           if (gameObject.isOver()) {
             room.data.state = 'lobby'
             delete room.data.gameObject
-            io.to(roomId).emit('state.lobby', getLobbyData(socket.session))
+            io.to(roomId).emit('game.isOver')
           }
         }
       }
