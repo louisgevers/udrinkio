@@ -11,7 +11,6 @@ module.exports = class MineField {
         })
         this.state = {
             table: this.generateTable(this.n),
-            users: users,
             playingUser: this.queue.peek()
         }
         this.counter = this.n ** 2
@@ -57,21 +56,32 @@ module.exports = class MineField {
 
     connect = (user) => {
         this.queue.enqueue(user)
-        this.state.users.set(user.userId, user.username)
     }
 
     disconnect = (userId) => {
         this.queue.remove((user) => {return user.userId === userId})
-        this.state.users.delete(userId)
         this.state.playingUser = this.queue.peek()
     }
 
     generateState = () => {
         return {
             table: this.state.table,
-            users: JSON.stringify(Array.from(this.state.users)),
-            playingUser: this.state.playingUser
+            users: JSON.stringify(Array.from(this.toUsers())),
+            playingUser: this.state.playingUser,
+            order: this.createOrder()
         }
+    }
+
+    toUsers = () => {
+        const users = new Map()
+        this.queue.items.forEach((user) => {
+            users.set(user.userId, user.username)
+        })
+        return users
+    }
+
+    createOrder = () => {
+        return this.queue.items.map((user) => { return user.userId })
     }
 
 }
@@ -103,7 +113,7 @@ class Queue {
     }
 
     remove = (filter) => {
-        this.items = this.items.filter((user) => {return !filter(user)})
+        this.items = this.items.filter((item) => {return !filter(item)})
     }
 
     isEmpty = () => {

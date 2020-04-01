@@ -13,7 +13,7 @@ class MineFieldGame extends Component {
 
     constructor(props) {
         super(props)
-        this.onNewGameState(this.props.gameState)
+        this.gameState = this.props.gameState
     }
 
     componentDidMount = () => {
@@ -22,6 +22,10 @@ class MineFieldGame extends Component {
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
         this.setup()
+    }
+
+    cardsAreSetup = () => {
+        this.onNewGameState(this.props.gameState)
         // socket.io
         this.props.socket.on('minefield.drawnCard', this.onNewGameState)
         this.props.socket.on('game.userDisconnected', this.onNewGameState)
@@ -44,10 +48,9 @@ class MineFieldGame extends Component {
 
     onNewGameState = (gameState) => {
         this.gameState = gameState
+        this.gameState.users = new Map(JSON.parse(gameState.users))
         this.updateCardSprites()
-        if (this.isUsersTurn()) {
-            alert('Your turn to play! Pick a card.')
-        }
+        this.updateUserDisplay()
     }
 
     onCardClicked = (i, j, cardName) => {
@@ -60,6 +63,19 @@ class MineFieldGame extends Component {
         } else {
             alert('Not your turn yet')
         }
+    }
+
+    updateUserDisplay = () => {
+        if (this.isUsersTurn()) {
+            this.userDisplay.text = 'Your turn!'
+            this.isPlayingDisplay.text = ''
+        } else {
+            const username = this.gameState.playingUser.username
+            this.userDisplay.text = `${username}`
+            this.isPlayingDisplay.text = ' is playing...'
+        }
+        this.userDisplay.x = (this.app.renderer.width / 2) - (this.userDisplay.width / 2) - (this.isPlayingDisplay.width / 2)
+        this.isPlayingDisplay.x = (this.app.renderer.width / 2) - (this.isPlayingDisplay.width / 2) + (this.userDisplay.width / 2)
     }
 
     isUsersTurn = () => {
@@ -78,6 +94,7 @@ class MineFieldGame extends Component {
             return {name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
         .load(this.initCardSprites)
+        this.initUserDisplay()
         window.addEventListener('resize', this.resizeCardSprites)
     }
 
@@ -107,6 +124,25 @@ class MineFieldGame extends Component {
             this.spriteTable.push(spriteRow)
         })
         this.resizeCardSprites()
+        this.cardsAreSetup()
+    }
+
+    initUserDisplay = () => {
+        this.userDisplay = new Pixi.Text()
+        this.isPlayingDisplay = new Pixi.Text()
+        this.userDisplay.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fill: this.props.session.game.secondaryColor,
+            fontWeight: 'bold'
+        }
+        this.isPlayingDisplay.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fill: 'white'
+        }
+        this.userDisplay.y = 50
+        this.isPlayingDisplay.y = 50
+        this.app.stage.addChild(this.userDisplay)
+        this.app.stage.addChild(this.isPlayingDisplay)
     }
 
     resizeCardSprites = () => {
@@ -117,7 +153,7 @@ class MineFieldGame extends Component {
                 const scale = (0.8 * this.app.renderer.height / n) / card.height
                 card.width = scale * card.width
                 card.height = scale * card.height
-                const centerOffsetY = (this.app.renderer.height - (n * card.height + (n - 1) * gap)) / 2
+                const centerOffsetY = (this.app.renderer.height - (n * card.height + (n - 1) * gap)) / 2 + 30
                 const centerOffsetX = (this.app.renderer.width - (n * card.width + (n - 1) * gap)) / 2
                 card.y = i * (card.height + gap) + centerOffsetY
                 card.x = j * (card.width + gap) + centerOffsetX

@@ -309,7 +309,6 @@ function disconnectUser(socket) {
       if (userId === room.data.host) {
         if (room.data.users.size > 1) {
           const userIds = room.data.users.keys()
-          console.log(userIds)
           for (var otherId of userIds) {
             if (otherId !== room.data.host) {
               room.data.host = otherId

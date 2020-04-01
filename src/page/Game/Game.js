@@ -38,7 +38,6 @@ class Game extends Component {
     componentDidMount() {
         this.socket = this.props.socket
         this.socket.on('game.started', (gameState) => {
-            gameState.users = new Map(JSON.parse(gameState.users))
             this.setState({
                 play: true,
                 gameState: gameState,
