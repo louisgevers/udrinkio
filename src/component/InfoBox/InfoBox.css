@@ -23,7 +23,7 @@
     display: none;
 }
 
-.InfoBox .info-container p {
+.InfoBox .info-content {
     margin: 0;
     padding: 10px;
 }

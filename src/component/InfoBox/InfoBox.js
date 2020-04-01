@@ -7,20 +7,26 @@ class InfoBox extends Component {
         super(props)
         this.infoContainer = React.createRef()
         this.helpButton = React.createRef()
+        // this.infoContentComponent = React.lazy(() => import('../InfoBox/InfoContents/MineFieldInfo.js'))
     }
 
     render() {
+        console.log(this.props.infoComponent)
+        const InfoComponent = typeof this.props.infoComponent !== 'undefined' ? require(`../InfoBox/InfoContents/${this.props.infoComponent}`).default : require(`../InfoBox/InfoContents/EmptyInfo.js`).default
         return (
             <div className='InfoBox'>
                 <div ref={this.infoContainer} className='info-container'>
-                    <p>{this.props.info}</p>
-                    <button class='close-button' onClick={this.hideInfo}>
+                    {
+                        (typeof InfoComponent !== 'undefined') &&
+                            <InfoComponent></InfoComponent>
+                    }
+                    <button className='close-button' onClick={this.hideInfo}>
                         <span className='material-icons'>
                             close
                         </span>
                     </button>
                 </div>
-                <button ref={this.helpButton} class='help-button' onClick={this.displayInfo}>
+                <button ref={this.helpButton} className='help-button' onClick={this.displayInfo}>
                     <span className='material-icons'>
                         help
                     </span>

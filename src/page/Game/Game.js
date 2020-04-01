@@ -29,7 +29,7 @@ class Game extends Component {
                 : 
                 <Lobby session={this.props.session} socket={this.props.socket} onHomeClick={this.props.onHomeClick} onStartClick={this.startGame} />
                 )}
-                <InfoBox info={this.props.session.game.info} />
+                <InfoBox infoComponent={this.props.session.game.infoComponent} />
                 <Chat game={this.props.session.game} socket={this.props.socket} />
             </div>
         )
