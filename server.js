@@ -4,7 +4,7 @@ const app = express()
 const http = require('http').createServer(app)
 var io = require('socket.io').listen(http)
 const {v4: uuidv4 } = require('uuid')
-
+const MineField = require('./game/MineField.js')
 
 app.use(express.static(path.join(__dirname, 'build')))
 
@@ -12,212 +12,375 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
-// ### SOCKET ABSTRACTED METHODS ###
+// ### SOCKET IO ###
+var connectionsCount = 0
 
-createRoom = (socket, username, game) => {
-  const roomId = generateRoomId()
-  socket.data.username = username
-  socket.data.roomId = roomId
+io.on('connection', (socket) => {
+  connectionsCount += 1
+  console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
+  socket.session = {}
 
-  socket.join(roomId)
+  socket.on('app.connect', () => {
+    socket.session = {}
+    socket.emit('app.connected')
+  })
 
-  const room = getRoom(roomId)
-  room.data = {
-    game: game,
-    host: socket.id,
-    members: new Map()
-  }
+  socket.on('state.get', () => {
+    const session = socket.session
+    if (typeof session !== 'undefined') {
+      // Check if state is defined
+      if (typeof session.state === 'undefined') {
+        session.state = 'none'
+      }
+      if (session.state === 'lobby') {
+        // Return lobby info if user is in lobby
+        const room = getRoom(session.roomId)
+        if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+          const lobbyData = getLobbyData(session)
+          socket.emit('state.lobby', lobbyData)
+        }
+      } else if (session.state === 'game') {
+        // Return game info if user is in game
+        const gameData = {
+          // TODO
+        }
+        socket.emit('state.game', gameData)
+      } else {
+        // Return no state if not matching
+        socket.emit('state.none')
+      }
+    }
+  })
 
-  memberData = {
-    username: username,
-    userId: 0
-  }
-  room.data.members.set(socket.id, memberData)
+  socket.on('room.create', (data) => {
+    // Data variables
+    const game = data.game
+    const username = data.username
+    if (typeof game !== 'undefined' && typeof username !== 'undefined') {
+      // Create room
+    const roomId = generateRoomId()
+    socket.join(roomId)
+    // Update socket information
+    if (typeof socket.session === 'undefined') {
+      socket.session = {}
+    }
+    const session = socket.session
+    session.username = username
+    session.roomId = roomId
+    session.userId = uuidv4()
+    session.state = 'lobby'
+    // Update room information
+    const room = getRoom(roomId)
+    const roomData = {
+      game: game,
+      host: session.userId,
+      state: 'lobby',
+      users: new Map(),
+      sockets: new Map()
+    }
+    roomData.users.set(session.userId, session.username)
+    roomData.sockets.set(session.userId, socket)
+    room.data = roomData
+    // Inform user
+    const lobbyData = getLobbyData(session)
+    socket.emit('state.lobby', lobbyData)
+    }
+  })
 
+  socket.on('room.available', (data) => {
+    const roomId = data.roomId
+    if (isRoomAvailable(socket, roomId)) {
+      const room = getRoom(roomId)
+      const users = createUsersJson(room.data.users)
+      const lobbyData = {
+        roomId: roomId,
+        game: room.data.game,
+        users: users,
+        host: room.data.host
+      }
+      socket.emit('room.isAvailable', lobbyData)
+    }
+  })
+
+  socket.on('room.join', (data) => {
+    // Retrieve data
+    const username = data.username
+    const roomId = data.roomId
+    if (isRoomAvailable(socket, roomId)) {
+      // Join room
+      socket.join(roomId)
+      const room = getRoom(roomId)
+      // Update socket information
+      const session = socket.session
+      session.username = username
+      session.roomId = roomId
+      session.userId = uuidv4()
+      session.state = room.data.state
+      // Update room information
+      room.data.users.set(session.userId, session.username)
+      room.data.sockets.set(session.userId, socket)
+    // Inform user
+      const lobbyData = getLobbyData(session)
+      socket.emit('state.lobby', lobbyData)
+      if (room.data.state === 'game' && typeof room.data.gameObject !== 'undefined') {
+        const gameObject = room.data.gameObject
+        gameObject.connect({userId: session.userId, username: session.username})
+        socket.emit('game.started', gameObject.generateState())
+      }
+      // Inform room
+      const users = createUsersJson(room.data.users)
+      socket.broadcast.to(roomId).emit('room.userJoined', users)
+      const chatInfo = {
+        type: 'info',
+        message: `${username} joined the room`
+      }
+      io.to(roomId).emit('chat.info', chatInfo)
+    }
+  })
+
+  socket.on('room.quit', () => {
+    notifyUserDisconnected(socket)
+    disconnectUser(socket)
+    socket.emit('state.none')
+  })
+
+  socket.on('room.removeUser', (data) => {
+    const userId = data.userId
+    const room = getRoom(socket.session.roomId)
+    // Check if room exists
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      // Check if host is trying to remove
+      const isHost = (socket === room.data.sockets.get(room.data.host))
+      if (isHost) {
+        // Disconnect the user socket
+        const toRemoveSocket = room.data.sockets.get(userId)
+        if (typeof toRemoveSocket !== 'undefined') {
+          // Collect info
+          const hostName = room.data.users.get(room.data.host)
+          const chatInfo = {
+            type: 'info',
+            message: `${hostName} has removed ${toRemoveSocket.session.username}`
+          }
+          // Disconnect
+          disconnectUser(toRemoveSocket)
+          // Notify user
+          toRemoveSocket.emit('room.removed', hostName)
+          // Notify room
+          io.to(socket.session.roomId).emit('chat.info', chatInfo)
+        }
+      }
+    }
+  })
+
+  socket.on('chat.sendMessage', (data) => {
+    // Get message
+    const message = data.message
+    const roomId = socket.session.roomId
+    if (typeof roomId !== 'undefined') {
+      // Create chat message data
+      const chatMessage = {
+        type: 'chat',
+        message: message,
+        isSender: true,
+        username: socket.session.username
+      }
+      // Emit to sender
+      socket.emit('chat.receivedMessage', chatMessage)
+      // Emit to rest of room
+      chatMessage.isSender = false
+      socket.broadcast.to(roomId).emit('chat.receivedMessage', chatMessage)
+    }
+  })
+
+  socket.on('game.start', (data) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof data !== 'undefined') {
+      const gameId = room.data.game.id
+      if (gameId === 'minefield') {
+        const gridSize = data.value
+        if (typeof data.value === 'number') {
+          const gameObject = new MineField(gridSize, room.data.users)
+          room.data.gameObject = gameObject
+          io.to(roomId).emit('game.started', gameObject.generateState())
+          room.data.state = 'game'
+          room.data.sockets.forEach((playingSocket) => {
+            playingSocket.session.state = 'game'
+          })
+        }
+      } else {
+        // TODO implement other games here
+      }
+    }
+  })
+
+  socket.on('game.playAgain', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      if (room.data.state === 'lobby') {
+        const lobbyData = getLobbyData(socket.session)
+        socket.emit('state.lobby', lobbyData)
+      }
+    }
+  })
+
+  socket.on('minefield.drawCard', (data) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const user = {userId: socket.session.userId, username: socket.session.username}
+        if (gameObject.isTurn(user) && gameObject.drawCard(data.row, data.column)) {
+          gameObject.nextTurn()
+          io.to(roomId).emit('minefield.drawnCard', gameObject.generateState())
+          if (gameObject.isOver()) {
+            room.data.state = 'lobby'
+            delete room.data.gameObject
+            io.to(roomId).emit('game.isOver')
+          }
+        }
+      }
+    }
+  })
+
+  socket.on('disconnect', () => { 
+    connectionsCount -= 1
+    console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
+    notifyUserDisconnected(socket)
+    disconnectUser(socket)
+  })
+})
+
+// ### ABSTRACT SOCKET METHODS ###
+
+function getLobbyData(session) {
+  const room = getRoom(session.roomId)
+  const users = createUsersJson(room.data.users)
   return {
-    users: generateUsersData(room.data),
-    isHost: true,
-    roomId: roomId
-  }
-}
-
-joinRoom = (socket, username, roomId, room) => {
-  socket.data.username = username
-  socket.data.roomId = roomId
-  socket.join(roomId)
-  
-  memberData = {
-    username: username,
-    userId: room.data.members.size
-  }
-
-  room.data.members.set(socket.id, memberData)
-
-  const users = generateUsersData(room.data)
-  socket.broadcast.to(roomId).emit('room.newUser', users)
-  return {
+    userId: session.userId,
+    roomId: session.roomId,
+    game: room.data.game,
     users: users,
-    isHost: false,
-    roomId: roomId,
-    game: room.data.game
+    host: room.data.host
   }
 }
 
-canConnectToRoom = (socket, roomId, room) => {
-  if (!isValidRoomCode(roomId)) {
-    socket.emit('room.unavailable', 'Invalid room code!')
+function isRoomAvailable(socket, roomId) {
+  if (typeof roomId !== 'undefined' && !isValidRoomCode(roomId)) {
+    socket.emit('room.unavailable', 'Invalid room code')
     return false
-  } else if (room == null) {
-    socket.emit('room.unavailable', 'This room does not exist!')
+  }
+  const room = getRoom(roomId)
+  if (typeof room === 'undefined' || typeof room.data === 'undefined') {
+    socket.emit('room.unavailable', 'Room does not exist')
+    return false
+  } else if (room.data.users.size >= room.data.game.maxPlayers) {
+    socket.emit('room.unavailable', `Room is full (${room.data.users.size}/${room.data.game.maxPlayers})`)
     return false
   } else {
     return true
   }
 }
 
-disconnectUser = (socket, room) => {
-  if (room.data.host === socket.id) {
-    socket.broadcast.to(socket.data.roomId).emit('room.hostDisconnected', socket.data.username)
-    io.in(socket.data.roomId).clients((error, socketIds) => {
-      if (error) throw error
-      socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(socket.data.roomId))
-    })
-  } else {
-    delete room.data.members.delete(socket.id)
-    const users = generateUsersData(room.data)
-    socket.broadcast.to(socket.data.roomId).emit('room.userDisconnected', users)
+function notifyUserDisconnected(socket) {
+  if (typeof socket.session !== 'undefined') {
+    const roomId = socket.session.roomId
+    if (typeof roomId !== 'undefined') {
+      const chatInfo = {
+        type: 'info',
+        message: `${socket.session.username} disconnected`
+      }
+      io.to(roomId).emit('chat.info', chatInfo)
+    }
   }
-  socket.leave(socket.data.roomId)
-  delete socket.data.roomId
 }
 
-// ### SOCKET IO ###
-var connectionsCount = 0
-io.on('connection', (socket) => {
-  connectionsCount += 1
-  console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
-
-  socket.on('app.addUser', () => {
-    // TODO persist ID or reconnect socket
-    const id = uuidv4()
-    socket.data = {
-      userId: id
-    }
-    socket.emit('app.userAdded', (id))
-  })
-
-  socket.on('room.create', (data) => {
-    const username = data.username
-    const game = data.game
-    socket.emit('room.created', createRoom(socket, username, game))
-    socket.emit('chat.userJoined', username)
-  })
-
-  socket.on('room.availability', (roomId) => {
+function disconnectUser(socket) {
+  // Check if session is initialized
+  if (typeof socket.session !== 'undefined') {
+    // Check if room is initialized
+    const roomId = socket.session.roomId
     const room = getRoom(roomId)
-    if (canConnectToRoom(socket, roomId, room)) {
-      socket.emit('room.available', {
-        game: room.data.game,
-        isHost: false,
-        users: generateUsersData(room.data),
-        roomId: roomId
-      })
-    }
-  })
-
-  socket.on('room.join', (data) => {
-    const roomId = data.roomId
-    const username = data.username
-    const room = getRoom(roomId)
-    if (canConnectToRoom(socket, roomId, room)) {
-      socket.emit('room.joined', joinRoom(socket, username, roomId, room))
-      io.to(roomId).emit('chat.userJoined', username)
-    }
-  })
-
-  socket.on('room.quit', () => {
-    const roomId = socket.data.roomId
-    const room = getRoom(roomId)
-    disconnectUser(socket, room)
-    io.to(roomId).emit('chat.userDisconnected', (socket.data.username))
-  })
-
-  socket.on('room.removeUser', (userId) => {
-    const room = getRoom(socket.data.roomId)
-    if (socket.id === room.data.host) {
-      var userSocketId = -1
-      room.data.members.forEach((member, socketId) => {
-        if (member.userId === userId) {
-          userSocketId = socketId
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const userId = socket.session.userId
+      // Check if host
+      if (userId === room.data.host) {
+        if (room.data.users.size > 1) {
+          const userIds = room.data.users.keys()
+          for (var otherId of userIds) {
+            if (otherId !== room.data.host) {
+              room.data.host = otherId
+              break
+            }
+          }
+        } else {
+          roomIdsSet.delete(roomId)
         }
-      })
-      if (userSocketId !== -1) {
-        const userSocket = io.sockets.sockets[userSocketId]
-        disconnectUser(userSocket, room)
-        userSocket.emit('room.userRemoved', socket.data.username)
-        io.to(socket.data.roomId).emit('chat.userRemoved', {
-          host: socket.data.username,
-          username: userSocket.data.username
-        })
+        // ### CODE TO DISCONNECT USERS IF HOST DISCONNECTS
+        // // Notify users
+        // const hostName = room.data.users.get(room.data.host)
+        // socket.broadcast.to(roomId).emit('room.hostDisconnected', hostName)
+        // // Remove listeners to room
+        // io.in(roomId).clients((err, socketIds) => {
+        //   if (err) throw err
+        //   socketIds.forEach((socketId) => {
+        //     const socket = io.sockets.sockets[socketId]
+        //     socket.leave(roomId)
+        //     delete socket.session.username
+        //     delete socket.session.roomId
+        //     delete socket.session.userId
+        //     socket.session.state = 'none'
+        //   })
+        // })
+        // // Remove room id
+        // roomIdsSet.delete(roomId)
       }
+        // Remove user from room data and notify users
+        room.data.users.delete(userId)
+        room.data.sockets.delete(userId)
+        if (room.data.state === 'game' && typeof room.data.gameObject !== 'undefined') {
+          const gameObject = room.data.gameObject
+          gameObject.disconnect(userId)
+          socket.broadcast.to(roomId).emit('game.userDisconnected', gameObject.generateState())
+        }
+        const data = {
+          users: createUsersJson(room.data.users),
+          host: room.data.host
+        }
+        socket.broadcast.to(roomId).emit('room.userDisconnected', data)
+      
+      // Update socket info
+      socket.leave(roomId)
+      delete socket.session.username
+      delete socket.session.roomId
+      delete socket.session.userId
+      socket.session.state = 'none'
     }
-  })
-
-  socket.on('chat.sendMessage', (message) => {
-    const data = {
-      username: socket.data.username,
-      message: message,
-      isSender: false
-    }
-    socket.broadcast.to(socket.data.roomId).emit('chat.receivedMessage', data)
-    data.isSender = true
-    socket.emit('chat.receivedMessage', data)
-  })
-
-  socket.on('disconnect', () => { 
-    connectionsCount -= 1
-    console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)
-    if (typeof socket.data !== 'undefined') {
-      const roomId = socket.data.roomId
-      const room = getRoom(roomId)
-      if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
-        disconnectUser(socket, room)
-        io.to(roomId).emit('chat.userDisconnected', socket.data.username)
-      }
-    }
-  })
-
-})
+  }
+}
 
 // ### HELPER METHODS ###
 
+const roomIdsSet = new Set()
 function generateRoomId() {
   const min = 100000
   const max = 999999
-  // TODO conflicitng room ids
-  return Math.floor(Math.random() * (max - min + 1)) + min
+  var roomId = 0
+  do {
+    roomId = Math.floor(Math.random() * (max - min + 1)) + min
+  } while (roomIdsSet.has(roomId))
+  roomIdsSet.add(roomId) 
+  return roomId
 }
 
 function getRoom(id) {
   return io.sockets.adapter.rooms[id]
 }
 
-function generateUsersData(roomData) {
-  const host = roomData.host
-  const members = roomData.members
-  const users = []
-  var hostIndex = 0
-  index = 0
-  members.forEach((member, socketId) => {
-    if (socketId === host) {
-     hostIndex = index
-    }
-    users.push(member)
-  })
-  return {
-    host: hostIndex,
-    users: users
-  }
+function createUsersJson(users) {
+  return JSON.stringify(Array.from(users))
 }
 
 function isValidRoomCode(roomId) {

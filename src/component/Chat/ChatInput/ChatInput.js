@@ -13,7 +13,7 @@ class ChatInput extends Component {
             <div className="ChatInput">
                 <input className="chat-input" placeholder="Write a message..." maxLength="200" onKeyDown={this.onInputKeyDown}/>
                 <button className="chat-send-button" onClick={this.sendMessage}>
-                    <span class="material-icons">send</span>
+                    <span className="material-icons">send</span>
                 </button>
             </div>
         )
@@ -34,7 +34,7 @@ class ChatInput extends Component {
         // only if message is not empty or not full of spaces
         if (message.length > 0 && message.replace(/\s/g, '').length > 0) {
             input.value = ''
-            this.socket.emit('chat.sendMessage', message)
+            this.socket.emit('chat.sendMessage', {message: message})
         }
     }
 }

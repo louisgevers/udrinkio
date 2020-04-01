@@ -8,7 +8,6 @@ class ChatContent extends Component {
         this.state = {
             chatMessages: []
         }
-        this.initializeSocket()
     }
 
     render() {
@@ -24,9 +23,9 @@ class ChatContent extends Component {
                                 message={chatMessage.message} 
                             />
                         } else if (chatMessage.type === "info") {
-                            return <span className="InfoMessage">{chatMessage.message}</span>
+                            return <span key={index} className="InfoMessage">{chatMessage.message}</span>
                         } else {
-                            return <span>{chatMessage}</span>
+                            return <span key={index}>{chatMessage}</span>
                         }
                         
                     })}
@@ -35,33 +34,15 @@ class ChatContent extends Component {
         )
     }
 
-    initializeSocket = () => {
+    componentWillUnmount = () => {
+        this.socket.off('chat.receivedMessage')
+        this.socket.off('chat.info')
+    }
+
+    componentDidMount = () => {
         this.socket = this.props.socket
-        this.socket.on('chat.receivedMessage', (chatMessage) => {
-            chatMessage.type = "chat"
-            this.addMessage(chatMessage)
-        })
-        this.socket.on('chat.userJoined', (username) => {
-            const chatMessage = {
-                type: "info",
-                message: `${username} joined the room`
-            }
-            this.addMessage(chatMessage)
-        })
-        this.socket.on('chat.userDisconnected', (username) => {
-            const chatMessage = {
-                type: "info",
-                message: `${username} disconnected`
-            }
-            this.addMessage(chatMessage)
-        })
-        this.socket.on('chat.userRemoved', (data) => {
-            const chatMessage = {
-                type: "info",
-                message: `${data.host} removed ${data.username}`
-            }
-            this.addMessage(chatMessage)
-        })
+        this.socket.on('chat.receivedMessage', this.addMessage)
+        this.socket.on('chat.info', this.addMessage)
     }
 
     addMessage = (chatMessage) => {

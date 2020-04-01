@@ -7,7 +7,9 @@
         "imageName": "pyramid.png",
         "primaryColor": "#6D534B",
         "primaryDark": "#5C4944",
-        "secondaryColor": "#EEB711"
+        "secondaryColor": "#EEB711",
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "horserace",
@@ -17,7 +19,9 @@
         "imageName": "horse-race.png",
         "primaryColor": "#3FA2BE",
         "primaryDark": "#3B8194",
-        "secondaryColor": "#FC0F3B"
+        "secondaryColor": "#FC0F3B",
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "kingcup",
@@ -27,7 +31,9 @@
         "imageName": "king-cup.png",
         "primaryColor": "#FC0F3B",
         "primaryDark": "#C01A38",
-        "secondaryColor": "#3FA2BE"
+        "secondaryColor": "#3FA2BE",
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "triviaquizz",
@@ -37,7 +43,9 @@
         "imageName": "quiz.png",
         "primaryColor": "#EEB711",
         "primaryDark": "#B68F1B",
-        "secondaryColor": "#6D534B"
+        "secondaryColor": "#6D534B",
+        "settings": [],
+        "info": "Lorem ipsum dolor sit amet."
     },
     {
         "id": "minefield",
@@ -47,6 +55,34 @@
         "imageName": "minefield.png",
         "primaryColor": "#333333",
         "primaryDark": "#111111",
-        "secondaryColor": "#FC0F3B"
+        "secondaryColor": "#FC0F3B",
+        "settings": [
+            {
+                "name": "Grid size",
+                "options": [
+                    {
+                        "display": "3x3",
+                        "value": 3
+                    },
+                    {
+                        "display": "4x4",
+                        "value": 4
+                    },
+                    {
+                        "display": "5x5",
+                        "value": 5
+                    },
+                    {
+                        "display": "6x6",
+                        "value": 6
+                    },
+                    {
+                        "display": "7x7",
+                        "value": 7
+                    }
+                ]
+            }
+        ],
+        "infoComponent": "MineFieldInfo.js"
     }
 ]
