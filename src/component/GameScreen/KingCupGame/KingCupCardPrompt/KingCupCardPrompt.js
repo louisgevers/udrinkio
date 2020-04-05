@@ -11,8 +11,8 @@ class KingCupCardPrompt extends Component {
                 <Prompt primaryColor={this.props.game.primaryColor} secondaryColor={this.props.game.secondaryColor} title={'NEW CARD'} >
                     <div className='prompt-content'>
                         <img src={require(`../../../../image/cards/${this.props.card}.svg`)} alt={`${this.props.card} card`}></img>
-                        <span className='card-name'>{rules[this.props.card.charAt(0)].name}</span>
-                        <span className='card-description'>{rules[this.props.card.charAt(0)].description}</span>
+                        <span className='card-name'>{rules[this.props.card.slice(0, -1)].name}</span>
+                        <span className='card-description'>{rules[this.props.card.slice(0, -1)].description}</span>
                         {this.props.isTurn && <span className='ready-description'>When ready, stack the card on the bottle...</span>}
                         {this.props.isTurn ? 
                             <button style={{backgroundColor: this.props.game.secondaryColor}} onClick={this.props.onStackClick}>STACK</button>
