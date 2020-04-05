@@ -61,9 +61,13 @@ class KingCupGame extends Component {
         .add(cardFiles.map((fileName) => {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
-        .load(this.initCardSprites)
+        .add({name: 'bottle', url: require('../../../image/bottle.png')})
+        .load(() => { 
+            this.initBottleSprite()
+            this.initCardSprites()
+            window.addEventListener('resize', this.reposition)
+        })
         this.initUserDisplay()
-        window.addEventListener('resize', this.positionCards)
     }
 
     cardsAreSetup = () => {
@@ -95,7 +99,7 @@ class KingCupGame extends Component {
     }
 
     cleanup = () => {
-        window.removeEventListener('resize', this.positionCards)
+        window.removeEventListener('resize', this.reposition)
         loader.reset()
     }
 
@@ -146,6 +150,7 @@ class KingCupGame extends Component {
             this.spriteTable.push(card)
             this.app.stage.addChild(card)
         })
+        this.app.stage.addChild(this.bottleSprite)
         for (var i = 0; i < this.gameState.table.length; i++) {
             const card = new Sprite(resources['b'].texture)
             card.visible = false
@@ -176,6 +181,23 @@ class KingCupGame extends Component {
         this.isPlayingDisplay.y = 50
         this.app.stage.addChild(this.userDisplay)
         this.app.stage.addChild(this.isPlayingDisplay)
+    }
+
+    initBottleSprite = () => {
+        this.bottleSprite = new Sprite(resources['bottle'].texture)
+
+        const scale = (0.25 * this.app.renderer.height) / this.bottleSprite.height
+        this.bottleSprite.height = scale * this.bottleSprite.height
+        this.bottleSprite.width = scale * this.bottleSprite.width
+
+        const centerOffset = 50
+        this.bottleSprite.x = this.app.renderer.width / 2 - this.bottleSprite.width / 2
+        this.bottleSprite.y = this.app.renderer.height / 2 - this.bottleSprite.height / 2 + centerOffset
+    }
+
+    reposition = () => {
+        this.positionCards()
+        this.positionBottle()
     }
 
     positionCards = () => {
@@ -210,6 +232,11 @@ class KingCupGame extends Component {
             const angle = (10 * Math.PI / 180) * (Math.random() * 2 - 1)
             cardSprite.rotation = angle
         })
+    }
+
+    positionBottle = () => {
+        this.bottleSprite.x = this.app.renderer.width / 2 - this.bottleSprite.width / 2
+        this.bottleSprite.y = this.app.renderer.height / 2 - this.bottleSprite.height / 2
     }
 
     updateCardSprites = () => {
