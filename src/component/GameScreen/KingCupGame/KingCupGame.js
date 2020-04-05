@@ -45,6 +45,7 @@ class KingCupGame extends Component {
 
     setup = () => {
         this.spriteTable = []
+        this.spriteBottleStack = []
         loader
         .add(cardFiles.map((fileName) => {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
@@ -87,7 +88,8 @@ class KingCupGame extends Component {
 
     initCardSprites = () => {
         this.gameState.table.forEach((cardName, index) => {
-            const card = new Sprite(resources[cardName].texture)
+            const texture = cardName === 'b' ? resources[cardName].texture : null
+            const card = new Sprite(texture)
             card.interactive = true
             card.data = {
                 name: cardName
@@ -96,6 +98,16 @@ class KingCupGame extends Component {
             this.spriteTable.push(card)
             this.app.stage.addChild(card)
         })
+        for (var i = 0; i < this.gameState.table.length; i++) {
+            const card = new Sprite(resources['b'].texture)
+            card.visible = false
+            this.spriteBottleStack.push(card)
+            this.app.stage.addChild(card)
+        }
+        this.gameState.bottleStack.forEach((cardName, index) => {
+            this.spriteBottleStack[index].texture = resources[cardName].texture
+        })
+        this.updateCardSprites()
         this.positionCards()
         this.cardsAreSetup()
     }
@@ -121,6 +133,16 @@ class KingCupGame extends Component {
             cardSprite.y = rotatedY
             cardSprite.rotation = angle
         })
+        this.spriteBottleStack.forEach((cardSprite) => {
+            const scale = (0.4 * this.app.renderer.height) / cardSprite.height
+            cardSprite.width = scale * cardSprite.width
+            cardSprite.height = scale * cardSprite.height
+            cardSprite.anchor.set(0.5, 0.5)
+            cardSprite.x = this.app.renderer.width / 2
+            cardSprite.y = this.app.renderer.height / 2
+            const angle = (10 * Math.PI / 180) * (Math.random() * 2 - 1)
+            cardSprite.rotation = angle
+        })
     }
 
     updateCardSprites = () => {
@@ -133,6 +155,15 @@ class KingCupGame extends Component {
                 }
                 this.spriteTable[index].data.name = cardName
             })
+        }
+        if (typeof this.spriteBottleStack !== 'undefined') {
+            this.gameState.bottleStack.forEach((cardName, index) => {
+                this.spriteBottleStack[index].texture = resources[cardName].texture
+                this.spriteBottleStack[index].visible = true
+            })
+            for (var i = this.gameState.bottleStack.length; i < this.spriteBottleStack.length; i++) {
+                this.spriteBottleStack[i].visible = false
+            }
         }
     }
 

@@ -11,6 +11,7 @@ module.exports = class KingCup {
         this.playingUser = this.queue.peek()
         this.deck = deck.createDeck()
         this.table = this.generateTable()
+        this.bottleStack = []
         this.counter = 52
     }
 
@@ -28,7 +29,8 @@ module.exports = class KingCup {
     generateState() {
         return {
             table: this.table,
-            playingUser: this.playingUser
+            playingUser: this.playingUser,
+            bottleStack: this.bottleStack
         }
     }
 
@@ -38,6 +40,7 @@ module.exports = class KingCup {
         if (typeof index === 'number' && index < this.table.length) {
             if (this.table[index] === 'b') {
                 const card = this.deck.pop()
+                this.bottleStack.push(card)
                 this.table[index] = card
                 this.counter -= 1
                 return true
