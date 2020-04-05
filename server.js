@@ -211,13 +211,16 @@ io.on('connection', (socket) => {
           })
         }
       } else if (gameId === 'kingcup') {
-        const gameObject = new KingCup(room.data.users)
-        room.data.gameObject = gameObject
-        io.to(roomId).emit('game.started', gameObject.generateState())
-        room.data.state = 'game'
-        room.data.sockets.forEach((playingSocket) => {
-          playingSocket.session.state = 'game'
-        })
+        const cardsAmount = data.value
+        if (typeof cardsAmount === 'number') {
+          const gameObject = new KingCup(cardsAmount, room.data.users)
+          room.data.gameObject = gameObject
+          io.to(roomId).emit('game.started', gameObject.generateState())
+          room.data.state = 'game'
+          room.data.sockets.forEach((playingSocket) => {
+            playingSocket.session.state = 'game'
+          })
+        }
       } else {
         // TODO implement other games here
       }

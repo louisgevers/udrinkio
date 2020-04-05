@@ -3,16 +3,16 @@ const Queue = require('./Queue.js')
 
 module.exports = class KingCup {
 
-    constructor(users) {
+    constructor(cardFamiliesAmount, users) {
         this.queue = new Queue()
         users.forEach((user, key) => {
             this.queue.enqueue({userId: key, username: user})
         })
         this.playingUser = this.queue.peek()
         this.deck = deck.createDeck()
-        this.table = this.generateTable()
+        this.table = this.generateTable(cardFamiliesAmount)
         this.bottleStack = []
-        this.counter = 52
+        this.counter = this.table.length
         this.lastCard = null
     }
 
@@ -76,10 +76,24 @@ module.exports = class KingCup {
 
     // ### GAME SETUP METHODS ###
 
-    generateTable() {
+    generateTable(cardFamiliesAmount) {
+        const n = cardFamiliesAmount > 4 ? 4 : cardFamiliesAmount < 1 ? 1 : cardFamiliesAmount
         const table = []
-        for (var i = 0; i < 52; i++) {
+        for (var i = 0; i < n * 13; i++) {
             table.push('b')
+        }
+        if (n === 1) {
+            this.deck = this.deck.filter((cardName) => {
+                return cardName.indexOf('h') > -1
+            })
+        } else if (n === 2) {
+            this.deck = this.deck.filter((cardName) => {
+                return (cardName.indexOf('h') > -1 || cardName.indexOf('s') > -1)
+            })
+        } else if (n === 3) {
+            this.deck = this.deck.filter((cardName) => {
+                return (cardName.indexOf('c') < 0)
+            })
         }
         return table
     }

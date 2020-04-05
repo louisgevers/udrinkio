@@ -36,9 +36,21 @@
             {
                 "name": "Game mode",
                 "options": [
-                    {
-                        "display": "NORMAL",
-                        "value": 52
+                    {   
+                        "display": "EXPRESS (13 cards)",
+                        "value": 1
+                    },
+                    {   
+                        "display": "QUICK (26 cards)",
+                        "value": 2
+                    },
+                    {   
+                        "display": "NORMAL (39 cards)",
+                        "value": 3
+                    },
+                    {   
+                        "display": "FULL (52 cards)",
+                        "value": 4
                     }
                 ]
             }
