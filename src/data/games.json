@@ -32,7 +32,17 @@
         "primaryColor": "#FC0F3B",
         "primaryDark": "#C01A38",
         "secondaryColor": "#3FA2BE",
-        "settings": [],
+        "settings": [
+            {
+                "name": "Game mode",
+                "options": [
+                    {
+                        "display": "NORMAL",
+                        "value": 52
+                    }
+                ]
+            }
+        ],
         "info": "Lorem ipsum dolor sit amet."
     },
     {
