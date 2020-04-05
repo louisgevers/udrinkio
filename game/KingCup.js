@@ -13,6 +13,7 @@ module.exports = class KingCup {
         this.table = this.generateTable()
         this.bottleStack = []
         this.counter = 52
+        this.lastCard = null
     }
 
     // ### GLOBAL GAME METHODS ###
@@ -30,7 +31,8 @@ module.exports = class KingCup {
         return {
             table: this.table,
             playingUser: this.playingUser,
-            bottleStack: this.bottleStack
+            bottleStack: this.bottleStack,
+            lastCard: this.lastCard
         }
     }
 
@@ -40,13 +42,22 @@ module.exports = class KingCup {
         if (typeof index === 'number' && index < this.table.length) {
             if (this.table[index] === 'b') {
                 const card = this.deck.pop()
-                this.bottleStack.push(card)
+                this.addCardOnBottleStack(card)
                 this.table[index] = card
+                this.lastCard = card
                 this.counter -= 1
                 return true
             } else {
                 return false
             }
+        }
+    }
+
+    addCardOnBottleStack(card) {
+        this.bottleStack.push(card)
+        const falls = Math.random() < this.bottleStack.length / this.table.length
+        if (falls) {
+            this.bottleStack = []
         }
     }
 
