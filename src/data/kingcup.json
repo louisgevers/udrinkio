@@ -36,8 +36,8 @@
         "description": "The person who picked the card chooses one word. Then in the right order; everybody says a word that rhymes with the chosen word. The first one who repeats an already said word/doesn’t find a word/etc. drinks."
     },
     "10" : {
-        "name": "10 blah",
-        "description": "blah"
+        "name": "10 never have I ever",
+        "description": "The person who picked the card tells something that he or she has never done. All the players that did the said thing have to drink."
     },
     "j" : {
         "name": "JACK",
