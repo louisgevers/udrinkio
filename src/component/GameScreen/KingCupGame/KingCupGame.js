@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import './KingCupGame.css'
 
+import KingCupCardPrompt from './KingCupCardPrompt/KingCupCardPrompt.js'
+
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 
@@ -14,6 +16,10 @@ class KingCupGame extends Component {
     constructor(props) {
         super(props)
         this.gameState = this.props.gameState
+        this.state = {
+            lastCard: this.props.gameState.lastCard,
+            showCard: false
+        }
     }
 
     // ### COMPONENT METHODS ###
@@ -28,8 +34,8 @@ class KingCupGame extends Component {
 
     componentWillUnmount = () => {
         // socket.io
-        this.props.socket.on('kingcup.drawnCard', this.onNewGameState)
-        this.props.socket.on('game.userDisconnected', this.onNewGameState)
+        this.props.socket.off('kingcup.drawnCard')
+        this.props.socket.off('game.userDisconnected')
         // pixi.js
         this.cleanup()
         this.app.stop()
@@ -37,7 +43,10 @@ class KingCupGame extends Component {
 
     render = () => {
         return (
-            <div ref={(divCanvas => { this.gameCanvas = divCanvas })} className='KingCupGame game-component' />
+            <div className='KingCupGame'>
+                <div ref={(divCanvas => { this.gameCanvas = divCanvas })} className='game-component' />
+                {this.state.lastCard !== null && this.state.showCard && <KingCupCardPrompt game={this.props.session.game} card={this.state.lastCard} onStackClick={this.onStackCard} isTurn={this.isUsersTurn()} /> }
+            </div>
         )
     }
 
@@ -58,7 +67,23 @@ class KingCupGame extends Component {
     cardsAreSetup = () => {
         this.onNewGameState(this.props.gameState)
         // socket.io
-        this.props.socket.on('kingcup.drawnCard', this.onNewGameState)
+        this.props.socket.on('kingcup.drawnCard', (gameState) => { 
+            this.onNewGameState(gameState)
+            this.onCardDrawn(gameState)
+        })
+        this.props.socket.on('kingcup.towerFell', (gameState) => {
+            this.onNewGameState(gameState)
+            this.setState({
+                showCard: false
+            })
+            alert('STACK FELL!')
+        })
+        this.props.socket.on('kingcup.towerStands', (gameState) => {
+            this.onNewGameState(gameState)
+            this.setState({
+                showCard: false
+            })
+        })
         this.props.socket.on('game.userDisconnected', this.onNewGameState)
     }
 
@@ -75,6 +100,13 @@ class KingCupGame extends Component {
         this.updateUserDisplay()
     }
 
+    onCardDrawn = (gameState) => {
+        this.setState({
+            lastCard: gameState.lastCard,
+            showCard: true
+        })
+    }
+
     onCardClicked = (index, cardName) => {
         if (this.isUsersTurn()) {
             if (cardName === 'b') {
@@ -83,6 +115,10 @@ class KingCupGame extends Component {
         } else {
             alert('Not your turn yet')
         }
+    }
+
+    onStackCard = () => {
+        this.props.socket.emit('kingcup.stackCard')
     }
 
     isUsersTurn = () => {

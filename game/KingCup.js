@@ -14,6 +14,7 @@ module.exports = class KingCup {
         this.bottleStack = []
         this.counter = this.table.length
         this.lastCard = null
+        this.waitForStack = false
     }
 
     // ### GLOBAL GAME METHODS ###
@@ -23,6 +24,9 @@ module.exports = class KingCup {
     }
 
     disconnect(userId) {
+        if (this.playingUser.userId === userId && this.waitForStack) {
+            this.waitForStack = false
+        }
         this.queue.remove((user) => { return user.userId === userId })
         this.playingUser = this.queue.peek()
     }
@@ -39,13 +43,13 @@ module.exports = class KingCup {
     // ### GAME LOGIC METHODS ###
 
     drawCard(index) {
-        if (typeof index === 'number' && index < this.table.length) {
+        if (typeof index === 'number' && index < this.table.length && !this.waitForStack) {
             if (this.table[index] === 'b') {
                 const card = this.deck.pop()
-                this.addCardOnBottleStack(card)
                 this.table[index] = card
                 this.lastCard = card
                 this.counter -= 1
+                this.waitForStack = true
                 return true
             } else {
                 return false
@@ -53,12 +57,14 @@ module.exports = class KingCup {
         }
     }
 
-    addCardOnBottleStack(card) {
-        this.bottleStack.push(card)
+    addCardOnBottleStack() {
+        this.bottleStack.push(this.lastCard)
         const falls = Math.random() < this.bottleStack.length / this.table.length
         if (falls) {
             this.bottleStack = []
         }
+        this.waitForStack = false
+        return falls
     }
 
     nextTurn() {

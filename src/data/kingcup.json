@@ -1,0 +1,54 @@
+{
+    "1" : {
+        "name": "1 for everyone",
+        "description": "Everybody drinks 1 sip"
+    },
+    "2" : {
+        "name": "2 for you",
+        "description": "The person who picked the card can give two slips to the person of his or her choice."
+    },
+    "3" : {
+        "name": "3 for me",
+        "description": "The person who picked the card has to drink 3 sips."
+    },
+    "4" : {
+        "name": "4 to the floor",
+        "description": "Everybody has to turn his thumb down. The last one drinks."
+    },
+    "5" : {
+        "name": "5 for the guys",
+        "description": "All guys drink."
+    },
+    "6" : {
+        "name": "6 for the chicks",
+        "description": "All girls drink."
+    },
+    "7" : {
+        "name": "7 to the heaven",
+        "description": "Everybody has to turn his thumb up. The last one drinks."
+    },
+    "8" : {
+        "name": "8 pick a mate",
+        "description": "The person who picked the card can choose one mate that will also have to drink whenever the person has to drink (chains possible)."
+    },
+    "9" : {
+        "name": "9 make a rhyme",
+        "description": "The person who picked the card chooses one word. Then in the right order; everybody says a word that rhymes with the chosen word. The first one who repeats an already said word/doesn’t find a word/etc. drinks."
+    },
+    "10" : {
+        "name": "10 blah",
+        "description": "blah"
+    },
+    "j" : {
+        "name": "JACK",
+        "description": "The person who picked the card can not say \"yes\" or \"no\" until another Jack is picked. The person drinks every time he or she fails."
+    },
+    "q" : {
+        "name": "QUEEN",
+        "description": "The person who picked the card chooses one category (cars, beers, etc.). Then in the right order; everybody says a word that belongs to the category (for cars : BMW, Tesla, etc.). The first one who repeats an already said word/doesn’t find a word/etc. drinks."
+    },
+    "k" : {
+        "name": "KING",
+        "description": "The person that picked the card can create a new rule. (example : Everybody has to do something in particular before drinking). If someone forgets to follow the rule, he or she drinks."
+    }
+}

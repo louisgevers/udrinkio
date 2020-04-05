@@ -266,8 +266,27 @@ io.on('connection', (socket) => {
       if (typeof gameObject !== 'undefined') {
         const user = { userId: socket.session.userId, username: socket.session.username }
         if (gameObject.isTurn(user) && gameObject.drawCard(data.index)) {
-          gameObject.nextTurn()
           io.to(roomId).emit('kingcup.drawnCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
+  socket.on('kingcup.stackCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const user = { userId: socket.session.userId, username: socket.session.username }
+        if (gameObject.isTurn(user)) {
+          const towerFell = gameObject.addCardOnBottleStack()
+          gameObject.nextTurn()
+          if (towerFell) {
+            io.to(roomId).emit('kingcup.towerFell', gameObject.generateState())
+          } else {
+            io.to(roomId).emit('kingcup.towerStands', gameObject.generateState())
+          }
           if (gameObject.isOver()) {
             room.data.state = 'lobby'
             delete room.data.gameObject
