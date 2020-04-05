@@ -51,10 +51,12 @@ class KingCupGame extends Component {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
         .load(this.initCardSprites)
+        this.initUserDisplay()
         window.addEventListener('resize', this.positionCards)
     }
 
     cardsAreSetup = () => {
+        this.onNewGameState(this.props.gameState)
         // socket.io
         this.props.socket.on('kingcup.drawnCard', this.onNewGameState)
         this.props.socket.on('game.userDisconnected', this.onNewGameState)
@@ -70,11 +72,14 @@ class KingCupGame extends Component {
     onNewGameState = (gameState) => {
         this.gameState = gameState
         this.updateCardSprites()
+        this.updateUserDisplay()
     }
 
     onCardClicked = (index, cardName) => {
         if (this.isUsersTurn()) {
-            this.props.socket.emit('kingcup.drawCard', {index: index})
+            if (cardName === 'b') {
+                this.props.socket.emit('kingcup.drawCard', {index: index})
+            }
         } else {
             alert('Not your turn yet')
         }
@@ -112,8 +117,27 @@ class KingCupGame extends Component {
         this.cardsAreSetup()
     }
 
+    initUserDisplay = () => {
+        this.userDisplay = new Pixi.Text()
+        this.isPlayingDisplay = new Pixi.Text()
+        this.userDisplay.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fill: this.props.session.game.secondaryColor,
+            fontWeight: 'bold'
+        }
+        this.isPlayingDisplay.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fill: 'white'
+        }
+        this.userDisplay.y = 50
+        this.isPlayingDisplay.y = 50
+        this.app.stage.addChild(this.userDisplay)
+        this.app.stage.addChild(this.isPlayingDisplay)
+    }
+
     positionCards = () => {
         const n = this.spriteTable.length
+        const centerOffset = 50
         this.spriteTable.forEach((cardSprite, i) => {
             const scale = (0.3 * this.app.renderer.height) / cardSprite.height
             cardSprite.width = scale * cardSprite.width
@@ -121,7 +145,7 @@ class KingCupGame extends Component {
 
             const r =  cardSprite.height
             const centerX = this.app.renderer.width / 2
-            const centerY = this.app.renderer.height / 2
+            const centerY = this.app.renderer.height / 2 + centerOffset
             const pointX = centerX - cardSprite.width / 2
             const pointY = centerY - cardSprite.width / 2 - r
 
@@ -139,7 +163,7 @@ class KingCupGame extends Component {
             cardSprite.height = scale * cardSprite.height
             cardSprite.anchor.set(0.5, 0.5)
             cardSprite.x = this.app.renderer.width / 2
-            cardSprite.y = this.app.renderer.height / 2
+            cardSprite.y = this.app.renderer.height / 2 + centerOffset
             const angle = (10 * Math.PI / 180) * (Math.random() * 2 - 1)
             cardSprite.rotation = angle
         })
@@ -165,6 +189,19 @@ class KingCupGame extends Component {
                 this.spriteBottleStack[i].visible = false
             }
         }
+    }
+
+    updateUserDisplay = () => {
+        if (this.isUsersTurn()) {
+            this.userDisplay.text = 'Your turn!'
+            this.isPlayingDisplay.text = ''
+        } else {
+            const username = this.gameState.playingUser.username
+            this.userDisplay.text = `${username}`
+            this.isPlayingDisplay.text = ' is playing...'
+        }
+        this.userDisplay.x = (this.app.renderer.width / 2) - (this.userDisplay.width / 2) - (this.isPlayingDisplay.width / 2)
+        this.isPlayingDisplay.x = (this.app.renderer.width / 2) - (this.isPlayingDisplay.width / 2) + (this.userDisplay.width / 2)
     }
 
 }
