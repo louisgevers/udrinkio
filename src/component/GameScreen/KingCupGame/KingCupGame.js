@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import './KingCupGame.css'
 
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
