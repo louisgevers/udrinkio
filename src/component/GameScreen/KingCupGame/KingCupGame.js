@@ -34,6 +34,8 @@ class KingCupGame extends Component {
 
     componentWillUnmount = () => {
         // socket.io
+        this.props.socket.off('kingcup.towerStands')
+        this.props.socket.off('kingcup.towerFell')
         this.props.socket.off('kingcup.drawnCard')
         this.props.socket.off('game.userDisconnected')
         // pixi.js
@@ -84,7 +86,12 @@ class KingCupGame extends Component {
                 showCard: false
             })
         })
-        this.props.socket.on('game.userDisconnected', this.onNewGameState)
+        this.props.socket.on('game.userDisconnected', (gameState) => {
+            this.onNewGameState(gameState)
+            this.setState({
+                showCard: false
+            })
+        })
     }
 
     cleanup = () => {
