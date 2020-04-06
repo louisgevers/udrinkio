@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import './MineFieldGame.css'
 
+import ProgressBar from '../../ProgressBar/ProgressBar'
+
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 
@@ -14,6 +16,9 @@ class MineFieldGame extends Component {
     constructor(props) {
         super(props)
         this.gameState = this.props.gameState
+        this.state = {
+            progress: 0
+        }
     }
 
     componentDidMount = () => {
@@ -42,7 +47,10 @@ class MineFieldGame extends Component {
 
     render() {
         return (
-            <div ref={(divCanvas) => {this.gameCanvas = divCanvas}} className='MineFieldGame game-component' />
+            <div className='MineFieldGame'>
+                {this.state.progress < 100 && <ProgressBar progress={this.state.progress} color={this.props.session.game.secondaryColor} description={'loading assets...'} />}
+                <div ref={(divCanvas) => {this.gameCanvas = divCanvas}} className='game-component' />
+            </div>
         )
     }
 
@@ -93,9 +101,19 @@ class MineFieldGame extends Component {
         .add(cardFiles.map((fileName) => {
             return {name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
-        .load(this.initCardSprites)
-        this.initUserDisplay()
-        window.addEventListener('resize', this.resizeCardSprites)
+        .on('progress', (loader, resource) => {
+            this.setState({
+                progress: loader.progress
+            })
+        })
+        .load(() => {
+            this.setState({
+                progress: 100
+            })
+            this.initUserDisplay()
+            this.initCardSprites()
+            window.addEventListener('resize', this.resizeCardSprites)
+        })
     }
 
     cleanUp = () => {

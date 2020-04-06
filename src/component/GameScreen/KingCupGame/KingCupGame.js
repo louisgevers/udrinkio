@@ -5,6 +5,7 @@ import KingCupCardPrompt from './KingCupCardPrompt/KingCupCardPrompt.js'
 
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
+import ProgressBar from '../../ProgressBar/ProgressBar'
 
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
@@ -18,7 +19,8 @@ class KingCupGame extends Component {
         this.gameState = this.props.gameState
         this.state = {
             lastCard: this.props.gameState.lastCard,
-            showCard: false
+            showCard: false,
+            progress: 0
         }
     }
 
@@ -46,6 +48,7 @@ class KingCupGame extends Component {
     render = () => {
         return (
             <div className='KingCupGame'>
+                {this.state.progress < 100 && <ProgressBar progress={this.state.progress} color={this.props.session.game.secondaryColor} description={'loading assets...'} />}
                 <div ref={(divCanvas => { this.gameCanvas = divCanvas })} className='game-component' />
                 {this.state.lastCard !== null && this.state.showCard && <KingCupCardPrompt game={this.props.session.game} card={this.state.lastCard} onStackClick={this.onStackCard} isTurn={this.isUsersTurn()} /> }
             </div>
@@ -62,7 +65,15 @@ class KingCupGame extends Component {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
         .add({name: 'bottle', url: require('../../../image/bottle.png')})
+        .on('progress', (loader, resource) => {
+            this.setState({
+                progress: loader.progress
+            })
+        })
         .load(() => { 
+            this.setState({
+                progress: 100
+            })
             this.initBottleSprite()
             this.initCardSprites()
             window.addEventListener('resize', this.reposition)

@@ -1,11 +1,4 @@
-
-.MineFieldGame .card-table {
-    display: grid;
-    height: 80%;
-}
-
-/* placeholder rules */
 .MineFieldGame {
-    background-color: #cccccc;
-    height: 100vh;
+    position: relative;
+    height: 100%;
 }
