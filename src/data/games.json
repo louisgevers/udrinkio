@@ -8,8 +8,33 @@
         "primaryColor": "#6D534B",
         "primaryDark": "#5C4944",
         "secondaryColor": "#EEB711",
-        "settings": [],
-        "comingSoon": true
+        "settings": [
+            {
+                "name": "Pyramid size",
+                "options": [
+                    {
+                        "display": "3 layers",
+                        "value": 3
+                    },
+                    {
+                        "display": "4 layers",
+                        "value": 4
+                    },
+                    {
+                        "display": "5 layers",
+                        "value": 5
+                    },
+                    {
+                        "display": "6 layers",
+                        "value": 6
+                    },
+                    {
+                        "display": "7 layers",
+                        "value": 7
+                    }
+                ]
+            }
+        ]
     },
     {
         "id": "horserace",

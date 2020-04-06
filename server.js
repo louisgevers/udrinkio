@@ -7,6 +7,7 @@ const {v4: uuidv4 } = require('uuid')
 
 const MineField = require('./game/MineField.js')
 const KingCup = require('./game/KingCup.js')
+const Pyramid = require('./game/Pyramid.js')
 
 app.use(express.static(path.join(__dirname, 'build')))
 
@@ -214,6 +215,17 @@ io.on('connection', (socket) => {
         const cardsAmount = data.value
         if (typeof cardsAmount === 'number') {
           const gameObject = new KingCup(cardsAmount, room.data.users)
+          room.data.gameObject = gameObject
+          io.to(roomId).emit('game.started', gameObject.generateState())
+          room.data.state = 'game'
+          room.data.sockets.forEach((playingSocket) => {
+            playingSocket.session.state = 'game'
+          })
+        }
+      } else if (gameId === 'pyramid') {
+        const pyramidSize = data.value
+        if (typeof pyramidSize === 'number') {
+          const gameObject = new Pyramid(pyramidSize, room.data.users)
           room.data.gameObject = gameObject
           io.to(roomId).emit('game.started', gameObject.generateState())
           room.data.state = 'game'
