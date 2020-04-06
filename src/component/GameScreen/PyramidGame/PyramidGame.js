@@ -108,18 +108,18 @@ class PyramidGame extends Component {
 
     positionPyramid = () => {
         this.pyramidSprites.forEach((sprite) => {
+            // Rotating
+            sprite.rotation = Math.PI/2
             // Scaling
             const scale = (0.8 * this.app.renderer.height) / sprite.height / this.pyramidSize
             sprite.height = scale * sprite.height
             sprite.width = scale * sprite.width
-
             // Positioning
-            const centerOffsetY = (this.app.renderer.height - this.pyramidSize * sprite.height) / 2
-            const centerOffsetX = 40
-            const pyramidOffsetX = (this.pyramidSize - 1 - sprite.data.row) * (sprite.width / 2)
-            sprite.x = sprite.data.column * sprite.width + centerOffsetX + pyramidOffsetX
-            sprite.y = sprite.data.row * sprite.height + centerOffsetY
-            console.log(`(${sprite.data.row}, ${sprite.data.column})`)
+            const centerOffsetX = (this.app.renderer.width - this.pyramidSize * sprite.height) / 2 + sprite.height
+            const centerOffsetY = (this.app.renderer.height - this.pyramidSize * sprite.width) / 2
+            const pyramidOffsetY = (this.pyramidSize - 1 - sprite.data.row) * (sprite.width) / 2
+            sprite.x = sprite.data.row * sprite.height + centerOffsetX
+            sprite.y = (this.pyramidSize - 1 - sprite.data.column) * sprite.width + centerOffsetY - pyramidOffsetY
         })
     }
 
