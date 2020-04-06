@@ -35,6 +35,9 @@ class PyramidGame extends Component {
     }
 
     componentWillUnmount = () => {
+        // socket.io
+        this.props.socket.off('pyramid.newCard')
+        this.props.socket.off('pyramid.playerCard')
         // pixi.js
         this.cleanup()
         this.app.stop()
@@ -49,15 +52,17 @@ class PyramidGame extends Component {
         )
     }
 
-    // ### SOCKET METHODS ###
+    // ### SOCKET.IO METHODS ###
 
     setupSockets = () => {
         this.props.socket.on('pyramid.newCard', (gameState) => {
-            console.log('received state')
-            this.gameState = gameState
-            this.gameState.hands = new Map(JSON.parse(this.gameState.hands))
-            this.gameState.users = new Map(JSON.parse(this.gameState.users))
+            this.newGameState(gameState)
             this.updatePyramid()
+        })
+        this.props.socket.on('pyramid.playerCard', (gameState) => {
+            this.newGameState(gameState)
+            this.updatePlayerCards()
+            this.updateOtherPlayerCards()
         })
     }
 
@@ -67,6 +72,20 @@ class PyramidGame extends Component {
 
     onUndoCardClick = () => {
         this.props.socket.emit('pyramid.undoCard')
+    }
+
+    onPlayerCardClick = (index, isVisible) => {
+        if (isVisible) {
+            this.props.socket.emit('pyramid.hideCard', index)
+        } else {
+            this.props.socket.emit('pyramid.showCard', index)
+        }
+    }
+
+    newGameState = (gameState) => {
+        this.gameState = gameState
+        this.gameState.hands = new Map(JSON.parse(this.gameState.hands))
+        this.gameState.users = new Map(JSON.parse(this.gameState.users))
     }
 
     // ### PIXI.JS METHODS ###
@@ -137,13 +156,19 @@ class PyramidGame extends Component {
         this.playerCardsContainer.data = {
             cards: []
         }
-        this.gameState.hands.get(this.props.session.userId).forEach((cardName) => {
+        this.gameState.hands.get(this.props.session.userId).forEach((cardName, index) => {
             const sprite = new Sprite(resources[cardName].texture)
-            // TODO onclick
+            sprite.interactive = true
+            sprite.buttonMode = true
+            sprite.data = {
+                index: index,
+                cardName: cardName
+            }
+            sprite.on('pointertap', () => this.onPlayerCardClick(sprite.data.index, sprite.data.cardName !== 'b'))
             this.playerCardsContainer.data.cards.push(sprite)
             this.playerCardsContainer.addChild(sprite)
         })
-        const instructionText = new Pixi.Text('Click a card to reveal it to everyone')
+        const instructionText = new Pixi.Text('Click a card to show or hide it (visible to everyone)')
         instructionText.style = {
             fontFamily: '\'Open Sans\', sans-serif',
             fontSize: '14px',
@@ -187,9 +212,11 @@ class PyramidGame extends Component {
 
     initOtherPlayerCards = () => {
         this.otherPlayersHands = []
+        this.cardsContainerMap = new Map()
         this.gameState.hands.forEach((cards, userId) => {
             if (userId !== this.props.session.userId) {
                 const container = new Pixi.Container()
+                this.cardsContainerMap.set(userId, container)
                 container.data = {
                     cards: []
                 }
@@ -307,6 +334,25 @@ class PyramidGame extends Component {
     updatePyramid = () => {
         this.gameState.pyramid.forEach((cardName, i) => {
             this.pyramidSprites[i].texture = resources[cardName].texture
+        })
+    }
+
+    updatePlayerCards = () => {
+        this.gameState.hands.get(this.props.session.userId).forEach((cardName, i) => {
+            const sprite = this.playerCardsContainer.data.cards[i]
+            sprite.texture = resources[cardName].texture
+            sprite.data.cardName = cardName
+        })
+    }
+
+    updateOtherPlayerCards = () => {
+        this.gameState.hands.forEach((cards, userId) => {
+            if (userId !== this.props.session.userId) {
+                const container = this.cardsContainerMap.get(userId)
+                cards.forEach((cardName, i) => {
+                    container.data.cards[i].texture = resources[cardName].texture
+                })
+            }  
         })
     }
 }
