@@ -9,7 +9,10 @@ class GamesPanel extends Component {
     render() {
         return (
             <div className="GamesPanel">
-                {games.map(game => {
+                {games.filter((game) => {return !game.comingSoon}).map(game => {
+                    return <GameTile key={game.name} game={game} onCreateParty={() => this.props.onCreateParty(game)} />
+                })}
+                {games.filter((game) => {return game.comingSoon}).map(game => {
                     return <GameTile key={game.name} game={game} onCreateParty={() => this.props.onCreateParty(game)} />
                 })}
             </div>

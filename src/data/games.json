@@ -9,7 +9,7 @@
         "primaryDark": "#5C4944",
         "secondaryColor": "#EEB711",
         "settings": [],
-        "info": "Lorem ipsum dolor sit amet."
+        "comingSoon": true
     },
     {
         "id": "horserace",
@@ -21,7 +21,7 @@
         "primaryDark": "#3B8194",
         "secondaryColor": "#FC0F3B",
         "settings": [],
-        "info": "Lorem ipsum dolor sit amet."
+        "comingSoon": true
     },
     {
         "id": "kingcup",
@@ -67,7 +67,7 @@
         "primaryDark": "#B68F1B",
         "secondaryColor": "#6D534B",
         "settings": [],
-        "info": "Lorem ipsum dolor sit amet."
+        "comingSoon": true
     },
     {
         "id": "minefield",
