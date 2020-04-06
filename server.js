@@ -309,6 +309,34 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('pyramid.nextCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        if (room.data.host === socket.session.userId) {
+          gameObject.nextPyramidCard()
+          io.to(roomId).emit('pyramid.newCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
+  socket.on('pyramid.undoCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        if (room.data.host === socket.session.userId) {
+          gameObject.undoPyramidCard()
+          io.to(roomId).emit('pyramid.newCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)

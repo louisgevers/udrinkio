@@ -49,6 +49,26 @@ class PyramidGame extends Component {
         )
     }
 
+    // ### SOCKET METHODS ###
+
+    setupSockets = () => {
+        this.props.socket.on('pyramid.newCard', (gameState) => {
+            console.log('received state')
+            this.gameState = gameState
+            this.gameState.hands = new Map(JSON.parse(this.gameState.hands))
+            this.gameState.users = new Map(JSON.parse(this.gameState.users))
+            this.updatePyramid()
+        })
+    }
+
+    onNextCardClick = () => {
+        this.props.socket.emit('pyramid.nextCard')
+    }
+
+    onUndoCardClick = () => {
+        this.props.socket.emit('pyramid.undoCard')
+    }
+
     // ### PIXI.JS METHODS ###
 
     setup = () => {
@@ -68,6 +88,7 @@ class PyramidGame extends Component {
             this.initPyramid()
             this.initPlayerCards()
             this.initOtherPlayerCards()
+            this.setupSockets()
             window.addEventListener('resize', this.reposition)
         })
     }
@@ -151,6 +172,8 @@ class PyramidGame extends Component {
 
         if (this.props.session.host === this.props.session.userId) {
             hostText.visible = false
+            nextButton.on('pointertap', this.onNextCardClick)
+            undoButton.on('pointertap', this.onUndoCardClick)
         } else {
             nextButton.visible = false
             undoButton.visible = false
@@ -279,6 +302,12 @@ class PyramidGame extends Component {
         this.positionPyramid()
         this.positionPlayerCards()
         this.positionOtherPlayerCards()
+    }
+
+    updatePyramid = () => {
+        this.gameState.pyramid.forEach((cardName, i) => {
+            this.pyramidSprites[i].texture = resources[cardName].texture
+        })
     }
 }
 
