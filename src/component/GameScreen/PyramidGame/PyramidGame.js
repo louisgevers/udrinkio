@@ -17,6 +17,8 @@ class PyramidGame extends Component {
     constructor(props) {
         super(props)
         this.gameState = this.props.gameState
+        this.gameState.hands = new Map(JSON.parse(this.gameState.hands))
+        this.gameState.users = new Map(JSON.parse(this.gameState.users))
         this.state = {
             progress: 0
         }

@@ -9,7 +9,7 @@ module.exports = class Pyramid {
             this.users.set(userId, username)
         })
         this.pyramid = this.generatePyramid(size)
-        this.visiblePyramid = this.pyramid.map((_) => 'b')
+        this.visiblePyramid = this.pyramid.map((_) => { return 'b' })
         this.possibleHands = this.generatePossibleHands()
         this.hands = this.generateHands()
         this.visibleHands = this.generateVisibleHands()
@@ -22,7 +22,7 @@ module.exports = class Pyramid {
         if (this.possibleHands.length > 0) {
             const hand = this.possibleHands.pop()
             this.hands.set(user.userId, hand)
-            this.visibleHands.set(user.userId, hand.map((_) => 'b'))
+            this.visibleHands.set(user.userId, hand.map((_) => { return 'b' }))
             this.users.set(user.userId, user.username)
         }
     }
@@ -36,7 +36,7 @@ module.exports = class Pyramid {
 
     generateState = () => {
         return {
-            pyramid: this.pyramid,
+            pyramid: this.visiblePyramid,
             hands: JSON.stringify(Array.from(this.visibleHands)),
             users: JSON.stringify(Array.from(this.users))
         }
