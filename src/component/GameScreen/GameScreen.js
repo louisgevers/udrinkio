@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import './GameScreen.css'
 import MineFieldGame from './MineFieldGame/MineFieldGame'
+import KingCupGame from './KingCupGame/KingCupGame'
 
 class GameScreen extends Component {
     render() {
@@ -14,6 +15,8 @@ class GameScreen extends Component {
     getGameComponent = (game) => {
         if (game.id === 'minefield') {
             return <MineFieldGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket }/>
+        } else if (game.id === 'kingcup') {
+            return <KingCupGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} />
         } else {
             return <span>{`Game ${game.name} not implemented`}</span>
         }

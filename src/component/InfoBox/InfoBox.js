@@ -11,7 +11,6 @@ class InfoBox extends Component {
     }
 
     render() {
-        console.log(this.props.infoComponent)
         const InfoComponent = typeof this.props.infoComponent !== 'undefined' ? require(`../InfoBox/InfoContents/${this.props.infoComponent}`).default : require(`../InfoBox/InfoContents/EmptyInfo.js`).default
         return (
             <div className='InfoBox'>

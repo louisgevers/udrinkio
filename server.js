@@ -4,7 +4,9 @@ const app = express()
 const http = require('http').createServer(app)
 var io = require('socket.io').listen(http)
 const {v4: uuidv4 } = require('uuid')
+
 const MineField = require('./game/MineField.js')
+const KingCup = require('./game/KingCup.js')
 
 app.use(express.static(path.join(__dirname, 'build')))
 
@@ -208,6 +210,17 @@ io.on('connection', (socket) => {
             playingSocket.session.state = 'game'
           })
         }
+      } else if (gameId === 'kingcup') {
+        const cardsAmount = data.value
+        if (typeof cardsAmount === 'number') {
+          const gameObject = new KingCup(cardsAmount, room.data.users)
+          room.data.gameObject = gameObject
+          io.to(roomId).emit('game.started', gameObject.generateState())
+          room.data.state = 'game'
+          room.data.sockets.forEach((playingSocket) => {
+            playingSocket.session.state = 'game'
+          })
+        }
       } else {
         // TODO implement other games here
       }
@@ -235,6 +248,45 @@ io.on('connection', (socket) => {
         if (gameObject.isTurn(user) && gameObject.drawCard(data.row, data.column)) {
           gameObject.nextTurn()
           io.to(roomId).emit('minefield.drawnCard', gameObject.generateState())
+          if (gameObject.isOver()) {
+            room.data.state = 'lobby'
+            delete room.data.gameObject
+            io.to(roomId).emit('game.isOver')
+          }
+        }
+      }
+    }
+  })
+
+  socket.on('kingcup.drawCard', (data) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const user = { userId: socket.session.userId, username: socket.session.username }
+        if (gameObject.isTurn(user) && gameObject.drawCard(data.index)) {
+          io.to(roomId).emit('kingcup.drawnCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
+  socket.on('kingcup.stackCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const user = { userId: socket.session.userId, username: socket.session.username }
+        if (gameObject.isTurn(user)) {
+          const towerFell = gameObject.addCardOnBottleStack()
+          gameObject.nextTurn()
+          if (towerFell) {
+            io.to(roomId).emit('kingcup.towerFell', gameObject.generateState())
+          } else {
+            io.to(roomId).emit('kingcup.towerStands', gameObject.generateState())
+          }
           if (gameObject.isOver()) {
             room.data.state = 'lobby'
             delete room.data.gameObject

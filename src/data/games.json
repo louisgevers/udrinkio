@@ -27,13 +27,35 @@
         "id": "kingcup",
         "name": "KING CUP",
         "minPlayers": 2,
-        "maxPlayers": 6,
+        "maxPlayers": 12,
         "imageName": "king-cup.png",
         "primaryColor": "#FC0F3B",
         "primaryDark": "#C01A38",
         "secondaryColor": "#3FA2BE",
-        "settings": [],
-        "info": "Lorem ipsum dolor sit amet."
+        "settings": [
+            {
+                "name": "Game mode",
+                "options": [
+                    {   
+                        "display": "EXPRESS (13 cards)",
+                        "value": 1
+                    },
+                    {   
+                        "display": "QUICK (26 cards)",
+                        "value": 2
+                    },
+                    {   
+                        "display": "NORMAL (39 cards)",
+                        "value": 3
+                    },
+                    {   
+                        "display": "FULL (52 cards)",
+                        "value": 4
+                    }
+                ]
+            }
+        ],
+        "infoComponent": "KingCupInfo.js"
     },
     {
         "id": "triviaquizz",
@@ -51,7 +73,7 @@
         "id": "minefield",
         "name": "MINE FIELD",
         "minPlayers": 2,
-        "maxPlayers": 6,
+        "maxPlayers": 9,
         "imageName": "minefield.png",
         "primaryColor": "#333333",
         "primaryDark": "#111111",
