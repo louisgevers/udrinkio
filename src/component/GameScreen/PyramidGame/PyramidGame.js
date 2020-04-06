@@ -64,6 +64,7 @@ class PyramidGame extends Component {
             })
             this.initPyramid()
             this.initPlayerCards()
+            this.initOtherPlayerCards()
             window.addEventListener('resize', this.reposition)
         })
     }
@@ -131,17 +132,46 @@ class PyramidGame extends Component {
         this.positionPlayerCards()
     }
 
+    initOtherPlayerCards = () => {
+        this.otherPlayersHands = []
+        this.gameState.hands.forEach((cards, userId) => {
+            if (userId !== this.props.session.userId) {
+                const container = new Pixi.Container()
+                container.data = {
+                    cards: []
+                }
+                cards.forEach((cardName) => {
+                    const sprite = new Sprite(resources[cardName].texture)
+                    container.data.cards.push(sprite)
+                    container.addChild(sprite)
+                })
+                const playerName = new Pixi.Text(this.gameState.users.get(userId))
+                playerName.style = {
+                    fontFamily: '\'Open Sans\', sans-serif',
+                    fontSize: '18px',
+                    fill: this.props.session.game.secondaryColor,
+                    fontWeight: 'normal'
+                }
+                container.data.text = playerName
+                container.addChild(playerName)
+                this.otherPlayersHands.push(container)
+                this.app.stage.addChild(container)
+            }
+        })
+        this.positionOtherPlayerCards()
+    }
+
     positionPyramid = () => {
         this.pyramidSprites.forEach((sprite) => {
             // Rotating
             sprite.rotation = Math.PI/2
             // Scaling
-            const scale = (0.6 * this.app.renderer.height) / sprite.height / this.pyramidSize
+            const scale = (0.65 * Math.min(this.app.renderer.height, this.app.renderer.width)) / sprite.height / this.pyramidSize
             sprite.height = scale * sprite.height
             sprite.width = scale * sprite.width
             // Positioning
             const centerOffsetX = (this.app.renderer.width - this.pyramidSize * sprite.height) / 2 + sprite.height
-            const centerOffsetY = (this.app.renderer.height - this.pyramidSize * sprite.width) / 2
+            const centerOffsetY =  -20 + (this.app.renderer.height - this.pyramidSize * sprite.width) / 2
             const pyramidOffsetY = (this.pyramidSize - 1 - sprite.data.row) * (sprite.width) / 2
             sprite.x = sprite.data.row * sprite.height + centerOffsetX
             sprite.y = (this.pyramidSize - 1 - sprite.data.column) * sprite.width + centerOffsetY - pyramidOffsetY
@@ -166,9 +196,46 @@ class PyramidGame extends Component {
         this.playerCardsContainer.y = this.app.renderer.height - this.playerCardsContainer.height - 20
     }
 
+    positionOtherPlayerCards = () => {
+        const n = this.otherPlayersHands.length
+        this.otherPlayersHands.forEach((container, i) => {
+            // ITEMS
+            var cardHeight = 0
+            container.data.cards.forEach((sprite, j) => {
+                // Scaling
+                const scale = (0.1 * Math.min(this.app.renderer.height, this.app.renderer.width)) / sprite.height
+                sprite.height = scale * sprite.height
+                sprite.width = scale * sprite.width
+                cardHeight = sprite.height
+                // Positioning
+                sprite.x = j * sprite.width
+            })
+            const playerName = container.data.text
+            playerName.x = container.width / 2 - playerName.width / 2
+            playerName.y = cardHeight + 10
+            // CONTAINER
+            if (i < 3) {
+                const gap = 30
+                const centerOffsetX = (this.app.renderer.width - Math.min(3, n) * (container.width) - (Math.min(3, n) - 1) * gap) / 2
+                container.x = i * (container.width + gap) + centerOffsetX
+                container.y = 10
+            } else if (i === 4) {
+                container.rotation = 3 * Math.PI / 2
+                container.x = 10
+                container.y = container.width / 2 + this.app.renderer.height / 2
+            } else {
+                container.rotation = Math.PI / 2
+                container.x = this.app.renderer.width - 10
+                container.y = this.app.renderer.height / 2 - container.width / 2
+            }
+        })
+
+    }
+
     reposition = () => {
         this.positionPyramid()
         this.positionPlayerCards()
+        this.positionOtherPlayerCards()
     }
 }
 
