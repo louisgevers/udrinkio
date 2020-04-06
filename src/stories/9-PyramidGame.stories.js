@@ -48,5 +48,6 @@ const session = {
         "settings": [],
         "comingSoon": true
     },
-    userId: 0
+    userId: 0,
+    host: 0
 }

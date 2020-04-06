@@ -5,6 +5,7 @@ import ProgressBar from '../../ProgressBar/ProgressBar.js'
 
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
+import Button from '../../../graphics/Button'
 
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
@@ -126,6 +127,33 @@ class PyramidGame extends Component {
             fill: '#eeeeee',
             fontWeight: 'normal'
         }
+        instructionText.resolution = 2
+
+        const nextButton = new Button('NEXT', this.props.session.game.secondaryColor)
+        this.playerCardsContainer.data.nextButton = nextButton
+        this.playerCardsContainer.addChild(nextButton)
+        const undoButton = new Button('UNDO', this.props.session.game.primaryDark)
+        this.playerCardsContainer.data.undoButton = undoButton
+        this.playerCardsContainer.addChild(undoButton)
+
+        const hostText = new Pixi.Text(`Host ${this.gameState.users.get(this.props.session.host)} controls the pyramid`)
+        hostText.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fontSize: '18px',
+            fill: '#ffffff',
+            fontWeight: 'normal'
+        }
+        hostText.resolution = 2
+        this.playerCardsContainer.data.hostText = hostText
+        this.playerCardsContainer.addChild(hostText)
+
+        if (this.props.session.host === this.props.session.userId) {
+            hostText.visible = false
+        } else {
+            nextButton.visible = false
+            undoButton.visible = false
+        }
+
         this.playerCardsContainer.data.text = instructionText
         this.playerCardsContainer.addChild(instructionText)
         this.app.stage.addChild(this.playerCardsContainer)
@@ -152,6 +180,7 @@ class PyramidGame extends Component {
                     fill: this.props.session.game.secondaryColor,
                     fontWeight: 'normal'
                 }
+                playerName.resolution = 2
                 container.data.text = playerName
                 container.addChild(playerName)
                 this.otherPlayersHands.push(container)
@@ -179,7 +208,11 @@ class PyramidGame extends Component {
     }
 
     positionPlayerCards = () => {
+        const nextButton = this.playerCardsContainer.data.nextButton
+        const undoButton = this.playerCardsContainer.data.undoButton
+        const buttonHeight = nextButton.height
         var cardHeight = 0
+        const gap = 10
         this.playerCardsContainer.data.cards.forEach((sprite, i) => {
             // Scaling
             const scale = (0.15 * this.app.renderer.height) / sprite.height
@@ -188,9 +221,17 @@ class PyramidGame extends Component {
             cardHeight = sprite.height
             // Positioning
             sprite.x = i * sprite.width
+            sprite.y = buttonHeight + gap
         })
+
+        undoButton.x = this.playerCardsContainer.width / 2 - undoButton.width / 2 - nextButton.width / 2
+        nextButton.x = this.playerCardsContainer.width / 2 - nextButton.width / 2 + undoButton.width / 2
+
+        const hostText = this.playerCardsContainer.data.hostText
+        hostText.x = this.playerCardsContainer.width / 2 - hostText.width / 2
+
         const instructionText = this.playerCardsContainer.data.text
-        instructionText.y = cardHeight + 10
+        instructionText.y = buttonHeight + cardHeight + 2 * gap
         instructionText.x = this.playerCardsContainer.width / 2 - instructionText.width / 2
         this.playerCardsContainer.x = this.app.renderer.width / 2 - this.playerCardsContainer.width / 2
         this.playerCardsContainer.y = this.app.renderer.height - this.playerCardsContainer.height - 20
