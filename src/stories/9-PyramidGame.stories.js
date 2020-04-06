@@ -12,7 +12,7 @@ export default {
 export const Simple = () => <PyramidGame gameState={state} socket={socket} session={session} />;
 
 const state = {
-    pyramid: ['b','b','b','b','b','b']
+    pyramid: ['qh','b','b','b','b','b', 'b', 'b', 'b', 'b']
 }
 
 const session = {

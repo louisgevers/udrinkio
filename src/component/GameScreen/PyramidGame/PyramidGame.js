@@ -62,20 +62,69 @@ class PyramidGame extends Component {
             this.setState({
                 progress: 100
             })
-            // TODO
+            this.initPyramid()
             window.addEventListener('resize', this.reposition)
         })
-    }
-
-    // ### RENDER METHODS ###
-
-    reposition = () => {
-        // TODO
     }
 
     cleanup = () => {
         window.removeEventListener('resize', this.reposition)
         loader.reset()
+    }
+
+    // ### RENDER METHODS ###
+
+    initPyramid = () => {
+        this.pyramidSprites = []
+        var row = 0
+        var column = 0
+        this.gameState.pyramid.forEach((cardName) => {
+            const sprite = new Sprite(resources[cardName].texture)
+            column += 1
+            if (column > row) {
+                column = 0
+                row += 1
+            }
+            this.pyramidSprites.push(sprite)
+            this.app.stage.addChild(sprite)
+        })
+        this.pyramidSize = row
+        // Correct order of array displayed
+        row -= 1
+        column = 0
+        this.pyramidSprites.forEach((sprite) => {
+            sprite.data = {
+                row: row,
+                column: column
+            }
+            column += 1
+            if (column > row) {
+                column = 0
+                row -= 1
+            }
+        })
+        this.positionPyramid()
+    }
+
+    positionPyramid = () => {
+        this.pyramidSprites.forEach((sprite) => {
+            // Scaling
+            const scale = (0.8 * this.app.renderer.height) / sprite.height / this.pyramidSize
+            sprite.height = scale * sprite.height
+            sprite.width = scale * sprite.width
+
+            // Positioning
+            const centerOffsetY = (this.app.renderer.height - this.pyramidSize * sprite.height) / 2
+            const centerOffsetX = 40
+            const pyramidOffsetX = (this.pyramidSize - 1 - sprite.data.row) * (sprite.width / 2)
+            sprite.x = sprite.data.column * sprite.width + centerOffsetX + pyramidOffsetX
+            sprite.y = sprite.data.row * sprite.height + centerOffsetY
+            console.log(`(${sprite.data.row}, ${sprite.data.column})`)
+        })
+    }
+
+    reposition = () => {
+        this.positionPyramid()
     }
 }
 
