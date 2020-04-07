@@ -25,6 +25,7 @@ class PyramidGame extends Component {
             timer: 0,
             hand: null
         }
+        this.host = this.props.session.host
         this.timeOuts = new Map()
     }
 
@@ -45,6 +46,7 @@ class PyramidGame extends Component {
         this.props.socket.off('pyramid.assignedCards')
         this.props.socket.off('game.userDisconnected')
         this.props.socket.off('game.userJoined')
+        this.props.socket.off('room.userDisconnected', this.updateHost)
         // pixi.js
         this.cleanup()
         this.app.stop()
@@ -75,6 +77,7 @@ class PyramidGame extends Component {
         })
         this.props.socket.on('game.userDisconnected', this.updateUsers)
         this.props.socket.on('game.userJoined', this.updateUsers)
+        this.props.socket.on('room.userDisconnected', this.updateHost)
         this.props.socket.on('pyramid.assignedCards', this.showCardsPrompt)
     }
 
@@ -103,6 +106,11 @@ class PyramidGame extends Component {
         this.newGameState(gameState)
         this.updateOtherPlayerCards()
         this.positionOtherPlayerCards()
+    }
+
+    updateHost = (data) => {
+        this.host = data.host
+        this.updatePlayerCards()
     }
 
     onNextCardClick = () => {
@@ -229,8 +237,10 @@ class PyramidGame extends Component {
         const undoButton = new Button('UNDO', this.props.session.game.primaryDark)
         this.playerCardsContainer.data.undoButton = undoButton
         this.playerCardsContainer.addChild(undoButton)
+        nextButton.on('pointertap', this.onNextCardClick)
+        undoButton.on('pointertap', this.onUndoCardClick)
 
-        const hostText = new Pixi.Text(`Host ${this.gameState.users.get(this.props.session.host)} controls the pyramid`)
+        const hostText = new Pixi.Text(`${this.gameState.users.get(this.host)} controls the pyramid`)
         hostText.style = {
             fontFamily: '\'Open Sans\', sans-serif',
             fontSize: '18px',
@@ -241,10 +251,8 @@ class PyramidGame extends Component {
         this.playerCardsContainer.data.hostText = hostText
         this.playerCardsContainer.addChild(hostText)
 
-        if (this.props.session.host === this.props.session.userId) {
+        if (this.host === this.props.session.userId) {
             hostText.visible = false
-            nextButton.on('pointertap', this.onNextCardClick)
-            undoButton.on('pointertap', this.onUndoCardClick)
         } else {
             nextButton.visible = false
             undoButton.visible = false
@@ -387,6 +395,20 @@ class PyramidGame extends Component {
             sprite.texture = resources[cardName].texture
             sprite.data.cardName = cardName
         })
+
+        const hostText = this.playerCardsContainer.data.hostText
+        hostText.text = `${this.gameState.users.get(this.host)} controls the pyramid`
+        const nextButton = this.playerCardsContainer.data.nextButton
+        const undoButton = this.playerCardsContainer.data.undoButton
+        if (this.host === this.props.session.userId) {
+            hostText.visible = false
+            nextButton.visible = true
+            undoButton.visible = true
+        } else {
+            hostText.visible = true
+            nextButton.visible = false
+            undoButton.visible = false
+        }
     }
 
     updateOtherPlayerCards = () => {
