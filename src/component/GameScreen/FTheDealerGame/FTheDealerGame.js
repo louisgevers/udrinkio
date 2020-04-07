@@ -62,6 +62,7 @@ class FTheDealerGame extends Component {
         .add(cardFiles.map((fileName) => {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
+        .add({name: 'token', url: require('../../../image/dealertoken.png')})
         .on('progress', (loader, resource) => {
             this.setState({
                 progress: loader.progress
@@ -74,6 +75,7 @@ class FTheDealerGame extends Component {
             this.initTableSprites()
             this.initDealerSprites()
             this.initPlayerSprites()
+            this.initOtherPlayerSprites()
             this.setupSockets()
             window.addEventListener('resize', this.reposition)
         })
@@ -175,6 +177,57 @@ class FTheDealerGame extends Component {
         this.positionPlayerSprites()
         this.updatePlayerSprites()
     }
+
+    initOtherPlayerSprites = () => {
+        this.otherPlayerContainers = []
+        for (var i = 0; i < this.props.session.game.maxPlayers - 1; i++) {
+            const container = new Pixi.Container()
+
+            const userName = new Pixi.Text(i)
+            userName.resolution = 2
+            userName.style = {
+                fontFamily: '\'Open Sans\', sans-serif',
+                fontSize: '16px',
+                fill: this.props.session.game.secondaryColor,
+                fontWeight: 'bold'
+            }
+
+            const dealerToken = new Sprite(resources['token'].texture)
+            dealerToken.width = 50
+            dealerToken.y = userName.height + 5
+            dealerToken.height = dealerToken.width
+
+            const assignDealerButton = new Button('ASSIGN DEALER', '#ff0000')
+            assignDealerButton.y = userName.height + 10
+
+            const userOrder = new Pixi.Text(i)
+            userOrder.resolution = 2
+            userOrder.style = {
+                fontFamily: '\'Open Sans\', sans-serif',
+                fontSize: '12px',
+                fill: '#eeeeee'
+            }
+            userOrder.y = userName.height + 10
+
+            container.addChild(userName)
+            container.addChild(userOrder)
+            container.addChild(dealerToken)
+            container.addChild(assignDealerButton)
+
+            container.data = {
+                userName: userName,
+                userOrder: userOrder,
+                dealerToken: dealerToken,
+                assignDealerButton: assignDealerButton,
+                height: container.height
+            }
+
+            this.otherPlayerContainers.push(container)
+            this.app.stage.addChild(container)
+        }
+        this.updateOtherPlayerSprites()
+        this.positionOtherPlayerSprites()
+    }
     
     // # POSITIONING #
 
@@ -235,10 +288,32 @@ class FTheDealerGame extends Component {
         this.playerContainer.y = this.app.renderer.height - this.playerContainer.height - 40
     }
 
+    positionOtherPlayerSprites = () => {
+        this.otherPlayerContainers.forEach((container) => {
+            const userName = container.data.userName
+            const dealerToken = container.data.dealerToken
+            const assignDealerButton = container.data.assignDealerButton
+            const userOrder = container.data.userOrder
+            userName.x = container.width / 2 - userName.width / 2
+            dealerToken.x = container.width / 2 - dealerToken.width / 2
+            assignDealerButton.x = container.width / 2 - assignDealerButton.width / 2
+            userOrder.x = container.width / 2 - userOrder.width / 2
+        })
+
+        const n = this.otherPlayerContainers.length
+        const offset = 20
+        this.positionLeftToPlayer(this.otherPlayerContainers[0], offset)
+        this.positionLeft(this.otherPlayerContainers, 1, 3, offset)
+        this.positionTop(this.otherPlayerContainers, 3, n - 3, offset)
+        this.positionRight(this.otherPlayerContainers, n - 3, n - 1, offset)
+        this.positionRightToPlayer(this.otherPlayerContainers[n - 1], offset)
+    }
+
     reposition = () => {
         this.positionTableSprites()
         this.positionDealerSprites()
         this.positionPlayerSprites()
+        this.positionOtherPlayerSprites()
     }
 
     // # UPDATING #
@@ -288,6 +363,95 @@ class FTheDealerGame extends Component {
             this.playerContainer.data.dealerName.text = this.gameState.users.get(this.gameState.dealer)
             this.playerContainer.visible = true
         }
+    }
+
+    updateOtherPlayerSprites = () => {
+        const playerIndex = this.gameState.order.indexOf(this.props.session.userId)
+        var i = playerIndex + 1
+        var counter = 0;
+        for (i; i < this.gameState.order.length; i++) {
+            const userId = this.gameState.order[i]
+            const userName = this.gameState.users.get(userId)
+            this.otherPlayerContainers[counter].data.userName.text = userName
+            if (this.gameState.dealer === userId) {
+                this.otherPlayerContainers[counter].data.dealerToken.visible = true
+            } else {
+                this.otherPlayerContainers[counter].data.dealerToken.visible = false
+            }
+            this.otherPlayerContainers[counter].data.userOrder.text = this.getOrderNumber(userId)
+            counter += 1
+        }
+        for (i = 0; i < playerIndex; i++) {
+            const userId = this.gameState.order[i]
+            const userName = this.gameState.users.get(userId)
+            this.otherPlayerContainers[counter].data.userName.text = userName
+            if (this.gameState.dealer === userId) {
+                this.otherPlayerContainers[counter].data.dealerToken.visible = true
+            } else {
+                this.otherPlayerContainers[counter].data.dealerToken.visible = false
+            }
+            this.otherPlayerContainers[counter].data.userOrder.text = this.getOrderNumber(userId)
+            counter += 1
+        }
+
+        this.otherPlayerContainers.forEach((container, i) => {
+            if (i < this.gameState.order.length - 1) {
+                if (this.gameState.dealer === this.props.session.userId && this.gameState.currentCard === 'b') {
+                    container.data.assignDealerButton.visible = true
+                } else {
+                    container.data.assignDealerButton.visible = false
+                }
+            } else {
+                container.visible = false
+            }
+        })
+    }
+
+    // # HELPER METHODS #
+
+    positionLeftToPlayer = (container, offset) => {
+        container.x = this.app.renderer.width / 4 - container.width / 2
+        container.y = this.app.renderer.height - container.data.height - offset
+    }
+
+    positionRightToPlayer = (container, offset) => {
+        container.x = 3 * this.app.renderer.width / 4 - container.width / 2
+        container.y = this.app.renderer.height - container.data.height - offset
+    }
+
+    positionLeft = (containers, startIndex, stopIndex, offset) => {
+        const n = stopIndex - startIndex
+        for (var i = startIndex; i < stopIndex; i++) {
+            const container = containers[i]
+            container.x = offset
+            container.y = (stopIndex - i) * (this.app.renderer.height / (n + 1)) + container.width / 2
+            container.rotation = - Math.PI / 2
+        }
+    }
+
+    positionRight = (containers, startIndex, stopIndex, offset) => {
+        const n = stopIndex - startIndex
+        for (var i = startIndex; i < stopIndex; i++) {
+            const container = containers[i]
+            container.x = this.app.renderer.width - offset
+            container.y =  (n - (stopIndex - i) + 1) * (this.app.renderer.height / (n + 1)) - container.width / 2
+            container.rotation = Math.PI / 2
+        }
+    }
+
+    positionTop = (containers, startIndex, stopIndex, offset) => {
+        const n = stopIndex - startIndex
+        for (var i = startIndex; i < stopIndex; i++) {
+            const container = containers[i]
+            container.y = offset
+            container.x = (n - (stopIndex - i) + 1) * (this.app.renderer.width / (n + 1)) - container.width / 2
+        }
+    }
+
+    getOrderNumber = (userId) => {
+        const dealerIndex = this.gameState.order.indexOf(this.gameState.dealer)
+        const userIndex = this.gameState.order.indexOf(userId)
+        return userIndex > dealerIndex ? userIndex - dealerIndex : this.gameState.order.length - dealerIndex + userIndex
     }
 
 }

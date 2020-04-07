@@ -28,9 +28,10 @@ users.set(11, 'Loriss')
 
 const state = {
     table: [['1s'],[],['3h','3c','3s','3d'],[],[],[],['7c'],[],[],[],[],[],['kd','ks']],
-    dealer: 0,
-    currentCard: 'qh',
-    users: users
+    dealer: 11,
+    currentCard: '1c',
+    users: users,
+    order: [4,3,2,1,0,5,6,7,11,10,9,8]
 }
 
 const session = {
@@ -44,6 +45,6 @@ const session = {
         "primaryDark": "#095e36",
         "secondaryColor": "#101820"
     },
-    userId: 0,
+    userId: 8,
     host: 0
 }
