@@ -6,6 +6,8 @@ import ProgressBar from '../../ProgressBar/ProgressBar'
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 
+Pixi.utils.skipHello()
+
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
     resources = loader.resources,
@@ -34,12 +36,14 @@ class MineFieldGame extends Component {
         // socket.io
         this.props.socket.on('minefield.drawnCard', this.onNewGameState)
         this.props.socket.on('game.userDisconnected', this.onNewGameState)
+        this.props.socket.on('game.userJoined', this.onNewGameState)
     }
 
     componentWillUnmount = () => {
         // socket.io
         this.props.socket.removeListener('minefield.drawnCard', this.onNewGameState)
         this.props.socket.removeListener('game.userDisconnected', this.onNewGameState)
+        this.props.socket.removeListener('game.userJoined', this.onNewGameState)
         // pixi.js
         this.cleanUp()
         this.app.stop()
@@ -132,6 +136,7 @@ class MineFieldGame extends Component {
             row.forEach((cardName, j) => {
                 const card = new Sprite(resources[cardName].texture)
                 card.interactive = true
+                card.buttonMode = true
                 card.data = {
                     name: cardName
                 }
@@ -185,6 +190,10 @@ class MineFieldGame extends Component {
                 row.forEach((cardName, j) => {
                     this.spriteTable[i][j].texture = resources[cardName].texture
                     this.spriteTable[i][j].data.name = cardName
+                    if (cardName !== 'b') {
+                        this.spriteTable[i][j].interactive = false
+                        this.spriteTable[i][j].buttonMode = false
+                    }
                 })
             })
         }

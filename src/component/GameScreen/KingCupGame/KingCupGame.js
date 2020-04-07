@@ -7,6 +7,8 @@ import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 import ProgressBar from '../../ProgressBar/ProgressBar'
 
+Pixi.utils.skipHello()
+
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
     resources = loader.resources,
@@ -40,6 +42,7 @@ class KingCupGame extends Component {
         this.props.socket.off('kingcup.towerFell')
         this.props.socket.off('kingcup.drawnCard')
         this.props.socket.off('game.userDisconnected')
+        this.props.socket.off('game.userJoined')
         // pixi.js
         this.cleanup()
         this.app.stop()
@@ -107,6 +110,9 @@ class KingCupGame extends Component {
                 showCard: false
             })
         })
+        this.props.socket.on('game.userJoined', (gameState) => {
+            this.onNewGameState(gameState)
+        })
     }
 
     cleanup = () => {
@@ -154,6 +160,7 @@ class KingCupGame extends Component {
             const texture = cardName === 'b' ? resources[cardName].texture : null
             const card = new Sprite(texture)
             card.interactive = true
+            card.buttonMode = true
             card.data = {
                 name: cardName
             }

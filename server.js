@@ -7,6 +7,7 @@ const {v4: uuidv4 } = require('uuid')
 
 const MineField = require('./game/MineField.js')
 const KingCup = require('./game/KingCup.js')
+const Pyramid = require('./game/Pyramid.js')
 
 app.use(express.static(path.join(__dirname, 'build')))
 
@@ -127,7 +128,9 @@ io.on('connection', (socket) => {
       if (room.data.state === 'game' && typeof room.data.gameObject !== 'undefined') {
         const gameObject = room.data.gameObject
         gameObject.connect({userId: session.userId, username: session.username})
-        socket.emit('game.started', gameObject.generateState())
+        const gameState = gameObject.generateState()
+        socket.emit('game.started', gameState)
+        socket.broadcast.to(roomId).emit('game.userJoined', gameState)
       }
       // Inform room
       const users = createUsersJson(room.data.users)
@@ -221,6 +224,17 @@ io.on('connection', (socket) => {
             playingSocket.session.state = 'game'
           })
         }
+      } else if (gameId === 'pyramid') {
+        const pyramidSize = data.value
+        if (typeof pyramidSize === 'number') {
+          const gameObject = new Pyramid(pyramidSize, room.data.users)
+          room.data.gameObject = gameObject
+          io.to(roomId).emit('game.started', gameObject.generateState())
+          room.data.state = 'game'
+          room.data.sockets.forEach((playingSocket) => {
+            playingSocket.session.state = 'game'
+          })
+        }
       } else {
         // TODO implement other games here
       }
@@ -293,6 +307,89 @@ io.on('connection', (socket) => {
             io.to(roomId).emit('game.isOver')
           }
         }
+      }
+    }
+  })
+
+  socket.on('pyramid.nextCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        if (room.data.host === socket.session.userId) {
+          gameObject.nextPyramidCard()
+          io.to(roomId).emit('pyramid.newCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
+  socket.on('pyramid.undoCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        if (room.data.host === socket.session.userId) {
+          gameObject.undoPyramidCard()
+          io.to(roomId).emit('pyramid.newCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
+  socket.on('pyramid.showCard', (index) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (typeof index === 'number') {
+          gameObject.showCard(userId, index)
+          io.to(roomId).emit('pyramid.playerCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
+  socket.on('pyramid.hideCard', (index) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (typeof index === 'number') {
+          gameObject.hideCard(userId, index)
+          io.to(roomId).emit('pyramid.playerCard', gameObject.generateState())
+        }
+      }
+    }
+  })
+
+  socket.on('pyramid.getCards', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const hand = gameObject.hands.get(socket.session.userId)
+        socket.emit('pyramid.assignedCards', hand)
+      }
+    }
+  })
+
+  socket.on('pyramid.end', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        room.data.state = 'lobby'
+        delete room.data.gameObject
+        io.to(roomId).emit('game.isOver')
       }
     }
   })
