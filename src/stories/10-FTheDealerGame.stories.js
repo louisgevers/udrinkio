@@ -11,10 +11,26 @@ export default {
 
 export const Simple = () => <FTheDealerGame gameState={state} socket={socket} session={session} />
 
+const users = new Map()
+users.set(0, 'Louis')
+users.set(1, 'Arthur')
+users.set(2, 'William')
+users.set(3, 'Elvis')
+users.set(4, 'Panda')
+users.set(5, 'Kakker')
+users.set(6, 'Alex')
+users.set(7, 'Knut')
+users.set(8, 'Doddo')
+users.set(9, 'Niel')
+users.set(10, 'Merlin')
+users.set(11, 'Loriss')
+
+
 const state = {
     table: [['1s'],[],['3h','3c','3s','3d'],[],[],[],['7c'],[],[],[],[],[],['kd','ks']],
     dealer: 0,
-    currentCard: 'qh'
+    currentCard: 'qh',
+    users: users
 }
 
 const session = {

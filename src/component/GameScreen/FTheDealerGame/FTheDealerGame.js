@@ -73,6 +73,7 @@ class FTheDealerGame extends Component {
             })
             this.initTableSprites()
             this.initDealerSprites()
+            this.initPlayerSprites()
             this.setupSockets()
             window.addEventListener('resize', this.reposition)
         })
@@ -144,6 +145,36 @@ class FTheDealerGame extends Component {
         this.positionDealerSprites()
         this.updateDealerSprites()
     }
+
+    initPlayerSprites = () => {
+        this.playerContainer = new Pixi.Container()
+        const dealerName = new Pixi.Text(this.gameState.users.get(this.gameState.dealer))
+        dealerName.resolution = 2
+        dealerName.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fontSize: '18px',
+            fill: this.props.session.game.secondaryColor,
+            fontWeight: 'bold'
+        }
+        const dealerText = new Pixi.Text(' is the dealer.')
+        dealerText.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fontSize: '18px',
+            fill: '#eeeeee'
+        }
+        dealerText.resolution = 2
+        
+        dealerText.x = dealerName.width
+
+        this.playerContainer.data = {
+            dealerName: dealerName
+        }
+        this.playerContainer.addChild(dealerName)
+        this.playerContainer.addChild(dealerText)
+        this.app.stage.addChild(this.playerContainer)
+        this.positionPlayerSprites()
+        this.updatePlayerSprites()
+    }
     
     // # POSITIONING #
 
@@ -199,9 +230,15 @@ class FTheDealerGame extends Component {
         this.dealerContainer.y = this.app.renderer.height - this.dealerContainer.height - 10
     }
 
+    positionPlayerSprites = () => {
+        this.playerContainer.x = this.app.renderer.width / 2 - this.playerContainer.width / 2
+        this.playerContainer.y = this.app.renderer.height - this.playerContainer.height - 40
+    }
+
     reposition = () => {
         this.positionTableSprites()
         this.positionDealerSprites()
+        this.positionPlayerSprites()
     }
 
     // # UPDATING #
@@ -241,6 +278,15 @@ class FTheDealerGame extends Component {
             }
         } else {
             this.dealerContainer.visible = false
+        }
+    }
+
+    updatePlayerSprites = () => {
+        if (this.gameState.dealer === this.props.session.userId) {
+            this.playerContainer.visible = false
+        } else {
+            this.playerContainer.data.dealerName.text = this.gameState.users.get(this.gameState.dealer)
+            this.playerContainer.visible = true
         }
     }
 
