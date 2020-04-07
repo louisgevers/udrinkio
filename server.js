@@ -381,6 +381,19 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('pyramid.end', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        room.data.state = 'lobby'
+        delete room.data.gameObject
+        io.to(roomId).emit('game.isOver')
+      }
+    }
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)

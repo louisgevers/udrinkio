@@ -71,6 +71,7 @@ class PyramidGame extends Component {
         this.props.socket.on('pyramid.newCard', (gameState) => {
             this.newGameState(gameState)
             this.updatePyramid()
+            this.updateHostButtons()
         })
         this.props.socket.on('pyramid.playerCard', (gameState) => {
             this.newGameState(gameState)
@@ -121,6 +122,10 @@ class PyramidGame extends Component {
 
     onUndoCardClick = () => {
         this.props.socket.emit('pyramid.undoCard')
+    }
+
+    onEndGameClick = () => {
+        this.props.socket.emit('pyramid.end')
     }
 
     onPlayerCardClick = (index, isVisible) => {
@@ -242,6 +247,11 @@ class PyramidGame extends Component {
         nextButton.on('pointertap', this.onNextCardClick)
         undoButton.on('pointertap', this.onUndoCardClick)
 
+        const endButton = new Button('END GAME', '#ff0000')
+        this.playerCardsContainer.data.endButton = endButton
+        this.playerCardsContainer.addChild(endButton)
+        endButton.on('pointertap', this.onEndGameClick)
+
         const hostText = new Pixi.Text(`${this.gameState.users.get(this.host)} controls the pyramid`)
         hostText.style = {
             fontFamily: '\'Open Sans\', sans-serif',
@@ -255,9 +265,15 @@ class PyramidGame extends Component {
 
         if (this.host === this.props.session.userId) {
             hostText.visible = false
+            if (this.gameState.pyramid[this.gameState.pyramid.length - 1] !== 'b') {
+                nextButton.visible = false
+            } else {
+                endButton.visible = false
+            }
         } else {
             nextButton.visible = false
             undoButton.visible = false
+            endButton.visible = false
         }
 
         this.playerCardsContainer.data.text = instructionText
@@ -316,6 +332,7 @@ class PyramidGame extends Component {
     positionPlayerCards = () => {
         const nextButton = this.playerCardsContainer.data.nextButton
         const undoButton = this.playerCardsContainer.data.undoButton
+        const endButton = this.playerCardsContainer.data.endButton
         const buttonHeight = nextButton.height
         var cardHeight = 0
         const gap = 10
@@ -332,6 +349,7 @@ class PyramidGame extends Component {
 
         undoButton.x = this.playerCardsContainer.width / 2 - undoButton.width / 2 - nextButton.width / 2
         nextButton.x = this.playerCardsContainer.width / 2 - nextButton.width / 2 + undoButton.width / 2
+        endButton.x = nextButton.x + nextButton.width
 
         const hostText = this.playerCardsContainer.data.hostText
         hostText.x = this.playerCardsContainer.width / 2 - hostText.width / 2
@@ -402,15 +420,42 @@ class PyramidGame extends Component {
         hostText.text = `${this.gameState.users.get(this.host)} controls the pyramid`
         const nextButton = this.playerCardsContainer.data.nextButton
         const undoButton = this.playerCardsContainer.data.undoButton
+        const endButton = this.playerCardsContainer.data.endButton
         if (this.host === this.props.session.userId) {
             hostText.visible = false
-            nextButton.visible = true
-            undoButton.visible = true
+            if (this.gameState.pyramid[this.gameState.pyramid.length - 1] !== 'b') {
+                nextButton.visible = false
+                undoButton.visible = true
+                endButton.visible = true
+            } else {
+                nextButton.visible = true
+                undoButton.visible = true
+                endButton.visible = false
+            }        
         } else {
             hostText.visible = true
             nextButton.visible = false
             undoButton.visible = false
+            endButton.visible = false
         }
+    }
+
+    updateHostButtons = () => {
+        const nextButton = this.playerCardsContainer.data.nextButton
+        const undoButton = this.playerCardsContainer.data.undoButton
+        const endButton = this.playerCardsContainer.data.endButton
+        if (this.host === this.props.session.userId) {
+            if (this.gameState.pyramid[this.gameState.pyramid.length - 1] !== 'b') {
+                nextButton.visible = false
+                undoButton.visible = true
+                endButton.visible = true
+            } else {
+                endButton.visible = false
+                nextButton.visible = true
+                undoButton.visible = true
+            }
+        }
+        
     }
 
     updateOtherPlayerCards = () => {
