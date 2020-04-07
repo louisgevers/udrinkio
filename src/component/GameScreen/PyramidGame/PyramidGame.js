@@ -39,6 +39,8 @@ class PyramidGame extends Component {
         // socket.io
         this.props.socket.off('pyramid.newCard')
         this.props.socket.off('pyramid.playerCard')
+        this.props.socket.off('game.userDisconnected')
+        this.props.socket.off('game.userJoined')
         // pixi.js
         this.cleanup()
         this.app.stop()
@@ -65,6 +67,14 @@ class PyramidGame extends Component {
             this.updatePlayerCards()
             this.updateOtherPlayerCards()
         })
+        this.props.socket.on('game.userDisconnected', this.updateUsers)
+        this.props.socket.on('game.userJoined', this.updateUsers)
+    }
+
+    updateUsers = (gameState) => {
+        this.newGameState(gameState)
+        this.updateOtherPlayerCards()
+        this.positionOtherPlayerCards()
     }
 
     onNextCardClick = () => {
@@ -220,33 +230,31 @@ class PyramidGame extends Component {
 
     initOtherPlayerCards = () => {
         this.otherPlayersHands = []
-        this.cardsContainerMap = new Map()
-        this.gameState.hands.forEach((cards, userId) => {
-            if (userId !== this.props.session.userId) {
-                const container = new Pixi.Container()
-                this.cardsContainerMap.set(userId, container)
-                container.data = {
-                    cards: []
-                }
-                cards.forEach((cardName) => {
-                    const sprite = new Sprite(resources[cardName].texture)
-                    container.data.cards.push(sprite)
-                    container.addChild(sprite)
-                })
-                const playerName = new Pixi.Text(this.gameState.users.get(userId))
-                playerName.style = {
-                    fontFamily: '\'Open Sans\', sans-serif',
-                    fontSize: '18px',
-                    fill: this.props.session.game.secondaryColor,
-                    fontWeight: 'normal'
-                }
-                playerName.resolution = 2
-                container.data.text = playerName
-                container.addChild(playerName)
-                this.otherPlayersHands.push(container)
-                this.app.stage.addChild(container)
+        const handsSize = this.gameState.hands.get(this.props.session.userId).length
+        for (var i = 0; i < this.props.session.game.maxPlayers - 1; i++) {
+            const container = new Pixi.Container()
+            container.data = {
+                cards: []
             }
-        })
+            for (var j = 0; j < handsSize; j++) {
+                const sprite = new Sprite(resources['b'].texture)
+                container.data.cards.push(sprite)
+                container.addChild(sprite)
+            }
+            const playerName = new Pixi.Text('')
+            playerName.style = {
+                fontFamily: '\'Open Sans\', sans-serif',
+                fontSize: '18px',
+                fill: this.props.session.game.secondaryColor,
+                fontWeight: 'normal'
+            }
+            playerName.resolution = 2
+            container.data.text = playerName
+            container.addChild(playerName)
+            this.otherPlayersHands.push(container)
+            this.app.stage.addChild(container)
+        }
+        this.updateOtherPlayerCards()
         this.positionOtherPlayerCards()
     }
 
@@ -298,7 +306,7 @@ class PyramidGame extends Component {
     }
 
     positionOtherPlayerCards = () => {
-        const n = this.otherPlayersHands.length
+        const n = this.gameState.hands.size - 1
         this.otherPlayersHands.forEach((container, i) => {
             // ITEMS
             var cardHeight = 0
@@ -354,14 +362,21 @@ class PyramidGame extends Component {
     }
 
     updateOtherPlayerCards = () => {
+        var counter = 0
         this.gameState.hands.forEach((cards, userId) => {
             if (userId !== this.props.session.userId) {
-                const container = this.cardsContainerMap.get(userId)
+                const container = this.otherPlayersHands[counter]
+                container.visible = true
                 cards.forEach((cardName, i) => {
                     container.data.cards[i].texture = resources[cardName].texture
                 })
+                container.data.text.text = this.gameState.users.get(userId)
+                counter += 1
             }  
         })
+        for (var i = counter; i < this.otherPlayersHands.length; i++) {
+            this.otherPlayersHands[i].visible = false
+        }
     }
 }
 

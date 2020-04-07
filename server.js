@@ -128,7 +128,9 @@ io.on('connection', (socket) => {
       if (room.data.state === 'game' && typeof room.data.gameObject !== 'undefined') {
         const gameObject = room.data.gameObject
         gameObject.connect({userId: session.userId, username: session.username})
-        socket.emit('game.started', gameObject.generateState())
+        const gameState = gameObject.generateState()
+        socket.emit('game.started', gameState)
+        socket.broadcast.to(roomId).emit('game.userJoined', gameState)
       }
       // Inform room
       const users = createUsersJson(room.data.users)
