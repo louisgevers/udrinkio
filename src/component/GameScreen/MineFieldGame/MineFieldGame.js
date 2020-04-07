@@ -132,6 +132,7 @@ class MineFieldGame extends Component {
             row.forEach((cardName, j) => {
                 const card = new Sprite(resources[cardName].texture)
                 card.interactive = true
+                card.buttonMode = true
                 card.data = {
                     name: cardName
                 }
@@ -185,6 +186,10 @@ class MineFieldGame extends Component {
                 row.forEach((cardName, j) => {
                     this.spriteTable[i][j].texture = resources[cardName].texture
                     this.spriteTable[i][j].data.name = cardName
+                    if (cardName !== 'b') {
+                        this.spriteTable[i][j].interactive = false
+                        this.spriteTable[i][j].buttonMode = false
+                    }
                 })
             })
         }

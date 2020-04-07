@@ -154,6 +154,7 @@ class KingCupGame extends Component {
             const texture = cardName === 'b' ? resources[cardName].texture : null
             const card = new Sprite(texture)
             card.interactive = true
+            card.buttonMode = true
             card.data = {
                 name: cardName
             }
