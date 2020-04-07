@@ -12,6 +12,7 @@ export default {
 export const Simple = () => <FTheDealerGame gameState={state} socket={socket} session={session} />
 
 const state = {
+    table: [['1s'],[],['3h','3c','3s','3d'],[],[],[],['7c'],[],[],[],[],[],['kd','ks']]
 }
 
 const session = {
