@@ -52,12 +52,12 @@ module.exports = class Pyramid {
     }
 
     undoPyramidCard = () => {
-        if (this.pyramidIndex >= this.pyramid.length) {
-            this.pyramidIndex = this.pyramid.length - 1
-        }
         if (this.pyramidIndex > -1) {
-            this.visiblePyramid[this.pyramidIndex] = 'b'
             this.pyramidIndex -= 1
+            this.visiblePyramid[this.pyramidIndex] = 'b'
+            if (this.pyramidIndex < 0) {
+                this.pyramidIndex = 0
+            }
         }
     }
 
