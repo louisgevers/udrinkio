@@ -8,6 +8,8 @@ import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 import Button from '../../../graphics/Button'
 
+Pixi.utils.skipHello()
+
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
     resources = loader.resources,

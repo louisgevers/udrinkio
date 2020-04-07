@@ -7,6 +7,8 @@ import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 import ProgressBar from '../../ProgressBar/ProgressBar'
 
+Pixi.utils.skipHello()
+
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
     resources = loader.resources,
