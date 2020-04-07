@@ -150,6 +150,23 @@ class FTheDealerGame extends Component {
 
     initPlayerSprites = () => {
         this.playerContainer = new Pixi.Container()
+
+        const playerOrder = new Pixi.Text('You are player ')
+        playerOrder.resolution = 2
+        playerOrder.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fontSize: '22px',
+            fill: '#dddddd'
+        }
+        const playerOrderNumber = new Pixi.Text('')
+        playerOrderNumber.resolution = 2
+        playerOrderNumber.style = {
+            fontFamily: '\'Open Sans\', sans-serif',
+            fontSize: '22px',
+            fill: '#ffffff',
+            fontWeight: 'bold'
+        }
+        
         const dealerName = new Pixi.Text(this.gameState.users.get(this.gameState.dealer))
         dealerName.resolution = 2
         dealerName.style = {
@@ -166,16 +183,24 @@ class FTheDealerGame extends Component {
         }
         dealerText.resolution = 2
         
+        playerOrderNumber.x = playerOrder.width
+        dealerName.y = playerOrder.height + 10
         dealerText.x = dealerName.width
-
+        dealerText.y = dealerName.y
+        
         this.playerContainer.data = {
-            dealerName: dealerName
+            dealerName: dealerName,
+            dealerText: dealerText,
+            orderText: playerOrder,
+            orderNumber: playerOrderNumber
         }
+        this.playerContainer.addChild(playerOrder)
+        this.playerContainer.addChild(playerOrderNumber)
         this.playerContainer.addChild(dealerName)
         this.playerContainer.addChild(dealerText)
         this.app.stage.addChild(this.playerContainer)
-        this.positionPlayerSprites()
         this.updatePlayerSprites()
+        this.positionPlayerSprites()
     }
 
     initOtherPlayerSprites = () => {
@@ -286,6 +311,14 @@ class FTheDealerGame extends Component {
     positionPlayerSprites = () => {
         this.playerContainer.x = this.app.renderer.width / 2 - this.playerContainer.width / 2
         this.playerContainer.y = this.app.renderer.height - this.playerContainer.height - 40
+        const orderText = this.playerContainer.data.orderText
+        const orderNumber = this.playerContainer.data.orderNumber
+        orderText.x = this.playerContainer.width / 2 - orderText.width / 2 - orderNumber.width / 2
+        orderNumber.x = this.playerContainer.width / 2 - orderNumber.width / 2 + orderText.width / 2
+        const dealerName = this.playerContainer.data.dealerName
+        const dealerText = this.playerContainer.data.dealerText
+        dealerName.x = this.playerContainer.width / 2 - dealerName.width / 2 - dealerText.width / 2
+        dealerText.x = this.playerContainer.width / 2 - dealerText.width / 2 + dealerName.width / 2
     }
 
     positionOtherPlayerSprites = () => {
@@ -361,6 +394,7 @@ class FTheDealerGame extends Component {
             this.playerContainer.visible = false
         } else {
             this.playerContainer.data.dealerName.text = this.gameState.users.get(this.gameState.dealer)
+            this.playerContainer.data.orderNumber.text = `#${this.getOrderNumber(this.props.session.userId)}`
             this.playerContainer.visible = true
         }
     }
