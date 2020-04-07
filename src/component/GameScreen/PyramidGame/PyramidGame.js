@@ -22,6 +22,7 @@ class PyramidGame extends Component {
         this.state = {
             progress: 0
         }
+        this.timeOuts = new Map()
     }
 
     // ### COMPONENT METHODS ###
@@ -77,8 +78,15 @@ class PyramidGame extends Component {
     onPlayerCardClick = (index, isVisible) => {
         if (isVisible) {
             this.props.socket.emit('pyramid.hideCard', index)
+            if (this.timeOuts.has(index)) {
+                const timeout = this.timeOuts.get(index)
+                window.clearTimeout(timeout)
+                this.timeOuts.delete(index)
+            }
         } else {
             this.props.socket.emit('pyramid.showCard', index)
+            const timeout = window.setTimeout(() => { this.props.socket.emit('pyramid.hideCard', index) }, 5000)
+            this.timeOuts.set(index, timeout)
         }
     }
 
