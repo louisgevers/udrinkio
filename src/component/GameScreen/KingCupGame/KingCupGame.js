@@ -40,6 +40,7 @@ class KingCupGame extends Component {
         this.props.socket.off('kingcup.towerFell')
         this.props.socket.off('kingcup.drawnCard')
         this.props.socket.off('game.userDisconnected')
+        this.props.socket.off('game.userJoined')
         // pixi.js
         this.cleanup()
         this.app.stop()
@@ -106,6 +107,9 @@ class KingCupGame extends Component {
             this.setState({
                 showCard: false
             })
+        })
+        this.props.socket.on('game.userJoined', (gameState) => {
+            this.onNewGameState(gameState)
         })
     }
 

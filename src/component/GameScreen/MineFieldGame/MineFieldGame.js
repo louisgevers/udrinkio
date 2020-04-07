@@ -34,12 +34,14 @@ class MineFieldGame extends Component {
         // socket.io
         this.props.socket.on('minefield.drawnCard', this.onNewGameState)
         this.props.socket.on('game.userDisconnected', this.onNewGameState)
+        this.props.socket.on('game.userJoined', this.onNewGameState)
     }
 
     componentWillUnmount = () => {
         // socket.io
         this.props.socket.removeListener('minefield.drawnCard', this.onNewGameState)
         this.props.socket.removeListener('game.userDisconnected', this.onNewGameState)
+        this.props.socket.removeListener('game.userJoined', this.onNewGameState)
         // pixi.js
         this.cleanUp()
         this.app.stop()
