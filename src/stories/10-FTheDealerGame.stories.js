@@ -12,7 +12,9 @@ export default {
 export const Simple = () => <FTheDealerGame gameState={state} socket={socket} session={session} />
 
 const state = {
-    table: [['1s'],[],['3h','3c','3s','3d'],[],[],[],['7c'],[],[],[],[],[],['kd','ks']]
+    table: [['1s'],[],['3h','3c','3s','3d'],[],[],[],['7c'],[],[],[],[],[],['kd','ks']],
+    dealer: 0,
+    currentCard: 'qh'
 }
 
 const session = {
@@ -24,7 +26,7 @@ const session = {
         "imageName": "fthedealer.png",
         "primaryColor": "#006B38",
         "primaryDark": "#095e36",
-        "secondaryColor": "#101820FF"
+        "secondaryColor": "#101820"
     },
     userId: 0,
     host: 0
