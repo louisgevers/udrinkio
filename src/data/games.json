@@ -98,7 +98,7 @@
         "id": "minefield",
         "name": "MINE FIELD",
         "minPlayers": 2,
-        "maxPlayers": 9,
+        "maxPlayers": 12,
         "imageName": "minefield.png",
         "primaryColor": "#333333",
         "primaryDark": "#111111",
@@ -131,5 +131,17 @@
             }
         ],
         "infoComponent": "MineFieldInfo.js"
+    },
+    {
+        "id": "fthedealer",
+        "name": "F*CK THE DEALER",
+        "minPlayers": 2,
+        "maxPlayers": 12,
+        "imageName": "fthedealer.png",
+        "primaryColor": "#006B38",
+        "primaryDark": "#095e36",
+        "secondaryColor": "#101820FF",
+        "settings": [],
+        "comingSoon": true
     }
 ]
