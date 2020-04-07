@@ -1,0 +1,35 @@
+.PyramidCardsPrompt .prompt-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.PyramidCardsPrompt .prompt-cards img {
+    max-width: 100%;
+    border-color: black;
+    border-style: solid;
+    border-radius: 10px;
+    border-width: 1px;
+}
+
+.PyramidCardsPrompt .description {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.PyramidCardsPrompt .auto-info {
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+.PyramidCardsPrompt .close-now-button {
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px 0;
+}
+
+.PyramidCardsPrompt .close-now-button:active {
+    color: black;
+}

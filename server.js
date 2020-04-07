@@ -369,6 +369,18 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('pyramid.getCards', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const hand = gameObject.hands.get(socket.session.userId)
+        socket.emit('pyramid.assignedCards', hand)
+      }
+    }
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)

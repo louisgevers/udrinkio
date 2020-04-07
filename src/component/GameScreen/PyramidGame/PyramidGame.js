@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './PyramidGame.css'
 
 import ProgressBar from '../../ProgressBar/ProgressBar.js'
+import PyramidCardsPrompt from './PyramidCardsPrompt/PyramidCardsPrompt.js'
 
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
@@ -20,7 +21,9 @@ class PyramidGame extends Component {
         this.gameState.hands = new Map(JSON.parse(this.gameState.hands))
         this.gameState.users = new Map(JSON.parse(this.gameState.users))
         this.state = {
-            progress: 0
+            progress: 0,
+            timer: 0,
+            hand: null
         }
         this.timeOuts = new Map()
     }
@@ -39,6 +42,7 @@ class PyramidGame extends Component {
         // socket.io
         this.props.socket.off('pyramid.newCard')
         this.props.socket.off('pyramid.playerCard')
+        this.props.socket.off('pyramid.assignedCards')
         this.props.socket.off('game.userDisconnected')
         this.props.socket.off('game.userJoined')
         // pixi.js
@@ -50,6 +54,7 @@ class PyramidGame extends Component {
         return (
             <div className='PyramidGame'>
                 {this.state.progress < 100 && <ProgressBar progress={this.state.progress} color={this.props.session.game.secondaryColor} description={'loading assets...'} />}
+                {this.state.timer > 0 && <PyramidCardsPrompt game={this.props.session.game} hand={this.state.hand} time={this.state.timer} onCloseNow={() => { this.setState({ timer: 0, hand: null }) }} />}
                 <div ref={(divCanvas) => { this.gameCanvas = divCanvas }} className='game-component' />
             </div>
         )
@@ -58,6 +63,7 @@ class PyramidGame extends Component {
     // ### SOCKET.IO METHODS ###
 
     setupSockets = () => {
+        this.props.socket.emit('pyramid.getCards')
         this.props.socket.on('pyramid.newCard', (gameState) => {
             this.newGameState(gameState)
             this.updatePyramid()
@@ -69,6 +75,28 @@ class PyramidGame extends Component {
         })
         this.props.socket.on('game.userDisconnected', this.updateUsers)
         this.props.socket.on('game.userJoined', this.updateUsers)
+        this.props.socket.on('pyramid.assignedCards', this.showCardsPrompt)
+    }
+
+    showCardsPrompt = (hand) => {
+        this.setState({
+            timer: 30,
+            hand: hand
+        })
+        const intervalId = window.setInterval(() => {
+            const timer = this.state.timer - 1
+            if (timer <= 0) {
+                this.setState({
+                    timer: 0,
+                    hand: null
+                })
+                window.clearInterval(intervalId)
+            } else {
+                this.setState({
+                    timer: timer
+                })
+            }
+        }, 1000)
     }
 
     updateUsers = (gameState) => {
