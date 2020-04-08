@@ -354,14 +354,24 @@ class FTheDealerGame extends Component {
     updateTableSprites = () => {
         const table = this.gameState.table
         this.tableSprites.forEach((column, i) => {
-            column.forEach((sprite, j) => {
-                if (i < table.length && j < table[i].length) {
-                    sprite.visible = true
-                    sprite.texture = resources[table[i][j]].texture
-                } else {
-                    sprite.visible = false
-                }
-            })
+            if (table[i].length >= this.gameState.cardsAmount) {
+                column.forEach((sprite, j) => {
+                    if (j === 0) {
+                        sprite.texture = resources['b'].texture
+                    } else {
+                        sprite.visible = false
+                    }
+                })
+            } else {
+                column.forEach((sprite, j) => {
+                    if (i < table.length && j < table[i].length) {
+                        sprite.visible = true
+                        sprite.texture = resources[table[i][j]].texture
+                    } else {
+                        sprite.visible = false
+                    }
+                })
+            }
         })
     }
 

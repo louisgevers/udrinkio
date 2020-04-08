@@ -28,6 +28,7 @@ users.set(11, 'Loriss')
 
 const state = {
     table: [['1s'],[],['3h','3c','3s','3d'],[],[],[],['7c'],[],[],[],[],[],['kd','ks']],
+    cardsAmount: 4,
     dealer: 11,
     currentCard: '1c',
     users: users,
