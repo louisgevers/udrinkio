@@ -27,7 +27,7 @@ class UsernameInput extends Component {
     render() {
         return (
             <div className="UsernameInput">
-                <input ref={(input) => this.input = input} type="text" onInput={this.updateName} className="username-input" id="username-prompt-input" style={this.props.textStyle} autoComplete="off" autoCorrect="off" spellCheck="false" />
+                <input ref={(input) => this.input = input} type="text" maxLength='20' onInput={this.updateName} className="username-input" id="username-prompt-input" style={this.props.textStyle} autoComplete="off" autoCorrect="off" spellCheck="false" />
                 <button className="random-button" onClick={this.setRandomName}>
                     <span className="material-icons">sync</span>
                 </button>

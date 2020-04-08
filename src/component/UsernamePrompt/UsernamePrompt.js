@@ -21,10 +21,16 @@ class UsernamePrompt extends Component {
                 <Prompt primaryColor={this.props.game.primaryColor} secondaryColor={this.props.game.secondaryColor} title={this.props.game.name} onClose={this.props.onClose}>
                     <span>Username</span>
                     <UsernameInput inputStyle={this.textStyle} onNameChange={this.setUsername} />
-                    <button className="prompt-create-button" id="username-prompt-create-button" style={this.buttonStyle} onClick={() => this.props.onStart(this.username)}>Start party</button>
+                    <button className="prompt-create-button" id="username-prompt-create-button" style={this.buttonStyle} onClick={this.onStartClick}>Start party</button>
                 </Prompt>
             </div>
         )
+    }
+
+    onStartClick = () => {
+        if (this.username.length > 0 && this.username.replace(/\s/g, '').length > 0 && this.username.length < 20) {
+            this.props.onStart(this.username)
+        }
     }
 }
 
