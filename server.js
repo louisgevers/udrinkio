@@ -59,7 +59,10 @@ io.on('connection', (socket) => {
   socket.on('room.create', (data) => {
     // Data variables
     const game = data.game
-    const username = data.username
+    var username = data.username
+    if (username.length > 20) {
+      username = username.substring(0, 20)
+    }
     if (typeof game !== 'undefined' && typeof username !== 'undefined') {
       // Create room
     const roomId = generateRoomId()
@@ -108,7 +111,10 @@ io.on('connection', (socket) => {
 
   socket.on('room.join', (data) => {
     // Retrieve data
-    const username = data.username
+    var username = data.username
+    if (username.length > 20) {
+      username = username.substring(0, 20)
+    }
     const roomId = data.roomId
     if (isRoomAvailable(socket, roomId)) {
       // Join room
@@ -180,7 +186,10 @@ io.on('connection', (socket) => {
 
   socket.on('chat.sendMessage', (data) => {
     // Get message
-    const message = data.message
+    var message = data.message
+    if (message.length > 200) {
+      message = message.substring(0, 200)
+    }
     const roomId = socket.session.roomId
     if (typeof roomId !== 'undefined') {
       // Create chat message data
