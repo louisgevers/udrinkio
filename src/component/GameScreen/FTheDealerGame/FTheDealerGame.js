@@ -18,6 +18,7 @@ class FTheDealerGame extends Component {
 
     constructor(props) {
         super(props)
+        this.isNewDealer = false
         this.newGameState(this.props.gameState)
         this.state = {
             progress: 0
@@ -59,6 +60,7 @@ class FTheDealerGame extends Component {
     // ### LOGIC METHODS ###
 
     newGameState = (gameState) => {
+        this.isNewDealer = gameState.dealer === this.props.session.userId && (typeof this.gameState === 'undefined' || this.gameState.dealer !== gameState.dealer)
         this.gameState = gameState
         this.gameState.users = new Map(JSON.parse(this.gameState.users))
     }
@@ -74,6 +76,7 @@ class FTheDealerGame extends Component {
     }
 
     newCard = (currentCard) => {
+        this.isNewDealer = false
         this.gameState.currentCard = currentCard
         this.updateDealerSprites()
         this.updateOtherPlayerSprites()
@@ -86,6 +89,7 @@ class FTheDealerGame extends Component {
     }
 
     newDealer = (dealerId) => {
+        this.isNewDealer = dealerId === this.props.session.userId && this.gameState.dealer !== dealerId
         this.gameState.dealer = dealerId
         this.updatePlayerSprites()
         this.positionPlayerSprites()
@@ -486,7 +490,7 @@ class FTheDealerGame extends Component {
                     currentCard.visible = true
                 } else {
                     nextButton.visible = true
-                    undoButton.visible = true
+                    undoButton.visible = !this.isNewDealer
                     showButton.visible = false
                     currentCard.visible = false
                 }
