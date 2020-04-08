@@ -140,7 +140,7 @@ class MineFieldGame extends Component {
                 card.data = {
                     name: cardName
                 }
-                card.on('click', () => this.onCardClicked(i, j, card.data.name))
+                card.on('pointertap', () => this.onCardClicked(i, j, card.data.name))
                 this.app.stage.addChild(card)
                 spriteRow.push(card)
             })
