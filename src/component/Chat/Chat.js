@@ -9,7 +9,7 @@ class Chat extends Component {
     render() {
         return (
             <div className="Chat">
-                <ChatHeader game={this.props.game} />
+                <ChatHeader game={this.props.game} username={this.props.username} />
                 <ChatContent socket={this.props.socket} />
                 <ChatInput socket={this.props.socket} />
             </div>
