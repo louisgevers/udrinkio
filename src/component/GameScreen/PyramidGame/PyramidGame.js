@@ -152,6 +152,8 @@ class PyramidGame extends Component {
     // ### PIXI.JS METHODS ###
 
     setup = () => {
+        this.app.renderer.plugins.interaction.autoPreventDefault = false
+        this.app.renderer.view.style['touch-action'] = 'auto'
         loader
         .add(cardFiles.map((fileName) => {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}

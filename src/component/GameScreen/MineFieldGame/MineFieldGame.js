@@ -99,6 +99,8 @@ class MineFieldGame extends Component {
     // ###################
 
     setup = () => {
+        this.app.renderer.plugins.interaction.autoPreventDefault = false
+        this.app.renderer.view.style['touch-action'] = 'auto'
         // Add card sprites
         this.spriteTable = []
         loader

@@ -61,6 +61,8 @@ class KingCupGame extends Component {
     // ### PIXI.JS METHODS ###
 
     setup = () => {
+        this.app.renderer.plugins.interaction.autoPreventDefault = false
+        this.app.renderer.view.style['touch-action'] = 'auto'
         this.spriteTable = []
         this.spriteBottleStack = []
         loader
