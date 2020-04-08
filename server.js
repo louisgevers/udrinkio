@@ -501,6 +501,7 @@ function getLobbyData(session) {
   const users = createUsersJson(room.data.users)
   return {
     userId: session.userId,
+    username: session.username,
     roomId: session.roomId,
     game: room.data.game,
     users: users,

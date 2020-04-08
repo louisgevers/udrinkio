@@ -86,7 +86,8 @@ class App extends Component {
             roomId: null,
             game: null,
             users: null,
-            host: null
+            host: null,
+            username: null
           })
         }
       })
@@ -97,7 +98,8 @@ class App extends Component {
           roomId: data.roomId,
           game: data.game,
           users: new Map(JSON.parse(data.users)),
-          host: data.host
+          host: data.host,
+          username: data.username
         }
         this.setState(state)
         this.props.history.push(`/${state.roomId}`)
@@ -127,7 +129,8 @@ class App extends Component {
           roomId: null,
           game: null,
           users: null,
-          host: null
+          host: null,
+          username: null
         })
         alert(`Host ${username} disconnected`)
       })
@@ -231,7 +234,8 @@ class App extends Component {
       game: null,
       isHost: false,
       users: null,
-      roomId: null
+      roomId: null,
+      username: null
     })
     // TODO proper alert
     alert(message)

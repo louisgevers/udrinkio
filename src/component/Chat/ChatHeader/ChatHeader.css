@@ -1,11 +1,40 @@
 .ChatHeader {
     background-color: #434343;
     text-align: center;
-    padding: 10px 0;
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 70% 1fr;
+}
+
+.ChatHeader .game-picture {
+    padding: 10px 0;
 }
 
 .ChatHeader img {
-    height: 100%;
+    max-height: 100%;
     max-width: 100%;
+}
+
+.ChatHeader .username-container {
+    height: 100%;
+    background-color: #222222;
+    position: relative;
+}
+
+.ChatHeader .username-container .username-title {
+    position: absolute;
+    color: #bbbbbb;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.ChatHeader .username-container .username {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    top: 50%;
+    left: 100px;
+    transform: translateY(-50%);
 }
