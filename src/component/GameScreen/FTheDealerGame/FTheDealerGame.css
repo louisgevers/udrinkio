@@ -2,8 +2,3 @@
     position: relative;
     height: 100%;
 }
-
-/* PLACEHOLDER FOR STORYBOOK */
-.PyramidGame, .game-component {
-    height: 100vh;
-}
