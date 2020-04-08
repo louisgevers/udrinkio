@@ -46,7 +46,8 @@ class Game extends Component {
         })
         this.socket.on('game.isOver', () => {
             this.setState({
-                gameOverPrompt: true
+                gameOverPrompt: true,
+                play: false
             })
         })
     }
