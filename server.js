@@ -8,6 +8,7 @@ const {v4: uuidv4 } = require('uuid')
 const MineField = require('./game/MineField.js')
 const KingCup = require('./game/KingCup.js')
 const Pyramid = require('./game/Pyramid.js')
+const FTheDealer = require('./game/FTheDealer.js')
 
 app.use(express.static(path.join(__dirname, 'build')))
 
@@ -235,6 +236,17 @@ io.on('connection', (socket) => {
             playingSocket.session.state = 'game'
           })
         }
+      } else if (gameId === 'fthedealer') { 
+        const cardsAmount = data.value
+        if (typeof cardsAmount === 'number') {
+          const gameObject = new FTheDealer(cardsAmount, room.data.users)
+          room.data.gameObject = gameObject
+          io.to(roomId).emit('game.started', gameObject.generateState())
+          room.data.state = 'game'
+          room.data.sockets.forEach((playingSocket) => {
+            playingSocket.session.state = 'game'
+          })
+        }
       } else {
         // TODO implement other games here
       }
@@ -382,6 +394,86 @@ io.on('connection', (socket) => {
   })
 
   socket.on('pyramid.end', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        room.data.state = 'lobby'
+        delete room.data.gameObject
+        io.to(roomId).emit('game.isOver')
+      }
+    }
+  })
+
+  socket.on('fthedealer.nextCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.nextCard(userId)
+          socket.emit('fthedealer.newCard', gameObject.currentCard)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.showCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.showCard(userId)
+          if (gameObject.lastCard) {
+            io.to(roomId).emit('fthedealer.lastCard')
+          }
+          socket.emit('fthedealer.newCard', gameObject.currentCard)
+          io.to(roomId).emit('fthedealer.newTable', gameObject.table)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.undoShowCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.undoShowCard(userId)
+          socket.emit('fthedealer.newCard', gameObject.currentCard)
+          io.to(roomId).emit('fthedealer.newTable', gameObject.table)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.assignDealer', (newDealerId) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.assignDealer(userId, newDealerId)
+          const dealerSocket = room.data.sockets.get(newDealerId)
+          dealerSocket.emit('fthedealer.newCard', gameObject.currentCard)
+          io.to(roomId).emit('fthedealer.newDealer', gameObject.dealer)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.end', () => {
     const roomId = socket.session.roomId
     const room = getRoom(roomId)
     if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
