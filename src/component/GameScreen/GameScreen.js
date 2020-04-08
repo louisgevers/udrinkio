@@ -3,6 +3,7 @@ import './GameScreen.css'
 import MineFieldGame from './MineFieldGame/MineFieldGame'
 import KingCupGame from './KingCupGame/KingCupGame'
 import PyramidGame from './PyramidGame/PyramidGame'
+import FTheDealerGame from './FTheDealerGame/FTheDealerGame'
 
 class GameScreen extends Component {
     render() {
@@ -20,6 +21,8 @@ class GameScreen extends Component {
             return <KingCupGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} />
         } else if (game.id === 'pyramid') {
             return <PyramidGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} />
+        } else if (game.id === 'fthedealer') {
+            return <FTheDealerGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} />
         } else {
             return <span>{`Game ${game.name} not implemented`}</span>
         }

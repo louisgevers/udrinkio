@@ -59,22 +59,22 @@
         "secondaryColor": "#3FA2BE",
         "settings": [
             {
-                "name": "Game mode",
+                "name": "Deck size",
                 "options": [
                     {   
-                        "display": "EXPRESS (13 cards)",
+                        "display": "QUARTER DECK (13 cards)",
                         "value": 1
                     },
                     {   
-                        "display": "QUICK (26 cards)",
+                        "display": "HALF DECK (26 cards)",
                         "value": 2
                     },
                     {   
-                        "display": "NORMAL (39 cards)",
+                        "display": "3 QUARTERS DECK (39 cards)",
                         "value": 3
                     },
                     {   
-                        "display": "FULL (52 cards)",
+                        "display": "FULL DECK (52 cards)",
                         "value": 4
                     }
                 ]
@@ -141,7 +141,28 @@
         "primaryColor": "#006B38",
         "primaryDark": "#095e36",
         "secondaryColor": "#101820",
-        "settings": [],
-        "comingSoon": true
+        "settings": [
+            {
+                "name": "Deck size",
+                "options": [
+                    {   
+                        "display": "QUARTER DECK (13 cards)",
+                        "value": 1
+                    },
+                    {   
+                        "display": "HALF DECK (26 cards)",
+                        "value": 2
+                    },
+                    {   
+                        "display": "3 QUARTERS DECK (39 cards)",
+                        "value": 3
+                    },
+                    {   
+                        "display": "FULL DECK (52 cards)",
+                        "value": 4
+                    }
+                ]
+            }
+        ]
     }
 ]
