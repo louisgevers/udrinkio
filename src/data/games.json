@@ -146,10 +146,6 @@
                 "name": "Deck size",
                 "options": [
                     {   
-                        "display": "QUARTER DECK (13 cards)",
-                        "value": 1
-                    },
-                    {   
                         "display": "HALF DECK (26 cards)",
                         "value": 2
                     },

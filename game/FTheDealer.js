@@ -13,19 +13,19 @@ tableMap.set('k', 12)
 module.exports = class FTheDealer {
 
     constructor(cardFamiliesAmount, users) {
-        this.cardsAmount = cardFamiliesAmount > 4 ? 4 : cardFamiliesAmount < 1 ? 1 : cardFamiliesAmount
+        this.cardsAmount = cardFamiliesAmount > 4 ? 4 : cardFamiliesAmount < 2 ? 2 : cardFamiliesAmount
         this.deck = deck.createDeck()
         this.filterDeck(this.cardsAmount)
         this.queue = new Queue()
         users.forEach((_, userId) => {
             this.queue.enqueue(userId)
         })
-        // TODO CHECK IF REF WORKS
         this.users = users
         this.table = this.generateTable()
         this.dealer = this.queue.peek()
         this.currentCard = 'b'
         this.lastCardIndex = -1
+        this.lastCard = false
     }
 
     // ### GLOBAL GAME METHODS ###
@@ -48,7 +48,8 @@ module.exports = class FTheDealer {
             dealer: this.dealer,
             currentCard: this.currentCard,
             users: JSON.stringify(Array.from(this.users)),
-            order: this.queue.items
+            order: this.queue.items,
+            lastCard: this.lastCard
         }
     }
 
@@ -62,9 +63,12 @@ module.exports = class FTheDealer {
 
     showCard = (userId) => {
         if (userId === this.dealer && this.currentCard !== 'b') {
-            this.lastCardIndex = tableMap.get(this.currentCard.charAt(0))
+            this.lastCardIndex = tableMap.get(this.currentCard.substring(0, this.currentCard.length - 1))
             this.table[this.lastCardIndex].push(this.currentCard)
             this.currentCard = 'b'
+            if (this.deck.length === 0) {
+                this.lastCard = true
+            }
         }
     }
 

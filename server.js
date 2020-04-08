@@ -406,6 +406,86 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('fthedealer.nextCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.nextCard(userId)
+          socket.emit('fthedealer.newCard', gameObject.currentCard)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.showCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.showCard(userId)
+          if (gameObject.lastCard) {
+            io.to(roomId).emit('fthedealer.lastCard')
+          }
+          socket.emit('fthedealer.newCard', gameObject.currentCard)
+          io.to(roomId).emit('fthedealer.newTable', gameObject.table)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.undoShowCard', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.undoShowCard(userId)
+          socket.emit('fthedealer.newCard', gameObject.currentCard)
+          io.to(roomId).emit('fthedealer.newTable', gameObject.table)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.assignDealer', (newDealerId) => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        const userId = socket.session.userId
+        if (userId === gameObject.dealer) {
+          gameObject.assignDealer(userId, newDealerId)
+          const dealerSocket = room.data.sockets.get(newDealerId)
+          dealerSocket.emit('fthedealer.newCard', gameObject.currentCard)
+          io.to(roomId).emit('fthedealer.newDealer', gameObject.dealer)
+        }
+      }
+    }
+  })
+
+  socket.on('fthedealer.end', () => {
+    const roomId = socket.session.roomId
+    const room = getRoom(roomId)
+    if (typeof room !== 'undefined' && typeof room.data !== 'undefined') {
+      const gameObject = room.data.gameObject
+      if (typeof gameObject !== 'undefined') {
+        room.data.state = 'lobby'
+        delete room.data.gameObject
+        io.to(roomId).emit('game.isOver')
+      }
+    }
+  })
+
   socket.on('disconnect', () => { 
     connectionsCount -= 1
     console.log(`[D](${connectionsCount} connection(s)) socket [${socket.id}] disconnected`)

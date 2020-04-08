@@ -18,8 +18,7 @@ class FTheDealerGame extends Component {
 
     constructor(props) {
         super(props)
-        this.gameState = this.props.gameState
-        this.gameState.users = new Map(JSON.parse(this.gameState.users))
+        this.newGameState(this.props.gameState)
         this.state = {
             progress: 0
         }
@@ -36,6 +35,13 @@ class FTheDealerGame extends Component {
     }
 
     componentWillUnmount = () => {
+        // socket.io
+        this.props.socket.off('fthedealer.newCard')
+        this.props.socket.off('fthedealer.newTable')
+        this.props.socket.off('fthedealer.newDealer')
+        this.props.socket.off('fthedealer.lastCard')
+        this.props.socket.off('game.userDisconnected')
+        this.props.socket.off('game.userJoined')
         // pixi.js
         this.cleanup()
         this.app.stop()
@@ -50,10 +56,78 @@ class FTheDealerGame extends Component {
         )
     }
 
+    // ### LOGIC METHODS ###
+
+    newGameState = (gameState) => {
+        this.gameState = gameState
+        this.gameState.users = new Map(JSON.parse(this.gameState.users))
+    }
+
+    updateUsers = (gameState) => {
+        this.newGameState(gameState)
+        this.updatePlayerSprites()
+        this.positionPlayerSprites()
+        this.updateDealerSprites()
+        this.positionDealerSprites()
+        this.updateOtherPlayerSprites()
+        this.positionOtherPlayerSprites()
+    }
+
+    newCard = (currentCard) => {
+        this.gameState.currentCard = currentCard
+        this.updateDealerSprites()
+        this.updateOtherPlayerSprites()
+        this.positionOtherPlayerSprites()
+    }
+
+    newTable = (table) => {
+        this.gameState.table = table
+        this.updateTableSprites()
+    }
+
+    newDealer = (dealerId) => {
+        this.gameState.dealer = dealerId
+        this.updatePlayerSprites()
+        this.positionPlayerSprites()
+        this.updateDealerSprites()
+        this.positionDealerSprites()
+        this.updateOtherPlayerSprites()
+        this.positionOtherPlayerSprites()
+    }
+
+    onLastCard = () => {
+        this.gameState.lastCard = true
+    }
+
     // ### SOCKET.IO METHODS ###
 
     setupSockets = () => {
+        this.props.socket.on('fthedealer.newCard', this.newCard)
+        this.props.socket.on('fthedealer.newTable', this.newTable)
+        this.props.socket.on('fthedealer.newDealer', this.newDealer)
+        this.props.socket.on('fthedealer.lastCard', this.onLastCard)
+        this.props.socket.on('game.userDisconnected', this.updateUsers)
+        this.props.socket.on('game.userJoined', this.updateUsers)
+    }
 
+    nextCardClick = () => {
+        this.props.socket.emit('fthedealer.nextCard')
+    }
+
+    showCardClick = () => {
+        this.props.socket.emit('fthedealer.showCard')
+    }
+
+    undoShowCardClick = () => {
+        this.props.socket.emit('fthedealer.undoShowCard')
+    }
+
+    assignDealerClick = (userId) => {
+        this.props.socket.emit('fthedealer.assignDealer', userId)
+    }
+
+    endGameClick = () => {
+        this.props.socket.emit('fthedealer.end')
     }
 
     // ### PIXI.JS METHODS ###
@@ -125,8 +199,13 @@ class FTheDealerGame extends Component {
         const currentCardSprite = new Sprite(resources['b'].texture)
         
         const nextCardButton = new Button('NEXT CARD', this.props.session.game.secondaryColor)
+        nextCardButton.on('pointertap', this.nextCardClick)
         const showCardButton = new Button('SHOW CARD', this.props.session.game.secondaryColor)
+        showCardButton.on('pointertap', this.showCardClick)
         const undoCardButton = new Button('UNDO', this.props.session.game.primaryDark)
+        undoCardButton.on('pointertap', this.undoShowCardClick)
+        const endGameButton = new Button('END GAME', '#ff0000')
+        endGameButton.on('pointertap', this.endGameClick)
 
         this.dealerContainer.data = {
             dealerText: dealerText,
@@ -134,7 +213,8 @@ class FTheDealerGame extends Component {
             currentCard: currentCardSprite,
             nextCardButton: nextCardButton,
             showCardButton: showCardButton,
-            undoCardButton: undoCardButton
+            undoCardButton: undoCardButton,
+            endGameButton: endGameButton
         }
 
         this.dealerContainer.addChild(dealerText)
@@ -143,6 +223,7 @@ class FTheDealerGame extends Component {
         this.dealerContainer.addChild(nextCardButton)
         this.dealerContainer.addChild(showCardButton)
         this.dealerContainer.addChild(undoCardButton)
+        this.dealerContainer.addChild(endGameButton)
 
         this.app.stage.addChild(this.dealerContainer)
         this.positionDealerSprites()
@@ -296,6 +377,7 @@ class FTheDealerGame extends Component {
         const nextCardButton = this.dealerContainer.data.nextCardButton
         const showCardButton = this.dealerContainer.data.showCardButton
         const undoCardButton = this.dealerContainer.data.undoCardButton
+        const endGameButton = this.dealerContainer.data.endGameButton
         // Positioning
         nextCardButton.x = deck.width
         nextCardButton.y = dealerText.height + 10
@@ -303,6 +385,8 @@ class FTheDealerGame extends Component {
         undoCardButton.y = nextCardButton.y + nextCardButton.height
         showCardButton.x = nextCardButton.x
         showCardButton.y = nextCardButton.y
+        endGameButton.x = nextCardButton.x
+        endGameButton.y = nextCardButton.y
         
         // CONTAINER
         this.dealerContainer.x = this.app.renderer.width / 2 - this.dealerContainer.width / 2
@@ -383,18 +467,31 @@ class FTheDealerGame extends Component {
             const showButton = this.dealerContainer.data.showCardButton
             const undoButton = this.dealerContainer.data.undoCardButton
             const currentCard = this.dealerContainer.data.currentCard
-            if (this.gameState.currentCard !== 'b') {
+            const endGameButton = this.dealerContainer.data.endGameButton
+            const dealerDeck = this.dealerContainer.data.deck
+            if (this.gameState.lastCard) {
+                endGameButton.visible = true
                 nextButton.visible = false
                 undoButton.visible = false
-                showButton.visible = true
-                currentCard.texture = resources[this.gameState.currentCard].texture
-                currentCard.visible = true
-            } else {
-                nextButton.visible = true
-                undoButton.visible = true
                 showButton.visible = false
                 currentCard.visible = false
+                dealerDeck.visible = false
+            } else {
+                endGameButton.visible = false
+                if (this.gameState.currentCard !== 'b') {
+                    nextButton.visible = false
+                    undoButton.visible = false
+                    showButton.visible = true
+                    currentCard.texture = resources[this.gameState.currentCard].texture
+                    currentCard.visible = true
+                } else {
+                    nextButton.visible = true
+                    undoButton.visible = true
+                    showButton.visible = false
+                    currentCard.visible = false
+                }
             }
+            
         } else {
             this.dealerContainer.visible = false
         }
@@ -418,6 +515,7 @@ class FTheDealerGame extends Component {
             const userId = this.gameState.order[i]
             const userName = this.gameState.users.get(userId)
             this.otherPlayerContainers[counter].data.userName.text = userName
+            this.otherPlayerContainers[counter].data.userId = userId
             if (this.gameState.dealer === userId) {
                 this.otherPlayerContainers[counter].data.dealerToken.visible = true
             } else {
@@ -430,6 +528,7 @@ class FTheDealerGame extends Component {
             const userId = this.gameState.order[i]
             const userName = this.gameState.users.get(userId)
             this.otherPlayerContainers[counter].data.userName.text = userName
+            this.otherPlayerContainers[counter].data.userId = userId
             if (this.gameState.dealer === userId) {
                 this.otherPlayerContainers[counter].data.dealerToken.visible = true
             } else {
@@ -441,11 +540,14 @@ class FTheDealerGame extends Component {
 
         this.otherPlayerContainers.forEach((container, i) => {
             if (i < this.gameState.order.length - 1) {
-                if (this.gameState.dealer === this.props.session.userId && this.gameState.currentCard === 'b') {
+                if (this.gameState.dealer === this.props.session.userId && this.gameState.currentCard === 'b' && !this.gameState.lastCard) {
                     container.data.assignDealerButton.visible = true
+                    container.data.assignDealerButton.on('pointertap', () => this.assignDealerClick(container.data.userId))
                 } else {
                     container.data.assignDealerButton.visible = false
+                    container.data.assignDealerButton.removeAllListeners()
                 }
+                container.visible = true
             } else {
                 container.visible = false
             }
