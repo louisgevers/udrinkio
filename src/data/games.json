@@ -34,7 +34,8 @@
                     }
                 ]
             }
-        ]
+        ],
+        "infoComponent": "PyramidInfo.js"
     },
     {
         "id": "kingcup",
