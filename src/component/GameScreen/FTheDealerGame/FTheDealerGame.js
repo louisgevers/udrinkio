@@ -424,13 +424,23 @@ class FTheDealerGame extends Component {
             userOrder.x = container.width / 2 - userOrder.width / 2
         })
 
-        const n = this.otherPlayerContainers.length
+        const n = this.gameState.order.length - 1
+        // const n = this.otherPlayerContainers.length
         const offset = 20
-        this.positionLeftToPlayer(this.otherPlayerContainers[0], offset)
-        this.positionLeft(this.otherPlayerContainers, 1, 3, offset)
-        this.positionTop(this.otherPlayerContainers, 3, n - 3, offset)
-        this.positionRight(this.otherPlayerContainers, n - 3, n - 1, offset)
-        this.positionRightToPlayer(this.otherPlayerContainers[n - 1], offset)
+
+        if (n < 6) {
+            this.positionTop(this.otherPlayerContainers, 0, n, offset)
+        } else if (n < 9) {
+            this.positionLeft(this.otherPlayerContainers, 0, 2, offset)
+            this.positionTop(this.otherPlayerContainers, 2, n - 2, offset)
+            this.positionRight(this.otherPlayerContainers, n - 2, n, offset)
+        } else {
+            this.positionLeftToPlayer(this.otherPlayerContainers[0], offset)
+            this.positionLeft(this.otherPlayerContainers, 1, 3, offset)
+            this.positionTop(this.otherPlayerContainers, 3, n - 3, offset)
+            this.positionRight(this.otherPlayerContainers, n - 3, n - 1, offset)
+            this.positionRightToPlayer(this.otherPlayerContainers[n - 1], offset)
+        }
     }
 
     reposition = () => {
