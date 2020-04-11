@@ -21,7 +21,7 @@ class GameTile extends Component {
                 </div>
                 <img src={require(`../../../image/${this.props.game.imageName}`)} alt={`${this.props.game.name} icon`}/>
                 {this.props.game.comingSoon ? 
-                <button className="create-party-button" style={{backgroundColor: '#333333', color: '#555555'}} disabled>COMING SOON</button>
+                <button className="coming-soon-button" style={{backgroundColor: '#555555', color: '#aaaaaa'}} disabled>COMING SOON</button>
                 : <button className="create-party-button" type="submit" data-color={this.props.game.secondaryColor} onClick={this.props.onCreateParty}>Create party</button>}
             </div>
         )
