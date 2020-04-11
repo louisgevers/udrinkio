@@ -35,9 +35,11 @@ class PyramidGame extends Component {
 
     componentDidMount = () => {
         // pixi.js
-        this.app = new Application({ resizeTo: this.gameCanvas, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
+        this.app = new Application({ autoResize: true, resolution: devicePixelRatio, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
+        const parent = this.app.view.parentNode
+        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
         this.setup()
     }
 
@@ -171,12 +173,12 @@ class PyramidGame extends Component {
             this.initPlayerCards()
             this.initOtherPlayerCards()
             this.setupSockets()
-            window.addEventListener('resize', this.reposition)
+            window.addEventListener('resize', this.resize)
         })
     }
 
     cleanup = () => {
-        window.removeEventListener('resize', this.reposition)
+        window.removeEventListener('resize', this.resize)
         loader.reset()
     }
 
@@ -403,6 +405,12 @@ class PyramidGame extends Component {
         this.positionPyramid()
         this.positionPlayerCards()
         this.positionOtherPlayerCards()
+    }
+
+    resize = () => {
+        const parent = this.app.view.parentNode
+        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
+        this.reposition()
     }
 
     updatePyramid = () => {

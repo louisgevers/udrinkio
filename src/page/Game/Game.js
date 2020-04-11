@@ -6,6 +6,7 @@ import GameScreen from "../../component/GameScreen/GameScreen"
 import GameSettingsPrompt from "../../component/GameSettingsPrompt/GameSettingsPrompt"
 import GameOverPrompt from "../../component/GameOverPrompt/GameOverPrompt"
 import InfoBox from "../../component/InfoBox/InfoBox"
+import EntryInfoPrompt from "../../component/EntryInfoPrompt/EntryInfoPrompt"
 
 class Game extends Component {
 
@@ -15,22 +16,26 @@ class Game extends Component {
             play: false,
             settingsPrompt: false,
             gameState: null,
-            gameOverPrompt: false
+            gameOverPrompt: false,
+            entryInfo: true
         }
     }
 
     render() {
         return (
             <div className="Game">
+                {this.props.session.userId !== null && this.state.entryInfo && <EntryInfoPrompt game={this.props.session.game} onClose={this.onEntryInfoClose} />}
                 {(this.state.settingsPrompt && <GameSettingsPrompt game={this.props.session.game} onOptionChosen={this.onOptionChosen} onClose={() => this.setState({settingsPrompt: false})} />)}
                 {(this.state.gameOverPrompt && <GameOverPrompt game={this.props.session.game} onPlayAgain={this.playAgain} onHome={this.props.onHomeClick} />)}
-                {(this.state.play ? 
-                <GameScreen session={this.props.session} gameState={this.state.gameState} socket={this.props.socket} />
-                : 
-                <Lobby session={this.props.session} socket={this.props.socket} onStartClick={this.startGame} />
-                )}
+                <div className='game-screens'>
+                    {(this.state.play ? 
+                    <GameScreen session={this.props.session} gameState={this.state.gameState} socket={this.props.socket} />
+                    : 
+                    <Lobby session={this.props.session} socket={this.props.socket} onStartClick={this.startGame} />
+                    )}
+                    <Chat game={this.props.session.game} username={this.props.session.username} socket={this.props.socket} />
+                </div> 
                 <InfoBox infoComponent={this.props.session.game.infoComponent} />
-                <Chat game={this.props.session.game} username={this.props.session.username} socket={this.props.socket} />
                 <button className="home-button" onClick={this.props.onHomeClick}>{this.state.play ? 'Quit game' : 'Home'}</button>
             </div>
         )
@@ -66,6 +71,12 @@ class Game extends Component {
         this.socket.emit('game.start', data)
         this.setState({
             settingsPrompt: false
+        })
+    }
+
+    onEntryInfoClose = () => {
+        this.setState({
+            entryInfo: false
         })
     }
 

@@ -1,0 +1,12 @@
+.EntryInfoPrompt button {
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.EntryInfoPrompt button:active {
+    border: none;
+    color: black;
+}

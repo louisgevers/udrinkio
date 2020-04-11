@@ -129,7 +129,7 @@ io.on('connection', (socket) => {
       // Update room information
       room.data.users.set(session.userId, session.username)
       room.data.sockets.set(session.userId, socket)
-    // Inform user
+      // Inform user
       const lobbyData = getLobbyData(session)
       socket.emit('state.lobby', lobbyData)
       if (room.data.state === 'game' && typeof room.data.gameObject !== 'undefined') {

@@ -29,9 +29,11 @@ class FTheDealerGame extends Component {
 
     componentDidMount = () => {
         // pixi.js
-        this.app = new Application({ resizeTo: this.gameCanvas, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
+        this.app = new Application({ autoResize: true, resolution: devicePixelRatio, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
+        const parent = this.app.view.parentNode
+        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
         this.setup()
     }
 
@@ -68,11 +70,8 @@ class FTheDealerGame extends Component {
     updateUsers = (gameState) => {
         this.newGameState(gameState)
         this.updatePlayerSprites()
-        this.positionPlayerSprites()
         this.updateDealerSprites()
-        this.positionDealerSprites()
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
 
     newCard = (currentCard) => {
@@ -80,7 +79,6 @@ class FTheDealerGame extends Component {
         this.gameState.currentCard = currentCard
         this.updateDealerSprites()
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
 
     newTable = (table) => {
@@ -92,11 +90,8 @@ class FTheDealerGame extends Component {
         this.isNewDealer = dealerId === this.props.session.userId && this.gameState.dealer !== dealerId
         this.gameState.dealer = dealerId
         this.updatePlayerSprites()
-        this.positionPlayerSprites()
         this.updateDealerSprites()
-        this.positionDealerSprites()
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
 
     onLastCard = () => {
@@ -158,12 +153,12 @@ class FTheDealerGame extends Component {
             this.initPlayerSprites()
             this.initOtherPlayerSprites()
             this.setupSockets()
-            window.addEventListener('resize', this.reposition)
+            window.addEventListener('resize', this.resize)
         })
     }
 
     cleanup = () => {
-        window.removeEventListener('resize', this.reposition)
+        window.removeEventListener('resize', this.resize)
         loader.reset()
     }
 
@@ -186,7 +181,6 @@ class FTheDealerGame extends Component {
             this.tableSprites.push(cardSprites)
             this.app.stage.addChild(container)
         }
-        this.positionTableSprites()
         this.updateTableSprites()
     }
 
@@ -232,7 +226,6 @@ class FTheDealerGame extends Component {
         this.dealerContainer.addChild(endGameButton)
 
         this.app.stage.addChild(this.dealerContainer)
-        this.positionDealerSprites()
         this.updateDealerSprites()
     }
 
@@ -288,7 +281,6 @@ class FTheDealerGame extends Component {
         this.playerContainer.addChild(dealerText)
         this.app.stage.addChild(this.playerContainer)
         this.updatePlayerSprites()
-        this.positionPlayerSprites()
     }
 
     initOtherPlayerSprites = () => {
@@ -339,7 +331,6 @@ class FTheDealerGame extends Component {
             this.app.stage.addChild(container)
         }
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
     
     // # POSITIONING #
@@ -424,13 +415,23 @@ class FTheDealerGame extends Component {
             userOrder.x = container.width / 2 - userOrder.width / 2
         })
 
-        const n = this.otherPlayerContainers.length
+        const n = this.gameState.order.length - 1
+        // const n = this.otherPlayerContainers.length
         const offset = 20
-        this.positionLeftToPlayer(this.otherPlayerContainers[0], offset)
-        this.positionLeft(this.otherPlayerContainers, 1, 3, offset)
-        this.positionTop(this.otherPlayerContainers, 3, n - 3, offset)
-        this.positionRight(this.otherPlayerContainers, n - 3, n - 1, offset)
-        this.positionRightToPlayer(this.otherPlayerContainers[n - 1], offset)
+
+        if (n < 6) {
+            this.positionTop(this.otherPlayerContainers, 0, n, offset)
+        } else if (n < 9) {
+            this.positionLeft(this.otherPlayerContainers, 0, 2, offset)
+            this.positionTop(this.otherPlayerContainers, 2, n - 2, offset)
+            this.positionRight(this.otherPlayerContainers, n - 2, n, offset)
+        } else {
+            this.positionLeftToPlayer(this.otherPlayerContainers[0], offset)
+            this.positionLeft(this.otherPlayerContainers, 1, 3, offset)
+            this.positionTop(this.otherPlayerContainers, 3, n - 3, offset)
+            this.positionRight(this.otherPlayerContainers, n - 3, n - 1, offset)
+            this.positionRightToPlayer(this.otherPlayerContainers[n - 1], offset)
+        }
     }
 
     reposition = () => {
@@ -438,6 +439,12 @@ class FTheDealerGame extends Component {
         this.positionDealerSprites()
         this.positionPlayerSprites()
         this.positionOtherPlayerSprites()
+    }
+
+    resize = () => {
+        const parent = this.app.view.parentNode
+        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
+        this.reposition()
     }
 
     // # UPDATING #
@@ -464,6 +471,7 @@ class FTheDealerGame extends Component {
                 })
             }
         })
+        this.positionTableSprites()
     }
 
     updateDealerSprites = () => {
@@ -501,6 +509,7 @@ class FTheDealerGame extends Component {
         } else {
             this.dealerContainer.visible = false
         }
+        this.positionDealerSprites()
     }
 
     updatePlayerSprites = () => {
@@ -511,6 +520,7 @@ class FTheDealerGame extends Component {
             this.playerContainer.data.orderNumber.text = `#${this.getOrderNumber(this.props.session.userId)}`
             this.playerContainer.visible = true
         }
+        this.positionPlayerSprites()
     }
 
     updateOtherPlayerSprites = () => {
@@ -558,6 +568,7 @@ class FTheDealerGame extends Component {
                 container.visible = false
             }
         })
+        this.positionOtherPlayerSprites()
     }
 
     // # HELPER METHODS #
@@ -565,11 +576,13 @@ class FTheDealerGame extends Component {
     positionLeftToPlayer = (container, offset) => {
         container.x = this.app.renderer.width / 4 - container.width / 2
         container.y = this.app.renderer.height - container.data.height - offset
+        container.rotation = 0
     }
 
     positionRightToPlayer = (container, offset) => {
         container.x = 3 * this.app.renderer.width / 4 - container.width / 2
         container.y = this.app.renderer.height - container.data.height - offset
+        container.rotation = 0
     }
 
     positionLeft = (containers, startIndex, stopIndex, offset) => {
@@ -598,6 +611,7 @@ class FTheDealerGame extends Component {
             const container = containers[i]
             container.y = offset
             container.x = (n - (stopIndex - i) + 1) * (this.app.renderer.width / (n + 1)) - container.width / 2
+            container.rotation = 0
         }
     }
 
