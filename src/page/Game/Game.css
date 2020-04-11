@@ -2,6 +2,10 @@
     height: 100%;
 }
 
+.Game .game-screens {
+    height: 100%;
+}
+
 .Lobby {
     min-height: 100%;
 }
@@ -51,17 +55,22 @@
 /* Desktop */
 @media only screen and (min-width: 800px) {
     
-    .Lobby, .GameScreen {
+    .Game .game-screens {
+        display: grid;
+        grid-template-columns: 75% 1fr;
+    }
+
+    /* .Lobby, .GameScreen {
         float: left;
         width: 75%;
-    }
+    } */
 
     .Chat {
         min-height: 600px;
         height: 100%;
-        float: left;
+        /* float: left;
         clear: right;
-        width: 25%;
+        width: 25%; */
     }
 
     .InfoBox {
