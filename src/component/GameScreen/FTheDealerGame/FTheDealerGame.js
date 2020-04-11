@@ -575,11 +575,13 @@ class FTheDealerGame extends Component {
     positionLeftToPlayer = (container, offset) => {
         container.x = this.app.renderer.width / 4 - container.width / 2
         container.y = this.app.renderer.height - container.data.height - offset
+        container.rotation = 0
     }
 
     positionRightToPlayer = (container, offset) => {
         container.x = 3 * this.app.renderer.width / 4 - container.width / 2
         container.y = this.app.renderer.height - container.data.height - offset
+        container.rotation = 0
     }
 
     positionLeft = (containers, startIndex, stopIndex, offset) => {
@@ -608,6 +610,7 @@ class FTheDealerGame extends Component {
             const container = containers[i]
             container.y = offset
             container.x = (n - (stopIndex - i) + 1) * (this.app.renderer.width / (n + 1)) - container.width / 2
+            container.rotation = 0
         }
     }
 
