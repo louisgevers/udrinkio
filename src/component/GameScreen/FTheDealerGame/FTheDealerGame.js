@@ -29,7 +29,7 @@ class FTheDealerGame extends Component {
 
     componentDidMount = () => {
         // pixi.js
-        this.app = new Application({ autoResize: true, resolution: devicePixelRatio, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
+        this.app = new Application({ autoResize: true, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
         const parent = this.app.view.parentNode
