@@ -34,19 +34,8 @@
                     }
                 ]
             }
-        ]
-    },
-    {
-        "id": "horserace",
-        "name": "HORSE RACE",
-        "minPlayers": 2,
-        "maxPlayers": 6,
-        "imageName": "horse-race.png",
-        "primaryColor": "#3FA2BE",
-        "primaryDark": "#3B8194",
-        "secondaryColor": "#FC0F3B",
-        "settings": [],
-        "comingSoon": true
+        ],
+        "infoComponent": "PyramidInfo.js"
     },
     {
         "id": "kingcup",
@@ -80,19 +69,8 @@
                 ]
             }
         ],
-        "infoComponent": "KingCupInfo.js"
-    },
-    {
-        "id": "triviaquizz",
-        "name": "TRIVIA QUIZ",
-        "minPlayers": 2,
-        "maxPlayers": 8,
-        "imageName": "quiz.png",
-        "primaryColor": "#EEB711",
-        "primaryDark": "#B68F1B",
-        "secondaryColor": "#6D534B",
-        "settings": [],
-        "comingSoon": true
+        "infoComponent": "KingCupInfo.js",
+        "comingSoon": "true"
     },
     {
         "id": "minefield",
@@ -130,7 +108,8 @@
                 ]
             }
         ],
-        "infoComponent": "MineFieldInfo.js"
+        "infoComponent": "MineFieldInfo.js",
+        "comingSoon": "true"
     },
     {
         "id": "fthedealer",
@@ -159,6 +138,7 @@
                     }
                 ]
             }
-        ]
+        ],
+        "infoComponent": "FTheDealerInfo.js"
     }
 ]
