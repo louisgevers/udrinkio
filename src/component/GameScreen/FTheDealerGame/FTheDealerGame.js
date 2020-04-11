@@ -68,11 +68,8 @@ class FTheDealerGame extends Component {
     updateUsers = (gameState) => {
         this.newGameState(gameState)
         this.updatePlayerSprites()
-        this.positionPlayerSprites()
         this.updateDealerSprites()
-        this.positionDealerSprites()
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
 
     newCard = (currentCard) => {
@@ -80,7 +77,6 @@ class FTheDealerGame extends Component {
         this.gameState.currentCard = currentCard
         this.updateDealerSprites()
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
 
     newTable = (table) => {
@@ -92,11 +88,8 @@ class FTheDealerGame extends Component {
         this.isNewDealer = dealerId === this.props.session.userId && this.gameState.dealer !== dealerId
         this.gameState.dealer = dealerId
         this.updatePlayerSprites()
-        this.positionPlayerSprites()
         this.updateDealerSprites()
-        this.positionDealerSprites()
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
 
     onLastCard = () => {
@@ -186,7 +179,6 @@ class FTheDealerGame extends Component {
             this.tableSprites.push(cardSprites)
             this.app.stage.addChild(container)
         }
-        this.positionTableSprites()
         this.updateTableSprites()
     }
 
@@ -232,7 +224,6 @@ class FTheDealerGame extends Component {
         this.dealerContainer.addChild(endGameButton)
 
         this.app.stage.addChild(this.dealerContainer)
-        this.positionDealerSprites()
         this.updateDealerSprites()
     }
 
@@ -288,7 +279,6 @@ class FTheDealerGame extends Component {
         this.playerContainer.addChild(dealerText)
         this.app.stage.addChild(this.playerContainer)
         this.updatePlayerSprites()
-        this.positionPlayerSprites()
     }
 
     initOtherPlayerSprites = () => {
@@ -339,7 +329,6 @@ class FTheDealerGame extends Component {
             this.app.stage.addChild(container)
         }
         this.updateOtherPlayerSprites()
-        this.positionOtherPlayerSprites()
     }
     
     // # POSITIONING #
@@ -474,6 +463,7 @@ class FTheDealerGame extends Component {
                 })
             }
         })
+        this.positionTableSprites()
     }
 
     updateDealerSprites = () => {
@@ -511,6 +501,7 @@ class FTheDealerGame extends Component {
         } else {
             this.dealerContainer.visible = false
         }
+        this.positionDealerSprites()
     }
 
     updatePlayerSprites = () => {
@@ -521,6 +512,7 @@ class FTheDealerGame extends Component {
             this.playerContainer.data.orderNumber.text = `#${this.getOrderNumber(this.props.session.userId)}`
             this.playerContainer.visible = true
         }
+        this.positionPlayerSprites()
     }
 
     updateOtherPlayerSprites = () => {
@@ -568,6 +560,7 @@ class FTheDealerGame extends Component {
                 container.visible = false
             }
         })
+        this.positionOtherPlayerSprites()
     }
 
     // # HELPER METHODS #
