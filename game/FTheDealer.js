@@ -3,12 +3,13 @@ const Queue = require('./Queue.js')
 
 const tableMap = new Map()
 
-for (var i = 1; i <= 10; i++) {
-    tableMap.set(i.toString(), i - 1)
+for (var i = 2; i <= 10; i++) {
+    tableMap.set(i.toString(), i - 2)
 }
-tableMap.set('j', 10)
-tableMap.set('q', 11)
-tableMap.set('k', 12)
+tableMap.set('j', 9)
+tableMap.set('q', 10)
+tableMap.set('k', 11)
+tableMap.set('1', 12)
 
 module.exports = class FTheDealer {
 
