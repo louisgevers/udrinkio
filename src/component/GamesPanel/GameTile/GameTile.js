@@ -3,11 +3,9 @@ import "./GameTile.css"
 
 class GameTile extends Component {
 
-    tileStyle = this.props.game.comingSoon ? {backgroundColor: '#555555'} : {backgroundColor: this.props.game.primaryColor}
+    tileStyle = {backgroundColor: this.props.game.primaryColor}
 
-    headerStyle = this.props.game.comingSoon ? {color: '#333333'} : {color: this.props.game.secondaryColor}
-
-    imageStyle = this.props.game.comingSoon ? {filter: 'grayscale(100%)'} : {}
+    headerStyle = {color: this.props.game.secondaryColor}
 
     buttonStyle = {
         backgroundColor: this.props.game.secondaryColor,
@@ -21,9 +19,9 @@ class GameTile extends Component {
                     <h2 style={this.headerStyle}>{this.props.game.name}</h2>
                     <span>Players {this.props.game.minPlayers} - {this.props.game.maxPlayers}</span>
                 </div>
-                <img src={require(`../../../image/${this.props.game.imageName}`)} alt={`${this.props.game.name} icon`} style={this.imageStyle}/>
+                <img src={require(`../../../image/${this.props.game.imageName}`)} alt={`${this.props.game.name} icon`}/>
                 {this.props.game.comingSoon ? 
-                <button className="create-party-button" style={{backgroundColor: '#333333', color: '#555555'}} disabled>COMING SOON</button>
+                <button className="coming-soon-button" style={{backgroundColor: '#555555', color: '#aaaaaa'}} disabled>COMING SOON</button>
                 : <button className="create-party-button" type="submit" data-color={this.props.game.secondaryColor} onClick={this.props.onCreateParty}>Create party</button>}
             </div>
         )
