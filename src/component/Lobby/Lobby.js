@@ -19,7 +19,6 @@ class Lobby extends Component {
     render() {
         return (
             <div className="Lobby" style={{backgroundColor: this.props.session.game.primaryColor}}>
-                <button className="lobby-home-button" onClick={this.props.onHomeClick}>Home</button>
                 <div className="header">
                     <h1 style={{color: this.props.session.game.secondaryColor}}>{this.props.session.game.name}</h1>
                     <span className="room-code-title">ROOM CODE</span>

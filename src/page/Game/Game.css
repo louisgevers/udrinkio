@@ -2,7 +2,12 @@
     height: 100%;
 }
 
-.Lobby, .GameScreen {
+.Lobby {
+    min-height: 100%;
+}
+
+.GameScreen {
+    min-height: 600px;
     height: 100%;
 }
 
@@ -21,12 +26,32 @@
     z-index: 100;
 }
 
+.Game .home-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+}
+
+.Game .home-button::before {
+    content: '< '
+}
+
+.Game .home-button:active {
+    color: black;
+}
+
+.Game .home-button:focus {
+    outline: none;
+}
+
 /* Desktop */
 @media only screen and (min-width: 800px) {
     
     .Lobby, .GameScreen {
-        min-height: 600px;
-        height: 100%;
         float: left;
         width: 75%;
     }

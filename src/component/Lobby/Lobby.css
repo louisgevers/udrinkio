@@ -78,17 +78,6 @@
     text-align: center;
 }
 
-.Lobby .lobby-home-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: transparent;
-}
-
-.Lobby .lobby-home-button::before {
-    content: '< '
-}
-
 /* Desktop */
 @media only screen and (min-width: 800px) and (min-height: 700px) {
     .Lobby h1 {
