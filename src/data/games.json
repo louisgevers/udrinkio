@@ -39,7 +39,7 @@
     },
     {
         "id": "kingcup",
-        "name": "KING CUP",
+        "name": "KINGS",
         "minPlayers": 2,
         "maxPlayers": 12,
         "imageName": "king-cup.png",
