@@ -50,7 +50,7 @@ class App extends Component {
           </Switch>
           {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onCreateStartClick}/>}
           {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onJoinStartClick}/>}
-          {!this.cookies.get('accepted-cookies') && !this.state.consentAsked && this.props.location.pathname !== '/cookies-info' &&
+          {!this.state.consentAsked && this.props.location.pathname !== '/cookies-info' &&
           <ConsentBanner
             onReadMore={this.onReadMoreConsent}
             onRefuse={this.onRefuseConsent}
@@ -74,6 +74,12 @@ class App extends Component {
         }
       }
     })
+    if (this.cookies.get('accepted-cookies')) {
+      this.setState({
+        consentAsked: true
+      })
+      this.setupGA()
+    }
     this.initializeSocket()
   }
 
@@ -109,11 +115,7 @@ class App extends Component {
     })
   }
 
-  onAcceptConsent = () => {
-    this.setState({
-      consentAsked: true
-    })
-    this.cookies.set('accepted-cookies', true, { maxAge: 3600 * 24 * 30})
+  setupGA = () => {
     ReactGA.initialize(trackingId)
     this.props.history.listen((location, _) => {
       if (location.pathname !== '/' && location.pathname !== '/cookies-info' && this.state.game !== null) {
@@ -122,6 +124,14 @@ class App extends Component {
         ReactGA.pageview(location.pathname + location.search)
       }
     })
+  }
+
+  onAcceptConsent = () => {
+    this.setState({
+      consentAsked: true
+    })
+    this.cookies.set('accepted-cookies', true, { maxAge: 3600 * 24 * 30})
+    this.setupGA()
   }
 
   initializeSocket = () => {
