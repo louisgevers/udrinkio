@@ -1,0 +1,45 @@
+.AboutCookies {
+    width: 100%;
+    background-color: #424242;
+    height: auto;
+}
+
+.AboutCookies .cookies-explanation {
+    padding: 0 10px;
+    overflow-wrap: break-word;
+    margin: auto;
+    background-color: #f7ebd7;
+}
+
+.AboutCookies .cookies-header {
+    background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../image/cover-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    width: 100%;
+    padding: 50px 0;
+}
+
+.AboutCookies .cookies-header h1 {
+    margin: 0;
+    text-align: center;
+}
+
+.AboutCookies .cookies-explanation h1 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.AboutCookies a {
+    color: #c79400;
+}
+
+@media only screen and (min-width: 800px) {
+
+    .AboutCookies .cookies-explanation {
+        width: 60%;
+        padding: 60px 40px;
+    }
+
+}

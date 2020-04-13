@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import io from "socket.io-client";
+import ReactGA from 'react-ga'
+import Cookies from 'universal-cookie'
 
 import './App.css';
 
 import Home from './page/Home/Home.js';
 import Game from './page/Game/Game';
 import UsernamePrompt from './component/UsernamePrompt/UsernamePrompt';
+import ConsentBanner from './component/ConsentBanner/ConsentBanner';
+import AboutCookies from './page/AboutCookies/AboutCookies';
+
+const trackingId = 'UA-163486392-1'
 
 class App extends Component {
 
@@ -17,8 +23,10 @@ class App extends Component {
       roomId: null,
       game: null,
       users: null,
-      host: null
+      host: null,
+      consentAsked: false
     }
+    this.cookies = new Cookies()
   }
 
   render() {
@@ -27,6 +35,9 @@ class App extends Component {
           <Switch>
             <Route exact path='/'>
               <Home onJoinParty={this.onJoinButtonClick} onCreateParty={this.onCreateButtonClick} />
+            </Route>
+            <Route exact path='/cookies-info'>
+              <AboutCookies />
             </Route>
             <Route path='/*'>
               {
@@ -39,6 +50,12 @@ class App extends Component {
           </Switch>
           {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onCreateStartClick}/>}
           {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onJoinStartClick}/>}
+          {!this.cookies.get('accepted-cookies') && !this.state.consentAsked && this.props.location.pathname !== '/cookies-info' &&
+          <ConsentBanner
+            onReadMore={this.onReadMoreConsent}
+            onRefuse={this.onRefuseConsent}
+            onAccept={this.onAcceptConsent}
+          />}
         </div>
     )
     return (
@@ -68,6 +85,45 @@ class App extends Component {
     this.socket.off('room.isAvailable')
   }
 
+  // ################
+  // # CONSENT FORM #
+  // ################
+
+  onReadMoreConsent = () => {
+    this.props.history.push('/cookies-info')
+    this.setState({
+      userId: null,
+      roomId: null,
+      game: null,
+      users: null,
+      host: null,
+      username: null,
+      joinPrompt: false,
+      createPrompt: false
+    })
+  }
+
+  onRefuseConsent = () => {
+    this.setState({
+      consentAsked: true
+    })
+  }
+
+  onAcceptConsent = () => {
+    this.setState({
+      consentAsked: true
+    })
+    this.cookies.set('accepted-cookies', true, { maxAge: 3600 * 24 * 30})
+    ReactGA.initialize(trackingId)
+    this.props.history.listen((location, _) => {
+      if (location.pathname !== '/' && location.pathname !== '/cookies-info' && this.state.game !== null) {
+        ReactGA.pageview(this.state.game.id)
+      } else {
+        ReactGA.pageview(location.pathname + location.search)
+      }
+    })
+  }
+
   initializeSocket = () => {
     this.socket = io()
     this.socket.emit('app.connect')
@@ -77,7 +133,7 @@ class App extends Component {
       this.socket.on('state.none', () => {
         // TODO if trying to access room
         const path = this.props.location.pathname
-        if (path !== '/') {
+        if (path !== '/' && path !== '/cookies-info') {
           this.socket.emit('room.available', {roomId: path.substr(1)})
         } else {
           this.props.history.push('/')
