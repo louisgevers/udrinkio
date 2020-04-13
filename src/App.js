@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import io from "socket.io-client";
 import ReactGA from 'react-ga'
+import Cookies from 'universal-cookie'
 
 import './App.css';
 
@@ -25,6 +26,7 @@ class App extends Component {
       host: null,
       consentAsked: false
     }
+    this.cookies = new Cookies()
   }
 
   render() {
@@ -48,7 +50,7 @@ class App extends Component {
           </Switch>
           {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onCreateStartClick}/>}
           {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onJoinStartClick}/>}
-          {!this.state.consentAsked && this.props.location.pathname !== '/cookies-info' &&
+          {!this.cookies.get('accepted-cookies') && !this.state.consentAsked && this.props.location.pathname !== '/cookies-info' &&
           <ConsentBanner
             onReadMore={this.onReadMoreConsent}
             onRefuse={this.onRefuseConsent}
@@ -111,6 +113,7 @@ class App extends Component {
     this.setState({
       consentAsked: true
     })
+    this.cookies.set('accepted-cookies', true, { maxAge: 3600 * 24 * 30})
     ReactGA.initialize(trackingId)
     this.props.history.listen((location, _) => {
       if (location.pathname !== '/' && location.pathname !== '/cookies-info' && this.state.game !== null) {

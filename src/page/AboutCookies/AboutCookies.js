@@ -56,6 +56,11 @@ class AboutCookies extends Component {
                                 <td>1 minute</td>
                                 <td>Used to reduce the amount of requests</td>
                             </tr>
+                            <tr>
+                                <td>accepted-cookies</td>
+                                <td>30 days</td>
+                                <td>Used to avoid asking for cookies again when accepted</td>
+                            </tr>
                         </tbody>
                         </table>
                     <h2>I do not wish to have cookies on my device</h2>
