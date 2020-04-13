@@ -118,11 +118,7 @@ class App extends Component {
   setupGA = () => {
     ReactGA.initialize(trackingId)
     this.props.history.listen((location, _) => {
-      if (location.pathname !== '/' && location.pathname !== '/cookies-info' && this.state.game !== null) {
-        ReactGA.pageview(this.state.game.id)
-      } else {
-        ReactGA.pageview(location.pathname + location.search)
-      }
+      ReactGA.pageview(location.pathname + location.search)
     })
   }
 

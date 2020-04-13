@@ -42,6 +42,7 @@ class Game extends Component {
     }
 
     componentDidMount() {
+        document.title = `Udrink.io - ${this.props.session.game.name}`
         this.socket = this.props.socket
         this.socket.on('game.started', (gameState) => {
             this.setState({
