@@ -59,6 +59,11 @@ class App extends Component {
           this.onQuitLobby()
         }
       }
+      if (location.pathname !== '/' && this.state.game !== null) {
+        ReactGA.pageview(this.state.game.id)
+      } else {
+        ReactGA.pageview(location.pathname + location.search)
+      }
     })
     ReactGA.initialize(trackingId)
     this.initializeSocket()
