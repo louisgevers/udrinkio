@@ -11,7 +11,7 @@ class Chat extends Component {
             <div className="Chat">
                 <ChatHeader game={this.props.game} username={this.props.username} />
                 <ChatContent socket={this.props.socket} />
-                <ChatInput socket={this.props.socket} />
+                <ChatInput socket={this.props.socket} analytics={this.cookies.get('accepted-cookies')} />
             </div>
         )
     }

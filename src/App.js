@@ -42,7 +42,7 @@ class App extends Component {
             <Route path='/*'>
               {
                 this.state.roomId !== null &&
-                <Game session={this.state} onHomeClick={this.onQuitLobby} socket={this.socket} />
+                <Game session={this.state} onHomeClick={this.onQuitLobby} socket={this.socket} analytics={this.cookies.get('accepted-cookies')} />
               }
               
             </Route>
