@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import io from "socket.io-client";
+import ReactGA from 'react-ga'
 
 import './App.css';
 
 import Home from './page/Home/Home.js';
 import Game from './page/Game/Game';
 import UsernamePrompt from './component/UsernamePrompt/UsernamePrompt';
+
+const trackingId = 'UA-163486392-1'
 
 class App extends Component {
 
@@ -57,6 +60,7 @@ class App extends Component {
         }
       }
     })
+    ReactGA.initialize(trackingId)
     this.initializeSocket()
   }
 
