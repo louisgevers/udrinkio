@@ -4,12 +4,14 @@ const app = express()
 const http = require('http').createServer(app)
 var io = require('socket.io').listen(http)
 const {v4: uuidv4 } = require('uuid')
+const sslRedirect = require('heroku-ssl-redirect')
 
 const MineField = require('./game/MineField.js')
 const KingCup = require('./game/KingCup.js')
 const Pyramid = require('./game/Pyramid.js')
 const FTheDealer = require('./game/FTheDealer.js')
 
+app.use(sslRedirect())
 app.use(express.static(path.join(__dirname, 'build')))
 
 app.get('*', (req, res) => {
