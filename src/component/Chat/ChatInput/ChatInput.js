@@ -1,6 +1,8 @@
 import React, { Component } from "react"
 import "./ChatInput.css"
 
+import ReactGA from 'react-ga'
+
 class ChatInput extends Component {
 
     constructor(props) {
@@ -35,6 +37,12 @@ class ChatInput extends Component {
         if (message.length > 0 && message.replace(/\s/g, '').length > 0) {
             input.value = ''
             this.socket.emit('chat.sendMessage', {message: message})
+            if (this.props.analytics) {
+                ReactGA.event({
+                    category: 'Chat',
+                    action: 'Sent a message'
+                })
+            }
         }
     }
 }

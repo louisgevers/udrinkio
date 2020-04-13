@@ -16,13 +16,13 @@ class GameScreen extends Component {
 
     getGameComponent = (game) => {
         if (game.id === 'minefield') {
-            return <MineFieldGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket }/>
+            return <MineFieldGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} analytics={this.props.analytics} />
         } else if (game.id === 'kingcup') {
-            return <KingCupGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} />
+            return <KingCupGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} analytics={this.props.analytics} />
         } else if (game.id === 'pyramid') {
-            return <PyramidGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} />
+            return <PyramidGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} analytics={this.props.analytics} />
         } else if (game.id === 'fthedealer') {
-            return <FTheDealerGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} />
+            return <FTheDealerGame session={this.props.session} gameState={this.props.gameState} socket={this.props.socket} analytics={this.props.analytics} />
         } else {
             return <span>{`Game ${game.name} not implemented`}</span>
         }
