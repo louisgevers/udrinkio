@@ -8,6 +8,7 @@ import './App.css';
 import Home from './page/Home/Home.js';
 import Game from './page/Game/Game';
 import UsernamePrompt from './component/UsernamePrompt/UsernamePrompt';
+import ConsentBanner from './component/ConsentBanner/ConsentBanner';
 
 const trackingId = 'UA-163486392-1'
 
@@ -20,7 +21,8 @@ class App extends Component {
       roomId: null,
       game: null,
       users: null,
-      host: null
+      host: null,
+      consentAsked: false
     }
   }
 
@@ -42,6 +44,11 @@ class App extends Component {
           </Switch>
           {this.state.createPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onCreateStartClick}/>}
           {this.state.joinPrompt && <UsernamePrompt game={this.state.game} onClose={this.cancelPrompts} onStart={this.onJoinStartClick}/>}
+          {!this.state.consentAsked && <ConsentBanner
+            onReadMore={this.onReadMoreConsent}
+            onRefuse={this.onRefuseConsent}
+            onAccept={this.onAcceptConsent}
+          />}
         </div>
     )
     return (
@@ -59,13 +66,7 @@ class App extends Component {
           this.onQuitLobby()
         }
       }
-      if (location.pathname !== '/' && this.state.game !== null) {
-        ReactGA.pageview(this.state.game.id)
-      } else {
-        ReactGA.pageview(location.pathname + location.search)
-      }
     })
-    ReactGA.initialize(trackingId)
     this.initializeSocket()
   }
 
@@ -75,6 +76,34 @@ class App extends Component {
     this.socket.off('state.lobby')
     this.socket.off('room.unavailable')
     this.socket.off('room.isAvailable')
+  }
+
+  // ################
+  // # CONSENT FORM #
+  // ################
+
+  onReadMoreConsent = () => {
+    // TODO
+  }
+
+  onRefuseConsent = () => {
+    this.setState({
+      consentAsked: true
+    })
+  }
+
+  onAcceptConsent = () => {
+    this.setState({
+      consentAsked: true
+    })
+    ReactGA.initialize(trackingId)
+    this.props.history.listen((location, _) => {
+      if (location.pathname !== '/' && this.state.game !== null) {
+        ReactGA.pageview(this.state.game.id)
+      } else {
+        ReactGA.pageview(location.pathname + location.search)
+      }
+    })
   }
 
   initializeSocket = () => {

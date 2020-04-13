@@ -1,0 +1,65 @@
+.ConsentBanner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.ConsentBanner .banner-content {
+    position: absolute;
+    background-color: #444444;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.ConsentBanner .banner-content p {
+    color: white;
+    font-size: 12px;
+    margin: 0;
+}
+
+.ConsentBanner .read-more-button, .ConsentBanner .refuse-button {
+    border: none;
+    background: none;
+    color: #EEB711;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ConsentBanner .read-more-button:focus, .ConsentBanner .refuse-button:focus {
+    outline: none;
+}
+
+.ConsentBanner .read-more-button {
+    margin-right: 5%;
+}
+
+.ConsentBanner .accept-button {
+    border: none;
+    background: #EEB711;
+    color: white;
+    padding: 10px 50px;
+    margin: 20px 5px;
+}
+
+.ConsentBanner .accept-button:active {
+    color: #EEB711;
+    background-color: #222222;
+}
+
+@media only screen and (min-width: 800px) {
+    .ConsentBanner .banner-content {
+        justify-content: center;
+    }
+
+    .ConsentBanner .banner-content p {
+        font-size: 14px;
+    }
+}
