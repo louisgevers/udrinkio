@@ -8,6 +8,8 @@ import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 import Button from '../../../graphics/Button'
 
+import ReactGA from 'react-ga'
+
 Pixi.utils.skipHello()
 
 const Application = Pixi.Application,
@@ -66,6 +68,18 @@ class PyramidGame extends Component {
         )
     }
 
+    // ### GOOGLE ANALYTICS ###
+    
+    analyticsEvent = (action) => {
+        if (this.props.analytics) {
+            ReactGA.event({
+                category: 'Game',
+                action: action,
+                label: 'Pyramid'
+            })
+        }
+    }
+
     // ### SOCKET.IO METHODS ###
 
     setupSockets = () => {
@@ -120,19 +134,23 @@ class PyramidGame extends Component {
 
     onNextCardClick = () => {
         this.props.socket.emit('pyramid.nextCard')
+        this.analyticsEvent('Requested next pyramid card')
     }
 
     onUndoCardClick = () => {
         this.props.socket.emit('pyramid.undoCard')
+        this.analyticsEvent('Requested to undo pyramid card')
     }
 
     onEndGameClick = () => {
         this.props.socket.emit('pyramid.end')
+        this.analyticsEvent('Requested end of pyramid game')
     }
 
     onPlayerCardClick = (index, isVisible) => {
         if (isVisible) {
             this.props.socket.emit('pyramid.hideCard', index)
+            this.analyticsEvent('Hid own card')
             if (this.timeOuts.has(index)) {
                 const timeout = this.timeOuts.get(index)
                 window.clearTimeout(timeout)
@@ -140,6 +158,7 @@ class PyramidGame extends Component {
             }
         } else {
             this.props.socket.emit('pyramid.showCard', index)
+            this.analyticsEvent('Showed own card')
             const timeout = window.setTimeout(() => { this.props.socket.emit('pyramid.hideCard', index) }, 5000)
             this.timeOuts.set(index, timeout)
         }

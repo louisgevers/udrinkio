@@ -29,11 +29,11 @@ class Game extends Component {
                 {(this.state.gameOverPrompt && <GameOverPrompt game={this.props.session.game} onPlayAgain={this.playAgain} onHome={this.props.onHomeClick} />)}
                 <div className='game-screens'>
                     {(this.state.play ? 
-                    <GameScreen session={this.props.session} gameState={this.state.gameState} socket={this.props.socket} />
+                    <GameScreen session={this.props.session} gameState={this.state.gameState} socket={this.props.socket} analytics={this.props.analytics} />
                     : 
-                    <Lobby session={this.props.session} socket={this.props.socket} onStartClick={this.startGame} />
+                    <Lobby session={this.props.session} socket={this.props.socket} onStartClick={this.startGame} analytics={this.props.analytics} />
                     )}
-                    <Chat game={this.props.session.game} username={this.props.session.username} socket={this.props.socket} />
+                    <Chat game={this.props.session.game} username={this.props.session.username} socket={this.props.socket} analytics={this.props.analytics} />
                 </div> 
                 <InfoBox infoComponent={this.props.session.game.infoComponent} />
                 <button className="home-button" onClick={this.props.onHomeClick}>{this.state.play ? 'Quit game' : 'Home'}</button>
