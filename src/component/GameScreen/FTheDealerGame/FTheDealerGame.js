@@ -7,6 +7,8 @@ import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 import Button from '../../../graphics/Button'
 
+import ReactGA from 'react-ga'
+
 Pixi.utils.skipHello()
 
 const Application = Pixi.Application,
@@ -57,6 +59,18 @@ class FTheDealerGame extends Component {
                 <div ref={(divCanvas) => { this.gameCanvas = divCanvas }} className='game-component' />
             </div>
         )
+    }
+
+    // ### GOOGLE ANALYTICS ###
+    
+    analyticsEvent = (action) => {
+        if (this.props.analytics) {
+            ReactGA.event({
+                category: 'Game',
+                action: action,
+                label: 'FTheDealer'
+            })
+        }
     }
 
     // ### LOGIC METHODS ###
@@ -111,22 +125,27 @@ class FTheDealerGame extends Component {
 
     nextCardClick = () => {
         this.props.socket.emit('fthedealer.nextCard')
+        this.analyticsEvent('Requested next dealer card')
     }
 
     showCardClick = () => {
         this.props.socket.emit('fthedealer.showCard')
+        this.analyticsEvent('Showed dealer card')
     }
 
     undoShowCardClick = () => {
         this.props.socket.emit('fthedealer.undoShowCard')
+        this.analyticsEvent('Requested undo show dealer card')
     }
 
     assignDealerClick = (userId) => {
         this.props.socket.emit('fthedealer.assignDealer', userId)
+        this.analyticsEvent('Assigned new dealer')
     }
 
     endGameClick = () => {
         this.props.socket.emit('fthedealer.end')
+        this.analyticsEvent('Requested end of fthedealer game')
     }
 
     // ### PIXI.JS METHODS ###
