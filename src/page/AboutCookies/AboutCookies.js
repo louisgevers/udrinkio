@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
 import './AboutCookies.css'
+import Logo from '../../component/Cover/Logo/Logo'
 
 class AboutCookies extends Component {
     render = () => {
         return (
             <div className='AboutCookies'>
+                <div className='cookies-header'>
+                    <Logo />
+                </div>
                 <div className='cookies-explanation'>
                     <h1>About cookies</h1>
                     <p>When you are using <a href='udrink.io'>udrink.io</a>, some information can be stored on your computer, tablet, or smartphone under the form of cookies. This page explains what these cookies are, how they work, and which cookies you can expect when using this website.<br/>
@@ -29,31 +33,35 @@ class AboutCookies extends Component {
                         This information is all strictly anonymous and allows us to better understand your preferences and improve the website accordingly. It allows us to improve popular games, rethink unpopular ones, plan proper times for updates, etc.<br/>
                     </p>
                     <table>
-                        <tr>
-                            <th>Cookie Name</th>
-                            <th>Expiry Date</th>
-                            <th>Role</th>
-                        </tr>
-                        <tr>
-                            <td>_ga</td>
-                            <td>2 years</td>
-                            <td>Used to distinguish users</td>
-                        </tr>
-                        <tr>
-                            <td>_gid</td>
-                            <td>24 hours</td>
-                            <td>Used to distinguish users</td>
-                        </tr>
-                        <tr>
-                            <td>_gat</td>
-                            <td>1 minute</td>
-                            <td>Used to reduce the amount of requests</td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>Cookie Name</th>
+                                <th>Expiry Date</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>_ga</td>
+                                <td>2 years</td>
+                                <td>Used to distinguish users</td>
+                            </tr>
+                            <tr>
+                                <td>_gid</td>
+                                <td>24 hours</td>
+                                <td>Used to distinguish users</td>
+                            </tr>
+                            <tr>
+                                <td>_gat</td>
+                                <td>1 minute</td>
+                                <td>Used to reduce the amount of requests</td>
+                            </tr>
+                        </tbody>
                         </table>
                     <h2>I do not wish to have cookies on my device</h2>
                     <p><a href='udrink.io'>udrink.io</a> can be used without cookies by not accepting cookies when prompted. If you wish to further oppose the use of cookies you can take further measures.</p>
                     <ul>
-                        <li>Chrome: <a href='https://support.google.com/accounts/answer/61416?co=GENIE.Platform%3DDesktop&hl=en'>https://support.google.com/accounts/answer/61416?co=GENIE.Platform%3DDesktop&hl=en</a></li>
+                        <li>Chrome: <a href='https://support.google.com/accounts/answer/61416'>https://support.google.com/accounts/answer/61416</a></li>
                         <li>Firefox: <a href='https://support.mozilla.org/en-US/kb/block-websites-storing-cookies-site-data-firefox'>https://support.mozilla.org/en-US/kb/block-websites-storing-cookies-site-data-firefox</a></li>
                         <li>Edge: <a href='https://support.microsoft.com/en-us/help/4468242/microsoft-edge-browsing-data-and-privacy'>https://support.microsoft.com/en-us/help/4468242/microsoft-edge-browsing-data-and-privacy</a></li>
                         <li>Safari: <a href='https://support.apple.com/en-in/guide/safari/sfri11471/mac'>https://support.apple.com/en-in/guide/safari/sfri11471/mac</a></li>
