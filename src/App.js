@@ -89,6 +89,16 @@ class App extends Component {
 
   onReadMoreConsent = () => {
     this.props.history.push('/cookies-info')
+    this.setState({
+      userId: null,
+      roomId: null,
+      game: null,
+      users: null,
+      host: null,
+      username: null,
+      joinPrompt: false,
+      createPrompt: false
+    })
   }
 
   onRefuseConsent = () => {
