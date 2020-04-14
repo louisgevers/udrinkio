@@ -27,6 +27,7 @@
     padding: 10px 10px 20px 10px;
     border-radius: 10px;
     position: relative;
+    word-wrap: break-word;
 }
 
 .ChatContent .ChatMessage:after {
@@ -61,4 +62,15 @@
 
 .ChatContent .ChatMessage * {
     display: block;
+}
+
+.ChatContent .AnnouncementMessage {
+    font-weight: bold;
+    color: orange;
+    padding: 10px;
+}
+
+.ChatContent .AnnouncementMessage::before {
+    content: '[ANNOUNCEMENT] - ';
+    font-weight: normal;
 }
