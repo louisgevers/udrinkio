@@ -9,7 +9,14 @@ export default {
     component: KingCupGame
 }
 
-export const Simple = () => <KingCupGame gameState={state} socket={socket} session={session} />;
+export const Simple = () => (
+    <div style={{height: '100vh'}}>
+        <style dangerouslySetInnerHTML={{__html: `
+            .game-component { height: 100% }
+        `}} />
+        <KingCupGame gameState={state} socket={socket} session={session} />
+    </div>
+)
 
 const state = {
     table: ['b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b'],
