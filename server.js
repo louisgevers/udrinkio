@@ -21,6 +21,11 @@ app.get('*', (req, res) => {
 // ### SOCKET IO ###
 var connectionsCount = 0
 
+const ftheDealerAnnouncement = {
+  type: 'announcement',
+  message: `If you cannot see the other players or the buttons are not working, please REFRESH the page. We are looking into the issue and are trying to find a fix. Happy drinking!`
+}
+
 io.on('connection', (socket) => {
   connectionsCount += 1
   console.log(`[C](${connectionsCount} connection(s)) socket [${socket.id}] connected`)
@@ -139,6 +144,9 @@ io.on('connection', (socket) => {
         gameObject.connect({userId: session.userId, username: session.username})
         const gameState = gameObject.generateState()
         socket.emit('game.started', gameState)
+        if (room.data.game.id === 'fthedealer') {
+          socket.emit('chat.announcement', ftheDealerAnnouncement)
+        }
         socket.broadcast.to(roomId).emit('game.userJoined', gameState)
       }
       // Inform room
@@ -257,6 +265,7 @@ io.on('connection', (socket) => {
           room.data.sockets.forEach((playingSocket) => {
             playingSocket.session.state = 'game'
           })
+          io.to(roomId).emit('chat.announcement', ftheDealerAnnouncement)
         }
       } else {
         // TODO implement other games here
