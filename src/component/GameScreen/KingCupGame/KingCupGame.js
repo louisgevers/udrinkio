@@ -30,9 +30,11 @@ class KingCupGame extends Component {
 
     componentDidMount = () => {
         // pixi.js
-        this.app = new Application({ resizeTo: this.gameCanvas, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
+        this.app = new Application({ autoResize: true, backgroundColor: parseInt(this.props.session.game.primaryColor.replace('#', '0x')) })
         this.gameCanvas.appendChild(this.app.view)
         this.app.start()
+        const parent = this.app.view.parentNode
+        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
         this.setup()
     }
 
@@ -58,37 +60,41 @@ class KingCupGame extends Component {
         )
     }
 
-    // ### PIXI.JS METHODS ###
+    // ### LOGIC METHODS ###
 
-    setup = () => {
-        this.app.renderer.plugins.interaction.autoPreventDefault = false
-        this.app.renderer.view.style['touch-action'] = 'auto'
-        this.spriteTable = []
-        this.spriteBottleStack = []
-        loader
-        .add(cardFiles.map((fileName) => {
-            return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
-        }))
-        .add({name: 'bottle', url: require('../../../image/bottle.png')})
-        .on('progress', (loader, resource) => {
-            this.setState({
-                progress: loader.progress
-            })
-        })
-        .load(() => { 
-            this.setState({
-                progress: 100
-            })
-            this.initBottleSprite()
-            this.initCardSprites()
-            window.addEventListener('resize', this.reposition)
-        })
-        this.initUserDisplay()
+    onNewGameState = (gameState) => {
+        this.gameState = gameState
+        this.updatePlayerTurn()
+        this.updateCards()
+        this.updateStack()
     }
 
-    cardsAreSetup = () => {
-        this.onNewGameState(this.props.gameState)
-        // socket.io
+    onCardClicked = (index) => {
+        if (this.isUsersTurn()) {
+            this.props.socket.emit('kingcup.drawCard', {index: index})
+        } else {
+            alert('Not your turn yet')
+        }
+    }
+
+    onCardDrawn = (gameState) => {
+        this.setState({
+            lastCard: gameState.lastCard,
+            showCard: true
+        })
+    }
+
+    onStackCard = () => {
+        this.props.socket.emit('kingcup.stackCard')
+    }
+
+    isUsersTurn = () => {
+        return this.gameState.playingUser.userId === this.props.session.userId
+    }
+
+    // ### SOCKET.IO METHODS ###
+
+    setupSockets = () => {
         this.props.socket.on('kingcup.drawnCard', (gameState) => { 
             this.onNewGameState(gameState)
             this.onCardDrawn(gameState)
@@ -117,181 +123,217 @@ class KingCupGame extends Component {
         })
     }
 
-    cleanup = () => {
-        window.removeEventListener('resize', this.reposition)
-        loader.reset()
-    }
+    // ### PIXI.JS METHODS
 
-    // ### GAMESTATE METHODS ###
-
-    onNewGameState = (gameState) => {
-        this.gameState = gameState
-        this.updateCardSprites()
-        this.updateUserDisplay()
-    }
-
-    onCardDrawn = (gameState) => {
-        this.setState({
-            lastCard: gameState.lastCard,
-            showCard: true
+    setup = () => {
+        this.app.renderer.plugins.interaction.autoPreventDefault = false
+        this.app.renderer.view.style['touch-action'] = 'auto'
+        loader
+        .add(cardFiles.map((fileName) => {
+            return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
+        }))
+        .add({name: 'bottle', url: require('../../../image/bottle.png')})
+        .on('progress', (loader, resource) => {
+            this.setState({
+                progress: loader.progress
+            })
+        })
+        .load(() => { 
+            this.setState({
+                progress: 100
+            })
+            this.initPlayerTurn()
+            this.initBottle()
+            this.initCards()
+            this.initStack()
+            this.setupSockets()
+            window.addEventListener('resize', this.resize)
         })
     }
 
-    onCardClicked = (index, cardName) => {
-        if (this.isUsersTurn()) {
-            if (cardName === 'b') {
-                this.props.socket.emit('kingcup.drawCard', {index: index})
-            }
-        } else {
-            alert('Not your turn yet')
-        }
+    cleanup = () => {
+        window.removeEventListener('resize', this.resize)
+        loader.reset()
     }
 
-    onStackCard = () => {
-        this.props.socket.emit('kingcup.stackCard')
-    }
-
-    isUsersTurn = () => {
-        return this.gameState.playingUser.userId === this.props.session.userId
+    resize = () => {
+        const parent = this.app.view.parentNode
+        this.positionPlayerTurn()
+        this.positionBottle()
+        this.positionCards()
+        this.positionStack()
+        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
     }
 
     // ### RENDER METHODS ###
 
-    initCardSprites = () => {
-        this.gameState.table.forEach((cardName, index) => {
-            const texture = cardName === 'b' ? resources[cardName].texture : null
-            const card = new Sprite(texture)
-            card.interactive = true
-            card.buttonMode = true
-            card.data = {
-                name: cardName
-            }
-            card.on('pointertap', () => this.onCardClicked(index, card.data.name))
-            this.spriteTable.push(card)
-            this.app.stage.addChild(card)
-        })
-        this.app.stage.addChild(this.bottleSprite)
-        for (var i = 0; i < this.gameState.table.length; i++) {
-            const card = new Sprite(resources['b'].texture)
-            card.visible = false
-            this.spriteBottleStack.push(card)
-            this.app.stage.addChild(card)
-        }
-        this.gameState.bottleStack.forEach((cardName, index) => {
-            this.spriteBottleStack[index].texture = resources[cardName].texture
-        })
-        this.updateCardSprites()
-        this.positionCards()
-        this.cardsAreSetup()
-    }
+    // # INITIALIZATION #
 
-    initUserDisplay = () => {
-        this.userDisplay = new Pixi.Text()
-        this.isPlayingDisplay = new Pixi.Text()
-        this.userDisplay.style = {
+    initPlayerTurn = () => {
+        this.playerTurnContainer = new Pixi.Container()
+
+        const playerName = new Pixi.Text()
+        const isPlaying = new Pixi.Text(' is playing.')
+
+        const fontSize = 24
+        playerName.resolution = 2
+        isPlaying.resolution = 2
+        playerName.style = {
             fontFamily: '\'Open Sans\', sans-serif',
+            fontSize: `${fontSize}px`,
             fill: this.props.session.game.secondaryColor,
             fontWeight: 'bold'
         }
-        this.isPlayingDisplay.style = {
+        isPlaying.style = {
             fontFamily: '\'Open Sans\', sans-serif',
-            fill: 'white'
+            fontSize: `${fontSize}px`,
+            fill: '#ffffff'
         }
-        this.userDisplay.y = 50
-        this.isPlayingDisplay.y = 50
-        this.app.stage.addChild(this.userDisplay)
-        this.app.stage.addChild(this.isPlayingDisplay)
+
+        this.playerTurnContainer.addChild(playerName)
+        this.playerTurnContainer.addChild(isPlaying)
+
+        this.app.stage.addChild(this.playerTurnContainer)
+        this.updatePlayerTurn()
     }
 
-    initBottleSprite = () => {
+    initBottle = () => {
         this.bottleSprite = new Sprite(resources['bottle'].texture)
-
-        const scale = (0.25 * this.app.renderer.height) / this.bottleSprite.height
-        this.bottleSprite.height = scale * this.bottleSprite.height
-        this.bottleSprite.width = scale * this.bottleSprite.width
-
-        const centerOffset = 50
-        this.bottleSprite.x = this.app.renderer.width / 2 - this.bottleSprite.width / 2
-        this.bottleSprite.y = this.app.renderer.height / 2 - this.bottleSprite.height / 2 + centerOffset
-    }
-
-    reposition = () => {
-        this.positionCards()
+        this.bottleSprite.anchor.set(0.5, 0.5)
         this.positionBottle()
     }
 
-    positionCards = () => {
-        const n = this.spriteTable.length
-        const centerOffset = 50
-        this.spriteTable.forEach((cardSprite, i) => {
-            const scale = (0.3 * this.app.renderer.height) / cardSprite.height
-            cardSprite.width = scale * cardSprite.width
-            cardSprite.height = scale * cardSprite.height
+    initCards = () => {
+        this.cardSpritesContainer = new Pixi.Container()
+        const n = this.gameState.table.length
+        for (var i = 0; i < n; i++) {
+            const sprite = new Sprite(resources['b'].texture)
+            sprite.data = {
+                index: i
+            }
+            sprite.on('pointertap', () => this.onCardClicked(sprite.data.index))
+            this.cardSpritesContainer.addChild(sprite)
+        }
+        this.app.stage.addChild(this.cardSpritesContainer)
+        this.app.stage.addChild(this.bottleSprite)
+        this.updateCards()
+    }
 
-            const r =  cardSprite.height
-            const centerX = this.app.renderer.width / 2
-            const centerY = this.app.renderer.height / 2 + centerOffset
-            const pointX = centerX - cardSprite.width / 2
-            const pointY = centerY - cardSprite.width / 2 - r
+    initStack = () => {
+        this.stackSpritesContainer = new Pixi.Container()
+        const n = this.gameState.table.length
+        for (var i = 0; i < n; i++) {
+            const sprite = new Sprite(resources['b'].texture)
+            this.stackSpritesContainer.addChild(sprite)
+            sprite.anchor.set(0.5, 0.5)
+            const angle = (10 * Math.PI / 180) * (Math.random() * 2 - 1)
+            sprite.rotation = angle
+        }
+        this.app.stage.addChild(this.stackSpritesContainer)
+        this.updateStack()
+    }
+
+    // # POSITIONING #
+
+    positionPlayerTurn = () => {
+        // Children
+        const playerName = this.playerTurnContainer.children[0]
+        const isPlaying = this.playerTurnContainer.children[1]
+        playerName.x = 0
+        isPlaying.x = playerName.width
+        isPlaying.y = playerName.height - isPlaying.height
+        // Container
+        this.playerTurnContainer.x = this.app.renderer.width / 2 - this.playerTurnContainer.width / 2
+        this.playerTurnContainer.y = 50
+    }
+
+    positionBottle = () => {
+        // Scaling
+        const scale = 0.2 * Math.min(this.app.renderer.height, this.app.renderer.width) / this.bottleSprite.height
+        this.bottleSprite.height = scale * this.bottleSprite.height
+        this.bottleSprite.width = scale * this.bottleSprite.width
+        // Positioning
+        this.bottleSprite.x = this.app.renderer.width / 2
+        this.bottleSprite.y = this.app.renderer.height / 2 + this.playerTurnContainer.y
+    }
+
+    positionCards = () => {
+        const n = this.cardSpritesContainer.children.length
+        this.cardSpritesContainer.children.forEach((sprite, i) => {
+            // Scaling
+            const scale = 0.3 * Math.min(this.app.renderer.height, this.app.renderer.width) / sprite.height
+            sprite.height = scale * sprite.height
+            sprite.width = scale* sprite.width
+            // Positioning
+            const r = this.bottleSprite.height * 1.2
+            const centerX = this.bottleSprite.x
+            const centerY = this.bottleSprite.y
+            const pointX = centerX - sprite.width / 2
+            const pointY = centerY - sprite.width / 2 - r
 
             const angle = (360 / n * i) * Math.PI / 180
             const rotatedX = Math.cos(angle) * (pointX - centerX) - Math.sin(angle) * (pointY - centerY) + centerX
             const rotatedY = Math.sin(angle) * (pointX - centerX) + Math.cos(angle) * (pointY - centerY) + centerY
 
-            cardSprite.x = rotatedX
-            cardSprite.y = rotatedY
-            cardSprite.rotation = angle
-        })
-        this.spriteBottleStack.forEach((cardSprite) => {
-            const scale = (0.4 * this.app.renderer.height) / cardSprite.height
-            cardSprite.width = scale * cardSprite.width
-            cardSprite.height = scale * cardSprite.height
-            cardSprite.anchor.set(0.5, 0.5)
-            cardSprite.x = this.app.renderer.width / 2
-            cardSprite.y = this.app.renderer.height / 2 + centerOffset
-            const angle = (10 * Math.PI / 180) * (Math.random() * 2 - 1)
-            cardSprite.rotation = angle
+            sprite.x = rotatedX
+            sprite.y = rotatedY
+            sprite.rotation = angle
         })
     }
 
-    positionBottle = () => {
-        this.bottleSprite.x = this.app.renderer.width / 2 - this.bottleSprite.width / 2
-        this.bottleSprite.y = this.app.renderer.height / 2 - this.bottleSprite.height / 2
+    positionStack = () => {
+        this.stackSpritesContainer.children.forEach((sprite) => {
+            // Scaling
+            const scale = 0.35 * Math.min(this.app.renderer.height, this.app.renderer.width) / sprite.height
+            sprite.height = scale * sprite.height
+            sprite.width = scale * sprite.width
+            // Positioning
+            sprite.x = this.bottleSprite.x
+            sprite.y = this.bottleSprite.y
+        })
     }
 
-    updateCardSprites = () => {
-        if (typeof this.spriteTable !== 'undefined') {
-            this.gameState.table.forEach((cardName, index) => {
-                if (cardName !== 'b') {
-                    this.spriteTable[index].texture = null
-                } else {
-                    this.spriteTable[index].texture = resources[cardName].texture
-                }
-                this.spriteTable[index].data.name = cardName
-            })
-        }
-        if (typeof this.spriteBottleStack !== 'undefined') {
-            this.gameState.bottleStack.forEach((cardName, index) => {
-                this.spriteBottleStack[index].texture = resources[cardName].texture
-                this.spriteBottleStack[index].visible = true
-            })
-            for (var i = this.gameState.bottleStack.length; i < this.spriteBottleStack.length; i++) {
-                this.spriteBottleStack[i].visible = false
-            }
-        }
-    }
+    // # UPDATING #
 
-    updateUserDisplay = () => {
+    updatePlayerTurn = () => {
+        const playerName = this.playerTurnContainer.children[0]
+        const isPlaying = this.playerTurnContainer.children[1]
         if (this.isUsersTurn()) {
-            this.userDisplay.text = 'Your turn!'
-            this.isPlayingDisplay.text = ''
+            playerName.text = 'Your turn!'
+            isPlaying.text = ''
         } else {
-            const username = this.gameState.playingUser.username
-            this.userDisplay.text = `${username}`
-            this.isPlayingDisplay.text = ' is playing...'
+            playerName.text = this.gameState.playingUser.username
+            isPlaying.text = ' is playing...'
         }
-        this.userDisplay.x = (this.app.renderer.width / 2) - (this.userDisplay.width / 2) - (this.isPlayingDisplay.width / 2)
-        this.isPlayingDisplay.x = (this.app.renderer.width / 2) - (this.isPlayingDisplay.width / 2) + (this.userDisplay.width / 2)
+        this.positionPlayerTurn()
+    }
+
+    updateCards = () => {
+        this.gameState.table.forEach((card, i) => {
+            const sprite = this.cardSpritesContainer.children[i]
+            if (card === 'b') {
+                sprite.visible = true
+                sprite.interactive = true
+                sprite.buttonMode = true
+            } else {
+                sprite.visible = false
+                sprite.interactive = false
+                sprite.buttonMode = false
+            }
+        })
+        this.positionCards()
+    }
+
+    updateStack = () => {
+        this.stackSpritesContainer.children.forEach((sprite, i) => {
+            if (i < this.gameState.bottleStack.length) {
+                sprite.visible = true;
+                sprite.texture = resources[this.gameState.bottleStack[i]].texture
+            } else {
+                sprite.visible = false
+            }
+        })
+        this.positionStack()
     }
 
 }

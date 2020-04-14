@@ -19,9 +19,9 @@ export const Simple = () => (
 )
 
 const state = {
-    table: ['b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b'],
+    table: ['b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','jc','3h','5s','6s','b','7h','b','b','b','qh','1c','5s','b','b','b','b','b','b','b','b','b','b','b'],
     playingUser: {userId: 0, username: 'louis'},
-    bottleStack: [],
+    bottleStack: ['qh', '1s', '3c'],
     lastCard: null
 }
 
@@ -34,5 +34,6 @@ const session = {
         "primaryColor": "#FC0F3B",
         "primaryDark": "#C01A38",
         "secondaryColor": "#3FA2BE"
-    }
+    },
+    userId: 1
 }

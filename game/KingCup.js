@@ -64,11 +64,11 @@ module.exports = class KingCup {
             this.bottleStack = []
         }
         this.waitForStack = false
+        this.queue.enqueue(this.queue.dequeue())
         return falls
     }
 
     nextTurn() {
-        this.queue.enqueue(this.queue.dequeue())
         this.playingUser = this.queue.peek()
     }
 
