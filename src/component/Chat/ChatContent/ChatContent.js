@@ -24,6 +24,8 @@ class ChatContent extends Component {
                             />
                         } else if (chatMessage.type === "info") {
                             return <span key={index} className="InfoMessage">{chatMessage.message}</span>
+                        } else if (chatMessage.type === 'announcement') {
+                            return <span key={index} className='AnnouncementMessage'>{chatMessage.message}</span>
                         } else {
                             return <span key={index}>{chatMessage}</span>
                         }
@@ -43,6 +45,7 @@ class ChatContent extends Component {
         this.socket = this.props.socket
         this.socket.on('chat.receivedMessage', this.addMessage)
         this.socket.on('chat.info', this.addMessage)
+        this.socket.on('chat.announcement', this.addMessage)
     }
 
     addMessage = (chatMessage) => {
