@@ -23,3 +23,12 @@
     text-decoration: none;
     border-radius: 50%;
 }
+
+/* Desktop */
+@media only screen and (min-width: 800px) {
+
+    .InstagramPlug .instagram-text {
+        font-size: 20px;
+    }
+
+}
