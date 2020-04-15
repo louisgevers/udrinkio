@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './KingCupGame.css'
 
 import KingCupCardPrompt from './KingCupCardPrompt/KingCupCardPrompt.js'
+import Button from '../../../graphics/Button'
 
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
@@ -67,6 +68,7 @@ class KingCupGame extends Component {
         this.updatePlayerTurn()
         this.updateCards()
         this.updateStack()
+        this.updateEndGameButton()
     }
 
     onCardClicked = (index) => {
@@ -88,8 +90,21 @@ class KingCupGame extends Component {
         this.props.socket.emit('kingcup.stackCard')
     }
 
+    onEndGameClicked = () => {
+        this.props.socket.emit('kingcup.end')
+    }
+
     isUsersTurn = () => {
         return this.gameState.playingUser.userId === this.props.session.userId
+    }
+
+    gameIsFinished = () => {
+        for (var i = 0; i < this.gameState.table.length; i++) {
+            if (this.gameState.table[i] === 'b') {
+                return false
+            }
+        }
+        return true
     }
 
     // ### SOCKET.IO METHODS ###
@@ -146,6 +161,7 @@ class KingCupGame extends Component {
             this.initBottle()
             this.initCards()
             this.initStack()
+            this.initEndGameButton()
             this.setupSockets()
             window.addEventListener('resize', this.resize)
         })
@@ -233,6 +249,13 @@ class KingCupGame extends Component {
         this.updateStack()
     }
 
+    initEndGameButton = () => {
+        this.endGameButton = new Button('END GAME', '#ff0000')
+        this.endGameButton.on('pointertap', this.onEndGameClicked)
+        this.app.stage.addChild(this.endGameButton)
+        this.updateEndGameButton()
+    }
+
     // # POSITIONING #
 
     positionPlayerTurn = () => {
@@ -293,18 +316,29 @@ class KingCupGame extends Component {
         })
     }
 
+    positionEndGameButton = () => {
+        this.endGameButton.x = this.bottleSprite.x - this.endGameButton.width / 2
+        this.endGameButton.y = this.bottleSprite.y - this.endGameButton.height / 2
+    }
+
     // # UPDATING #
 
     updatePlayerTurn = () => {
         const playerName = this.playerTurnContainer.children[0]
         const isPlaying = this.playerTurnContainer.children[1]
-        if (this.isUsersTurn()) {
-            playerName.text = 'Your turn!'
-            isPlaying.text = ''
+        if (this.gameIsFinished()) {
+            playerName.text = ''
+            isPlaying.text = 'Game finished'
         } else {
-            playerName.text = this.gameState.playingUser.username
-            isPlaying.text = ' is playing...'
+            if (this.isUsersTurn()) {
+                playerName.text = 'Your turn!'
+                isPlaying.text = ''
+            } else {
+                playerName.text = this.gameState.playingUser.username
+                isPlaying.text = ' is playing...'
+            }
         }
+        
         this.positionPlayerTurn()
     }
 
@@ -334,6 +368,19 @@ class KingCupGame extends Component {
             }
         })
         this.positionStack()
+    }
+
+    updateEndGameButton = () => {
+        if (this.props.session.userId === this.props.session.host && this.gameIsFinished()) {
+            this.endGameButton.visible = true
+            this.endGameButton.interactive = true
+            this.endGameButton.buttonMode = true
+        } else {
+            this.endGameButton.visible = false
+            this.endGameButton.interactive = false
+            this.endGameButton.buttonMode = false
+        }
+        this.positionEndGameButton()
     }
 
 }

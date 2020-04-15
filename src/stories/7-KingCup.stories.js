@@ -35,5 +35,6 @@ const session = {
         "primaryDark": "#C01A38",
         "secondaryColor": "#3FA2BE"
     },
-    userId: 1
+    userId: 1,
+    host: 1
 }
