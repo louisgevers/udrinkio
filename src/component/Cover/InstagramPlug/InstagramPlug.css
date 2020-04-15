@@ -1,0 +1,25 @@
+.InstagramPlug {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.InstagramPlug .instagram-text {
+    color: white;
+    padding: 0 5px;
+}
+
+.InstagramPlug .instagram-text a {
+    color: #D9B835;
+}
+
+.InstagramPlug .fa {
+    color: white;
+    background-color: #D9B835;
+    padding: 10px;
+    font-size: 30px;
+    width: 30px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 50%;
+}
