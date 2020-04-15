@@ -8,6 +8,8 @@ import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 import ProgressBar from '../../ProgressBar/ProgressBar'
 
+import ReactGA from 'react-ga'
+
 Pixi.utils.skipHello()
 
 const Application = Pixi.Application,
@@ -61,6 +63,18 @@ class KingCupGame extends Component {
         )
     }
 
+    // ### GOOGLE ANALYTICS ###
+    
+    analyticsEvent = (action) => {
+        if (this.props.analytics) {
+            ReactGA.event({
+                category: 'Game',
+                action: action,
+                label: 'Kings'
+            })
+        }
+    }
+
     // ### LOGIC METHODS ###
 
     onNewGameState = (gameState) => {
@@ -74,6 +88,7 @@ class KingCupGame extends Component {
     onCardClicked = (index) => {
         if (this.isUsersTurn()) {
             this.props.socket.emit('kingcup.drawCard', {index: index})
+            this.analyticsEvent('Drew new card')
         } else {
             alert('Not your turn yet')
         }
@@ -88,10 +103,12 @@ class KingCupGame extends Component {
 
     onStackCard = () => {
         this.props.socket.emit('kingcup.stackCard')
+        this.analyticsEvent('Stacked card')
     }
 
     onEndGameClicked = () => {
         this.props.socket.emit('kingcup.end')
+        this.analyticsEvent('Requested end of Kings game')
     }
 
     isUsersTurn = () => {
