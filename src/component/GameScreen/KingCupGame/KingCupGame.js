@@ -55,7 +55,7 @@ class KingCupGame extends Component {
             <div className='KingCupGame'>
                 {this.state.progress < 100 && <ProgressBar progress={this.state.progress} color={this.props.session.game.secondaryColor} description={'loading assets...'} />}
                 <div ref={(divCanvas => { this.gameCanvas = divCanvas })} className='game-component' />
-                {this.state.lastCard !== null && this.state.showCard && <KingCupCardPrompt game={this.props.session.game} card={this.state.lastCard} onStackClick={this.onStackCard} isTurn={this.isUsersTurn()} /> }
+                {this.state.lastCard !== null && this.state.showCard && <KingCupCardPrompt game={this.props.session.game} card={this.state.lastCard} onStackClick={this.onStackCard} isTurn={this.isUsersTurn()} order={this.gameState.order} /> }
             </div>
         )
     }

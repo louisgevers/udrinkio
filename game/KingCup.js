@@ -36,7 +36,8 @@ module.exports = class KingCup {
             table: this.table,
             playingUser: this.playingUser,
             bottleStack: this.bottleStack,
-            lastCard: this.lastCard
+            lastCard: this.lastCard,
+            order: this.queue.items
         }
     }
 

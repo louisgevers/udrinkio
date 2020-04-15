@@ -6,14 +6,15 @@
     left: 0;
 }
 
-.KingCupCardPrompt .prompt-content {
+.KingCupCardPrompt .prompt-content .card {
     display: flex;
     flex-direction: column;
     text-align: center;
     align-items: center;
+    padding: 50px;
 }
 
-.KingCupCardPrompt .prompt-content img {
+.KingCupCardPrompt .prompt-content .card img {
     max-height: 30vh;
 }
 
@@ -31,7 +32,7 @@
     font-size: 10px;
 }
 
-.KingCupCardPrompt .prompt-content button {
+.KingCupCardPrompt .prompt-content .card button {
     border: none;
     color: white;
     padding: 10px 20px;
@@ -40,7 +41,20 @@
     background-color: #777777;
 }
 
-.KingCupCardPrompt .prompt-content button:active {
+.KingCupCardPrompt .prompt-content .card button:active {
     border: none;
     color: black;
+}
+
+.KingCupCardPrompt .prompt-body {
+    padding: 0!important;
+}
+
+.KingCupCardPrompt .order {
+    background-color: #cccccc;
+}
+
+.KingCupCardPrompt .order h2 {
+    margin: 20px 20px;
+    text-align: center;
 }
