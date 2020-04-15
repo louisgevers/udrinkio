@@ -7,7 +7,7 @@ class InstagramPlug extends Component {
             <div className='InstagramPlug'>
                 <i className='fa fa-instagram'></i>
                 <span className='instagram-text'>
-                    &nbsp;Join us on instagram <a href='https://www.instagram.com/udrink.io/' target='_blank'>@udrink.io</a>
+                    &nbsp;Join us on instagram <a href='https://www.instagram.com/udrink.io/' target='_blank' rel='noopener noreferrer'>@udrink.io</a>
                 </span>
             </div>
         )
