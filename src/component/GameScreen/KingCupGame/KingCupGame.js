@@ -371,7 +371,7 @@ class KingCupGame extends Component {
     }
 
     updateEndGameButton = () => {
-        if (this.props.session.userId === this.props.session.host && this.gameIsFinished()) {
+        if (this.gameIsFinished()) {
             this.endGameButton.visible = true
             this.endGameButton.interactive = true
             this.endGameButton.buttonMode = true
