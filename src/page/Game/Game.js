@@ -8,6 +8,8 @@ import GameOverPrompt from "../../component/GameOverPrompt/GameOverPrompt"
 import InfoBox from "../../component/InfoBox/InfoBox"
 import EntryInfoPrompt from "../../component/EntryInfoPrompt/EntryInfoPrompt"
 
+import ReactGA from 'react-ga'
+
 class Game extends Component {
 
     constructor(props) {
@@ -70,6 +72,12 @@ class Game extends Component {
             value: value
         }
         this.socket.emit('game.start', data)
+        if (this.props.analytics) {
+            ReactGA.event({
+                category: 'Lobby',
+                action: `Requested to start ${this.props.session.game.name} game`
+            })
+        }
         this.setState({
             settingsPrompt: false
         })

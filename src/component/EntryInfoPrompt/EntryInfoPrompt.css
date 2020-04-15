@@ -10,3 +10,7 @@
     border: none;
     color: black;
 }
+
+.EntryInfoPrompt a {
+    color: #D9B835;
+}
