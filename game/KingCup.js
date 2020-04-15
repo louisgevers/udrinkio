@@ -36,7 +36,8 @@ module.exports = class KingCup {
             table: this.table,
             playingUser: this.playingUser,
             bottleStack: this.bottleStack,
-            lastCard: this.lastCard
+            lastCard: this.lastCard,
+            order: this.queue.items
         }
     }
 
@@ -64,11 +65,11 @@ module.exports = class KingCup {
             this.bottleStack = []
         }
         this.waitForStack = false
+        this.queue.enqueue(this.queue.dequeue())
         return falls
     }
 
     nextTurn() {
-        this.queue.enqueue(this.queue.dequeue())
         this.playingUser = this.queue.peek()
     }
 

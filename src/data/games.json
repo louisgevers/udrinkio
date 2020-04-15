@@ -38,6 +38,36 @@
         "infoComponent": "PyramidInfo.js"
     },
     {
+        "id": "fthedealer",
+        "name": "F*CK THE DEALER",
+        "minPlayers": 2,
+        "maxPlayers": 12,
+        "imageName": "fthedealer.png",
+        "primaryColor": "#006B38",
+        "primaryDark": "#095e36",
+        "secondaryColor": "#101820",
+        "settings": [
+            {
+                "name": "Deck size",
+                "options": [
+                    {   
+                        "display": "HALF DECK (26 cards)",
+                        "value": 2
+                    },
+                    {   
+                        "display": "3 QUARTERS DECK (39 cards)",
+                        "value": 3
+                    },
+                    {   
+                        "display": "FULL DECK (52 cards)",
+                        "value": 4
+                    }
+                ]
+            }
+        ],
+        "infoComponent": "FTheDealerInfo.js"
+    },
+    {
         "id": "kingcup",
         "name": "KINGS",
         "minPlayers": 2,
@@ -69,8 +99,7 @@
                 ]
             }
         ],
-        "infoComponent": "KingCupInfo.js",
-        "comingSoon": "true"
+        "infoComponent": "KingCupInfo.js"
     },
     {
         "id": "minefield",
@@ -110,35 +139,5 @@
         ],
         "infoComponent": "MineFieldInfo.js",
         "comingSoon": "true"
-    },
-    {
-        "id": "fthedealer",
-        "name": "F*CK THE DEALER",
-        "minPlayers": 2,
-        "maxPlayers": 12,
-        "imageName": "fthedealer.png",
-        "primaryColor": "#006B38",
-        "primaryDark": "#095e36",
-        "secondaryColor": "#101820",
-        "settings": [
-            {
-                "name": "Deck size",
-                "options": [
-                    {   
-                        "display": "HALF DECK (26 cards)",
-                        "value": 2
-                    },
-                    {   
-                        "display": "3 QUARTERS DECK (39 cards)",
-                        "value": 3
-                    },
-                    {   
-                        "display": "FULL DECK (52 cards)",
-                        "value": 4
-                    }
-                ]
-            }
-        ],
-        "infoComponent": "FTheDealerInfo.js"
     }
 ]
