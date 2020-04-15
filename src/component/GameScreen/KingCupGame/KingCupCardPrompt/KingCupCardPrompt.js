@@ -28,6 +28,7 @@ class KingCupCardPrompt extends Component {
                                     return <li key={user.userId}>{user.username}</li>
                                 })}
                             </ol>
+                            <p>Repeat the order until someone fails</p>
                         </div>}
                     </div>
                     
