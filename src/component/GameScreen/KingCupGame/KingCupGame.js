@@ -181,6 +181,9 @@ class KingCupGame extends Component {
         .add(cardFiles.map((fileName) => {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
+        .add(cardFiles.map((fileName) => {
+            return require(`../../../image/cards/${fileName.substring(0, fileName.length - 4)}.png`)
+        }))
         .add({name: 'bottle', url: require('../../../image/bottle.png')})
         .on('progress', (loader, resource) => {
             this.setState({
