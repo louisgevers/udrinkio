@@ -9,6 +9,7 @@ import * as Pixi from 'pixi.js'
 import ProgressBar from '../../ProgressBar/ProgressBar'
 
 import ReactGA from 'react-ga'
+import KingCupStackPrompt from './KingCupStackPrompt/KingCupStackPrompt'
 
 Pixi.utils.skipHello()
 
@@ -25,7 +26,8 @@ class KingCupGame extends Component {
         this.state = {
             lastCard: this.props.gameState.lastCard,
             showCard: false,
-            progress: 0
+            progress: 0,
+            stackFellTimer: 0
         }
     }
 
@@ -59,6 +61,7 @@ class KingCupGame extends Component {
                 {this.state.progress < 100 && <ProgressBar progress={this.state.progress} color={this.props.session.game.secondaryColor} description={'loading assets...'} />}
                 <div ref={(divCanvas => { this.gameCanvas = divCanvas })} className='game-component' />
                 {this.state.lastCard !== null && this.state.showCard && <KingCupCardPrompt game={this.props.session.game} card={this.state.lastCard} onStackClick={this.onStackCard} isTurn={this.isUsersTurn()} order={this.gameState.order} /> }
+                {this.state.stackFellTimer > 0 && <KingCupStackPrompt game={this.props.session.game} username={this.lastPlayer.username} onClose={() => {this.setState({stackFellTimer: 0})}} timer={this.state.stackFellTimer} /> }
             </div>
         )
     }
@@ -132,11 +135,25 @@ class KingCupGame extends Component {
             this.onCardDrawn(gameState)
         })
         this.props.socket.on('kingcup.towerFell', (gameState) => {
+            this.lastPlayer = this.gameState.playingUser
             this.onNewGameState(gameState)
             this.setState({
-                showCard: false
+                showCard: false,
+                stackFellTimer: 10
             })
-            alert('STACK FELL!')
+            const intervalId = window.setInterval(() => {
+                const timer = this.state.stackFellTimer - 1
+                if (timer <= 0) {
+                    this.setState({
+                        stackFellTimer: 0
+                    })
+                    window.clearInterval(intervalId)
+                } else {
+                    this.setState({
+                        stackFellTimer: timer
+                    })
+                }
+            }, 1000)
         })
         this.props.socket.on('kingcup.towerStands', (gameState) => {
             this.onNewGameState(gameState)

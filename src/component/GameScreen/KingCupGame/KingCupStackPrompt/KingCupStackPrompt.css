@@ -1,0 +1,11 @@
+.KingCupStackPrompt .prompt-content {
+    text-align: center;
+}
+
+.KingCupStackPrompt .timer {
+    font-size: 12px;
+}
+
+.KingCupStackPrompt .prompt-content p {
+    font-size: 18px;
+}

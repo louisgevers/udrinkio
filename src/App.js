@@ -42,7 +42,7 @@ class App extends Component {
             <Route path='/*'>
               {
                 this.state.roomId !== null &&
-                <Game session={this.state} onHomeClick={this.onQuitLobby} socket={this.socket} analytics={this.cookies.get('accepted-cookies')} />
+                <Game session={this.state} onHomeClick={this.onQuitLobby} socket={this.socket} analytics={this.cookies.get('accepted-cookies') && !this.cookies.get('dev-cookie')} />
               }
               
             </Route>
@@ -78,7 +78,9 @@ class App extends Component {
       this.setState({
         consentAsked: true
       })
-      this.setupGA()
+      if (!this.cookies.get('dev-cookie')) {
+        this.setupGA()
+      }
     }
     this.initializeSocket()
   }
