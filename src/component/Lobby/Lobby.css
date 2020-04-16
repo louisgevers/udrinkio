@@ -1,8 +1,10 @@
 .Lobby {
     position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(30px, 1fr);
+    grid-template-rows: min-content 1fr min-content;
     flex-direction: column;
-    align-items: center;
+    /* align-items: center; */
 }
 
 .Lobby .header, .Lobby .players {
@@ -17,6 +19,7 @@
 }
 
 .Lobby .start-game-button {
+    justify-self: center;
     margin-bottom: 20px;
     padding: 10px 20px;
 }
@@ -63,6 +66,8 @@
 .Lobby .players {
     color: white;
     font-size: 14px;
+    max-height: 100%;
+    overflow-y: auto;
 }
 
 .Lobby .start-game-button.inactive {
