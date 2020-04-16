@@ -4,6 +4,8 @@
     grid-template-columns: 70%;
     justify-content: center;
     margin: 30px;
+    overflow-y: auto;
+    max-height: 100%;
 }
 
 .UserList > * {
