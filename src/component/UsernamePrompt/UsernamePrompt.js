@@ -28,7 +28,7 @@ class UsernamePrompt extends Component {
     }
 
     onStartClick = () => {
-        if (this.username.length > 0 && this.username.replace(/\s/g, '').length > 0 && this.username.length < 20) {
+        if (this.username.length > 0 && this.username.replace(/\s/g, '').length > 0 && this.username.length <= 25) {
             this.props.onStart(this.username)
         }
     }

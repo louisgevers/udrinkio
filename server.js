@@ -67,8 +67,8 @@ io.on('connection', (socket) => {
     // Data variables
     const game = data.game
     var username = data.username
-    if (username.length > 20) {
-      username = username.substring(0, 20)
+    if (username.length > 25) {
+      username = username.substring(0, 25)
     }
     if (typeof game !== 'undefined' && typeof username !== 'undefined') {
       // Create room
