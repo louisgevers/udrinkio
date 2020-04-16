@@ -14,7 +14,6 @@ Pixi.utils.skipHello()
 
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
-    resources = loader.resources,
     Sprite = Pixi.Sprite;
 
 class PyramidGame extends Component {
@@ -211,7 +210,7 @@ class PyramidGame extends Component {
         var row = 0
         var column = 0
         this.gameState.pyramid.forEach((cardName) => {
-            const sprite = new Sprite(resources[cardName].texture)
+            const sprite = new Sprite(loader.resources[cardName].texture)
             column += 1
             if (column > row) {
                 column = 0
@@ -244,7 +243,7 @@ class PyramidGame extends Component {
             cards: []
         }
         this.gameState.hands.get(this.props.session.userId).forEach((cardName, index) => {
-            const sprite = new Sprite(resources[cardName].texture)
+            const sprite = new Sprite(loader.resources[cardName].texture)
             sprite.interactive = true
             sprite.buttonMode = true
             sprite.data = {
@@ -317,7 +316,7 @@ class PyramidGame extends Component {
                 cards: []
             }
             for (var j = 0; j < handsSize; j++) {
-                const sprite = new Sprite(resources['b'].texture)
+                const sprite = new Sprite(loader.resources['b'].texture)
                 container.data.cards.push(sprite)
                 container.addChild(sprite)
             }
@@ -437,14 +436,14 @@ class PyramidGame extends Component {
 
     updatePyramid = () => {
         this.gameState.pyramid.forEach((cardName, i) => {
-            this.pyramidSprites[i].texture = resources[cardName].texture
+            this.pyramidSprites[i].texture = loader.resources[cardName].texture
         })
     }
 
     updatePlayerCards = () => {
         this.gameState.hands.get(this.props.session.userId).forEach((cardName, i) => {
             const sprite = this.playerCardsContainer.data.cards[i]
-            sprite.texture = resources[cardName].texture
+            sprite.texture = loader.resources[cardName].texture
             sprite.data.cardName = cardName
         })
 
@@ -497,7 +496,7 @@ class PyramidGame extends Component {
                 const container = this.otherPlayersHands[counter]
                 container.visible = true
                 cards.forEach((cardName, i) => {
-                    container.data.cards[i].texture = resources[cardName].texture
+                    container.data.cards[i].texture = loader.resources[cardName].texture
                 })
                 container.data.text.text = this.gameState.users.get(userId)
                 counter += 1
