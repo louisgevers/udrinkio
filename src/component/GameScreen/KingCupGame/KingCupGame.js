@@ -208,11 +208,11 @@ class KingCupGame extends Component {
 
     resize = () => {
         const parent = this.app.view.parentNode
+        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
         this.positionPlayerTurn()
         this.positionBottle()
         this.positionCards()
         this.positionStack()
-        this.app.renderer.resize(parent.clientWidth, parent.clientHeight)
     }
 
     // ### RENDER METHODS ###
