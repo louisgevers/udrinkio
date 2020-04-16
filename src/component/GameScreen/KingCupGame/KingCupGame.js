@@ -15,7 +15,6 @@ Pixi.utils.skipHello()
 
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
-    resources = loader.resources,
     Sprite = Pixi.Sprite;
 
 class KingCupGame extends Component {
@@ -251,7 +250,7 @@ class KingCupGame extends Component {
     }
 
     initBottle = () => {
-        this.bottleSprite = new Sprite(resources['bottle'].texture)
+        this.bottleSprite = new Sprite(loader.resources['bottle'].texture)
         this.bottleSprite.anchor.set(0.5, 0.5)
         this.positionBottle()
     }
@@ -260,7 +259,7 @@ class KingCupGame extends Component {
         this.cardSpritesContainer = new Pixi.Container()
         const n = this.gameState.table.length
         for (var i = 0; i < n; i++) {
-            const sprite = new Sprite(resources['b'].texture)
+            const sprite = new Sprite(loader.resources['b'].texture)
             sprite.data = {
                 index: i
             }
@@ -276,7 +275,7 @@ class KingCupGame extends Component {
         this.stackSpritesContainer = new Pixi.Container()
         const n = this.gameState.table.length
         for (var i = 0; i < n; i++) {
-            const sprite = new Sprite(resources['b'].texture)
+            const sprite = new Sprite(loader.resources['b'].texture)
             this.stackSpritesContainer.addChild(sprite)
             sprite.anchor.set(0.5, 0.5)
             const angle = (10 * Math.PI / 180) * (Math.random() * 2 - 1)
@@ -399,7 +398,7 @@ class KingCupGame extends Component {
         this.stackSpritesContainer.children.forEach((sprite, i) => {
             if (i < this.gameState.bottleStack.length) {
                 sprite.visible = true;
-                sprite.texture = resources[this.gameState.bottleStack[i]].texture
+                sprite.texture = loader.resources[this.gameState.bottleStack[i]].texture
             } else {
                 sprite.visible = false
             }

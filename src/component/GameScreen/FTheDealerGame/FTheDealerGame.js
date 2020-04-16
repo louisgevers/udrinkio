@@ -13,7 +13,6 @@ Pixi.utils.skipHello()
 
 const Application = Pixi.Application,
     loader = Pixi.Loader.shared,
-    resources = loader.resources,
     Sprite = Pixi.Sprite;
 
 class FTheDealerGame extends Component {
@@ -193,7 +192,7 @@ class FTheDealerGame extends Component {
             this.cardContainers.push(container)
             const cardSprites = []
             for (var row = 0; row < 4; row++) {
-                const sprite = new Sprite(resources['b'].texture)
+                const sprite = new Sprite(loader.resources['b'].texture)
                 cardSprites.push(sprite)
                 container.addChild(sprite)
             }
@@ -214,8 +213,8 @@ class FTheDealerGame extends Component {
             fill: '#eeeeee'
         }
 
-        const deckSprite = new Sprite(resources['b'].texture)
-        const currentCardSprite = new Sprite(resources['b'].texture)
+        const deckSprite = new Sprite(loader.resources['b'].texture)
+        const currentCardSprite = new Sprite(loader.resources['b'].texture)
         
         const nextCardButton = new Button('NEXT CARD', this.props.session.game.secondaryColor)
         nextCardButton.on('pointertap', this.nextCardClick)
@@ -316,7 +315,7 @@ class FTheDealerGame extends Component {
                 fontWeight: 'bold'
             }
 
-            const dealerToken = new Sprite(resources['token'].texture)
+            const dealerToken = new Sprite(loader.resources['token'].texture)
             dealerToken.width = 50
             dealerToken.y = userName.height + 5
             dealerToken.height = dealerToken.width
@@ -474,7 +473,7 @@ class FTheDealerGame extends Component {
             if (table[i].length >= this.gameState.cardsAmount) {
                 column.forEach((sprite, j) => {
                     if (j === 0) {
-                        sprite.texture = resources['b'].texture
+                        sprite.texture = loader.resources['b'].texture
                     } else {
                         sprite.visible = false
                     }
@@ -483,7 +482,7 @@ class FTheDealerGame extends Component {
                 column.forEach((sprite, j) => {
                     if (i < table.length && j < table[i].length) {
                         sprite.visible = true
-                        sprite.texture = resources[table[i][j]].texture
+                        sprite.texture = loader.resources[table[i][j]].texture
                     } else {
                         sprite.visible = false
                     }
@@ -515,7 +514,7 @@ class FTheDealerGame extends Component {
                     nextButton.visible = false
                     undoButton.visible = false
                     showButton.visible = true
-                    currentCard.texture = resources[this.gameState.currentCard].texture
+                    currentCard.texture = loader.resources[this.gameState.currentCard].texture
                     currentCard.visible = true
                 } else {
                     nextButton.visible = true
