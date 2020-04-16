@@ -179,6 +179,9 @@ class PyramidGame extends Component {
         .add(cardFiles.map((fileName) => {
             return { name: fileName.substring(0, fileName.length - 4), url: require(`../../../image/cards/${fileName}`)}
         }))
+        .add(cardFiles.map((fileName) => {
+            return require(`../../../image/cards/${fileName.substring(0, fileName.length - 4)}.png`)
+        }))
         .on('progress', (loader, resource) => {
             this.setState({
                 progress: loader.progress
