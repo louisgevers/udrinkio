@@ -63,11 +63,13 @@
     .Lobby, .GameScreen {
         float: left;
         width: 75%;
+        min-height: 600px;
+        height: 100%;
     }
 
     .Chat {
-        /* min-height: 600px;
-        height: 100%; */
+        min-height: 600px;
+        height: 100%;
         float: left;
         clear: right;
         width: 25%;
