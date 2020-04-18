@@ -1,7 +1,6 @@
 .GameScreen {
     position: relative;
     height: 100%;
-    width: 100%;
 }
 
 .GameScreen .game-component {
