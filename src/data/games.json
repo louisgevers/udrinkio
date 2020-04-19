@@ -150,5 +150,17 @@
         "secondaryColor": "#a6e889",
         "settings": [],
         "comingSoon": true
+    },
+    {
+        "id": "h",
+        "name": "H",
+        "minPlayers": 2,
+        "maxPlayers": 9,
+        "imageName": "h.png",
+        "primaryColor": "#EEB711",
+        "primaryDark": "#3B8194",
+        "secondaryColor": "#6D534B",
+        "settings": [],
+        "comingSoon": true
     }
 ]
