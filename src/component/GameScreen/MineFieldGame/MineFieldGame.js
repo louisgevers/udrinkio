@@ -7,6 +7,8 @@ import Button from '../../../graphics/Button'
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
 
+import ReactGA from 'react-ga'
+
 Pixi.utils.skipHello()
 
 const Application = Pixi.Application,
@@ -56,7 +58,15 @@ class MineFieldGame extends Component {
 
     // ### GOOGLE ANALYTICS
 
-    // TODO
+    analyticsEvent = (action) => {
+        if (this.props.analytics) {
+            ReactGA.event({
+                category: 'Game',
+                action: action,
+                label: 'Mine Field'
+            })
+        }
+    }
 
     // ### LOGIC METHODS ###
 
@@ -71,11 +81,13 @@ class MineFieldGame extends Component {
 
     onEndGameClicked = () => {
         this.props.socket.emit('minefield.end')
+        this.analyticsEvent('Requested end of Mine Field game')
     }
 
     onCardClicked = (i, j) => {
         if (this.isUsersTurn()) {
             this.props.socket.emit('minefield.drawCard', {row: i, column: j})
+            this.analyticsEvent('Drew Mine Field card')
         } else {
             alert('Not your turn yet')
         }
