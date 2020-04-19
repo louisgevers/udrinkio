@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './MineFieldGame.css'
 
 import ProgressBar from '../../ProgressBar/ProgressBar'
+import Button from '../../../graphics/Button'
 
 import cardFiles from '../../../data/cards.json'
 import * as Pixi from 'pixi.js'
@@ -65,9 +66,12 @@ class MineFieldGame extends Component {
         this.updatePlayerSprite()
         this.updateCardSprites()
         this.updateHighlightSprites()
+        this.updateEndGameButton()
     }
 
-    // TODO
+    onEndGameClicked = () => {
+        this.props.socket.emit('minefield.end')
+    }
 
     onCardClicked = (i, j) => {
         if (this.isUsersTurn()) {
@@ -122,6 +126,7 @@ class MineFieldGame extends Component {
             this.initPlayerSprite()
             this.initCardSprites()
             this.initHighlightSprites()
+            this.initEndGameButton()
             this.setupSockets()
             window.addEventListener('resize', this.resize)
         })
@@ -138,6 +143,7 @@ class MineFieldGame extends Component {
         this.positionPlayerSprite()
         this.positionCardSprites()
         this.updateHighlightSprites()
+        this.positionEndGameButton()
     }
 
     // ### RENDER METHODS ###
@@ -197,6 +203,13 @@ class MineFieldGame extends Component {
         this.highlightSprites = new Pixi.Container()
         this.app.stage.addChild(this.highlightSprites)
         this.updateHighlightSprites()
+    }
+
+    initEndGameButton = () => {
+        this.endGameButton = new Button('END GAME', '#ff0000')
+        this.endGameButton.on('pointertap', this.onEndGameClicked)
+        this.app.stage.addChild(this.endGameButton)
+        this.updateEndGameButton()
     }
 
     // # UPDATING #
@@ -267,6 +280,19 @@ class MineFieldGame extends Component {
         this.highlightSprites.y = this.cardSprites.y
     }
 
+    updateEndGameButton = () => {
+        if (this.gameIsFinished()) {
+            this.endGameButton.visible = true
+            this.endGameButton.interactive = true
+            this.endGameButton.buttonMode = true
+        } else {
+            this.endGameButton.visible = false
+            this.endGameButton.interactive = false
+            this.endGameButton.buttonMode = false
+        }
+        this.positionEndGameButton()
+    }
+
     // # POSITIONING #
 
     positionPlayerSprite = () => {
@@ -298,6 +324,11 @@ class MineFieldGame extends Component {
         // Container
         this.cardSprites.x = this.app.renderer.width / 2 - this.cardSprites.width / 2
         this.cardSprites.y = this.app.renderer.height / 2 - this.cardSprites.height / 2 + this.playerSprite.y
+    }
+
+    positionEndGameButton = () => {
+        this.endGameButton.x = this.app.renderer.width / 2 - this.endGameButton.width / 2
+        this.endGameButton.y = this.playerSprite.y + this.playerSprite.height + 10
     }
 
     // ### HELPER METHODS ###
