@@ -9,10 +9,31 @@ export default {
     component: MineFieldGame
 }
 
-export const Simple = () => <MineFieldGame gameState={state} socket={socket} game={state.game} />;
+export const Simple = () => (
+    <div style={{height: '100vh'}}>
+        <style dangerouslySetInnerHTML={{__html: `
+            .game-component { height: 100% }
+        `}} />
+        <MineFieldGame gameState={state} session={session} socket={socket} />
+    </div>
+)
+
+const users = new Map()
+users.set(0, 'Louis')
+users.set(1, 'Tutur')
+users.set(2, 'Panda')
+
+const playingUser = 0
 
 const state = {
-    table: [['1s', 'b', 'qh'], ['ks', 'jh', '8c'], ['7c', '8c', '5h']],
+    table: [['1s', 'b', 'qh'], ['8h', 'b', '8c'], ['7c', '8c', 'b']],
+    users: JSON.stringify(Array.from(users)),
+    playingUser: {userId: playingUser, username: users.get(playingUser)},
+    order: [1, 0, 2],
+    lastCard: {row: 1, column: 2}
+}
+
+const session = {
     game: {
         "id": "minefield",
         "name": "MINE FIELD",
@@ -22,5 +43,6 @@ const state = {
         "primaryColor": "#333333",
         "primaryDark": "#111111",
         "secondaryColor": "#FC0F3B"
-    }
+    },
+    userId: 1
 }

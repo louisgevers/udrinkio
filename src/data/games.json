@@ -137,7 +137,6 @@
                 ]
             }
         ],
-        "infoComponent": "MineFieldInfo.js",
-        "comingSoon": "true"
+        "infoComponent": "MineFieldInfo.js"
     }
 ]

@@ -4,7 +4,7 @@ class KingCupInfo extends Component {
     render() {
         return (
             <div className='KingCupInfo'>
-                <h1>King Cup</h1>
+                <h1>Kings</h1>
                 <h2>Game Rules</h2>
                 <p>
                     When it is your turn, pick a card from the circle.<br/><br/>
