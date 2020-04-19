@@ -18,6 +18,11 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
+const instagramAnnouncement = {
+  type: 'announcement',
+  message: 'If you want to SUPPORT us, follow us and SHARE your moments with your friends on INSTAGRAM @udrink.io!'
+}
+
 // ### SOCKET IO ###
 var connectionsCount = 0
 
@@ -140,6 +145,7 @@ io.on('connection', (socket) => {
         const gameState = gameObject.generateState()
         socket.emit('game.started', gameState)
         socket.broadcast.to(roomId).emit('game.userJoined', gameState)
+        socket.emit('chat.announcement', instagramAnnouncement)
       }
       // Inform room
       const users = createUsersJson(room.data.users)
@@ -261,6 +267,7 @@ io.on('connection', (socket) => {
       } else {
         // TODO implement other games here
       }
+      io.to(roomId).emit('chat.announcement', instagramAnnouncement)
     }
   })
 
