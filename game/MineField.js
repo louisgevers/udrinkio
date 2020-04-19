@@ -15,6 +15,10 @@ module.exports = class MineField {
             playingUser: this.queue.peek()
         }
         this.counter = this.n ** 2
+        this.lastCard = {
+            row: -1,
+            column: -1
+        }
     }
 
     generateTable = (n) => {
@@ -34,6 +38,8 @@ module.exports = class MineField {
             if (this.state.table[row][column] === 'b') {
                 const card = this.deck.pop()
                 this.state.table[row][column] = card
+                this.lastCard.row = row
+                this.lastCard.column = column
                 this.counter -= 1
                 return true
             } else {
@@ -69,7 +75,8 @@ module.exports = class MineField {
             table: this.state.table,
             users: JSON.stringify(Array.from(this.toUsers())),
             playingUser: this.state.playingUser,
-            order: this.createOrder()
+            order: this.createOrder(),
+            lastCard: this.lastCard
         }
     }
 
