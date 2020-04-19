@@ -138,5 +138,17 @@
             }
         ],
         "infoComponent": "MineFieldInfo.js"
+    },
+    {
+        "id": "horserace",
+        "name": "HORSE RACE",
+        "minPlayers": 2,
+        "maxPlayers": 12,
+        "imageName": "horserace.png",
+        "primaryColor": "#3FA2BE",
+        "primaryDark": "#3B8194",
+        "secondaryColor": "#a6e889",
+        "settings": [],
+        "comingSoon": true
     }
 ]
